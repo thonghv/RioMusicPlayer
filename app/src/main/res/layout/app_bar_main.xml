@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bd_transparent"
+            android:alpha="0.75"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+            <RelativeLayout
+                app:layout_collapseMode="parallax"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:alpha="0.1"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"/>
+
+                <com.ogaclejapan.smarttablayout.SmartTabLayout
+                    android:id="@+id/viewpagertab"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    app:stl_indicatorAlwaysInCenter="false"
+                    app:stl_indicatorWithoutPadding="false"
+                    app:stl_indicatorInFront="false"
+                    app:stl_indicatorInterpolation="smart"
+                    app:stl_indicatorGravity="bottom"
+                    app:stl_indicatorColor="#40C4FF"
+                    app:stl_indicatorThickness="4dp"
+                    app:stl_indicatorWidth="auto"
+                    app:stl_indicatorCornerRadius="2dp"
+                    app:stl_overlineColor="#4D000000"
+                    app:stl_overlineThickness="0dp"
+                    app:stl_underlineColor="#544343"
+                    app:stl_underlineThickness="1dp"
+                    app:stl_dividerColor="#4D000000"
+                    app:stl_dividerThickness="1dp"
+                    app:stl_defaultTabBackground="?attr/selectableItemBackground"
+                    app:stl_defaultTabTextAllCaps="true"
+                    app:stl_defaultTabTextColor="#FFFFFF"
+                    app:stl_defaultTabTextSize="12sp"
+                    app:stl_defaultTabTextHorizontalPadding="16dp"
+                    app:stl_defaultTabTextMinWidth="0dp"
+                    app:stl_distributeEvenly="false"
+                    app:stl_clickable="true"
+                    app:stl_titleOffset="24dp"
+                    app:stl_drawDecorationAfterTab="false"
+                    />
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/viewpager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/viewpagertab"
+                    />
+
+               <!-- <LinearLayout
+                    android:orientation="horizontal"
+                    android:alpha="0.1"
+                    android:layout_width="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_height="50dp"/>-->
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="47dp"
+                    android:id="@+id/hiddenBarMainScreen"
+                    android:layout_alignParentBottom="true"
+                    android:background="#ffffff"
+                    android:visibility="visible">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="1.1dp"
+                        android:layout_alignParentTop="true"
+                        android:background="#eeeeee" />
+
+                    <ImageButton
+                        android:id="@+id/nextButtonBottom"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/next_bottom" />
+
+                    <ImageButton
+                        android:id="@+id/playPauseButtonBottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toLeftOf="@id/nextButtonBottom"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:background="@drawable/play_bottom" />
+
+                    <ImageButton
+                        android:id="@+id/previousButtonBottom"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_toLeftOf="@id/playPauseButtonBottom"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:background="@drawable/previous_bottom" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="32dp"
+                        android:id="@+id/defaultMusic"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="13dp"
+                        android:minHeight="0dp"
+                        android:maxHeight="0dp"
+                        android:background="@drawable/now_playing_bar_eq_image"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/defaultMusic"
+                        android:text="Ngày mai em đi Ngày mai em đi Ngày mai em đi"
+                        android:id="@+id/songTitleMainScreen"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="7dp"
+                        android:textSize="13dp"
+                        android:layout_marginRight="120dp"
+                        android:textColor="#1C1C1D" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/songTitleMainScreen"
+                        android:text="Lê Hiếu"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textSize="10dp"
+                        android:maxWidth="160dp"
+                        android:singleLine="true"
+                        android:id="@+id/songArtistMainScreen"
+                        android:layout_alignLeft="@id/songTitleMainScreen"
+                        android:textAppearance="?android:textAppearance"
+                        android:textColor="#7A7A8D" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!--<androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            />-->
+
+        <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/layout_default"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/av_red"
+            android:orientation="vertical" >
+
+            <fragment
+                android:id="@+id/detail_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                class="com.pine.pmedia.fragments.ContactsFragment"
+                android:layout_below="@+id/appBarLayout"/>
+
+        </LinearLayout>-->
+
+<!--        <RelativeLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="@color/av_green"-->
+<!--            android:layout_alignParentBottom="true">-->
+<!--            <LinearLayout-->
+<!--                android:orientation="horizontal"-->
+<!--                android:alpha="0.1"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="50dp"/>-->
+<!--        </RelativeLayout>-->
+
+<!--        <fragment-->
+<!--            android:id="@+id/detail_fragment"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            class="com.pine.pmedia.fragments.HomeFragment"-->
+<!--            android:layout_below="@+id/appBarLayout"/>-->
+
+<!--        <include layout="@layout/content_main"></include>-->
+
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
