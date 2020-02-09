@@ -23,6 +23,8 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
+import com.pine.pmedia.fragments.AboutUsFragment;
+import com.pine.pmedia.fragments.ContactsFragment;
 import com.pine.pmedia.fragments.FavoriteFragment;
 import com.pine.pmedia.fragments.HomeFragment;
 import com.pine.pmedia.helpers.Constants;
@@ -86,7 +88,7 @@ public class MainActivity extends BaseActivity {
         TabsPagerAdapter tabsPagerAdapter = new TabsPagerAdapter( getSupportFragmentManager());
 
         tabsPagerAdapter.addFragment(HomeFragment.getInstance(),"Home");
-        tabsPagerAdapter.addFragment(new FavoriteFragment(),"Home");
+        tabsPagerAdapter.addFragment(AboutUsFragment.getInstance(),"About Us");
 
 
         ViewPager viewPager = findViewById(R.id.viewpager);

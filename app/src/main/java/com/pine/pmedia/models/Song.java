@@ -1,5 +1,7 @@
 package com.pine.pmedia.models;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -19,6 +21,9 @@ public class Song implements Parcelable {
     private String _path;
     private int _duration;
     private int _likeCount;
+    private Long albumId;
+    private Bitmap bitmap;
+    private Uri uri;
 
     public Song(Long id, String image, String title, String path, int duration) {
         this._id = id;

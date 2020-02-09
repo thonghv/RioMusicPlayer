@@ -5,10 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".fragments.AboutUsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:paddingRight="5dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:id="@+id/albumContent">
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </RelativeLayout>
 
 </FrameLayout>

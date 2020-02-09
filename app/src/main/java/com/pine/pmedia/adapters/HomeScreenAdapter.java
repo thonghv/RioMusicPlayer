@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.CommonHelper;
@@ -77,9 +78,13 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.My
         Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO);
         holder.trackTitle.setTypeface(customFace);
 
-        if(!song.get_image().isEmpty()) {
-            Picasso.get().load(song.get_image()).into(holder.trackImage);
-        }
+        holder.trackImage.setImageBitmap(song.getBitmap());
+//        if(!song.get_image().isEmpty()) {
+////            Picasso.get().load(song.get_image()).into(holder.trackImage)
+////            final ImageLoader imageLoader = ImageLoader.getInstance();
+////            imageLoader.displayImage(song.getUri().toString(), holder.trackImage);
+//            holder.trackImage.setImageBitmap(song.getBitmap());
+//        }
 
         holder.contentHolder.setOnClickListener(new View.OnClickListener() {
             @Override
