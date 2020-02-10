@@ -23,10 +23,8 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
-import com.pine.pmedia.fragments.AboutUsFragment;
-import com.pine.pmedia.fragments.ContactsFragment;
-import com.pine.pmedia.fragments.FavoriteFragment;
-import com.pine.pmedia.fragments.HomeFragment;
+import com.pine.pmedia.fragments.AlbumsFragment;
+import com.pine.pmedia.fragments.SongsFragment;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
 
@@ -85,13 +83,8 @@ public class MainActivity extends BaseActivity {
         recyclerView.setHasFixedSize(true);
 
         // Handle tab on main screen
-        TabsPagerAdapter tabsPagerAdapter = new TabsPagerAdapter( getSupportFragmentManager());
-
-        tabsPagerAdapter.addFragment(HomeFragment.getInstance(),"Home");
-        tabsPagerAdapter.addFragment(AboutUsFragment.getInstance(),"About Us");
-
-
         ViewPager viewPager = findViewById(R.id.viewpager);
+        TabsPagerAdapter tabsPagerAdapter = initTab();
         viewPager.setAdapter(tabsPagerAdapter);
 
         SmartTabLayout viewPagerTab = findViewById(R.id.viewpagertab);
@@ -101,7 +94,7 @@ public class MainActivity extends BaseActivity {
         initViewControls();
 
         // Init broadcast actions
-        initBrocastAction();
+        initBroadcastAction();
 
         // Handle bottom play main screen.
         bottomPlayMainScreen = findViewById(R.id.hiddenBarMainScreen);
@@ -158,7 +151,17 @@ public class MainActivity extends BaseActivity {
         previousImageButton = this.findViewById(R.id.previousButtonBottom);
     }
 
-    private void initBrocastAction() {
+    private TabsPagerAdapter initTab() {
+
+        TabsPagerAdapter tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+
+        tabsPagerAdapter.addFragment(AlbumsFragment.getInstance(), this.getResources().getString(R.string.album));
+        tabsPagerAdapter.addFragment(SongsFragment.getInstance(), this.getResources().getString(R.string.songs));
+
+        return tabsPagerAdapter;
+    }
+
+    private void initBroadcastAction() {
 
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(mBroadcastAction);

@@ -16,14 +16,12 @@ public class Album implements Parcelable {
     private String name;
     private String artist;
     private Bitmap imgCover;
-    private String albumArt;
     private int numberOfSong;
 
     protected Album(Parcel in) {
         name = in.readString();
         artist = in.readString();
         imgCover = in.readParcelable(Bitmap.class.getClassLoader());
-        albumArt = in.readString();
         numberOfSong = in.readInt();
     }
 
@@ -49,7 +47,6 @@ public class Album implements Parcelable {
         dest.writeString(name);
         dest.writeString(artist);
         dest.writeParcelable(imgCover, flags);
-        dest.writeString(albumArt);
         dest.writeInt(numberOfSong);
     }
 }

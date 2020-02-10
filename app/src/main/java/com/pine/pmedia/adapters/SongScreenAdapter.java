@@ -16,20 +16,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.MyViewHolder>  {
+public class SongScreenAdapter extends RecyclerView.Adapter<SongScreenAdapter.MyViewHolder>  {
 
     private ArrayList<Song> songDetails;
     private Context mContext;
@@ -37,7 +36,7 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.My
     private Intent playIntent;
     private MusicService mService;
 
-    public HomeScreenAdapter(ArrayList<Song> songDetails, Context mContext) {
+    public SongScreenAdapter(ArrayList<Song> songDetails, Context mContext) {
         this.songDetails = songDetails;
         this.mContext = mContext;
     }
@@ -62,10 +61,13 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.My
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         inItService();
-        View layoutInflater = LayoutInflater.from(parent.getContext())
+
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row_custum_mainscreen_adapter, parent, false);
-        return new MyViewHolder(layoutInflater);
+
+        return new MyViewHolder(view);
     }
 
     @Override
@@ -74,11 +76,12 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.My
         final Song song = songDetails.get(position);
         holder.trackTitle.setText(song.get_title());
         holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
+        holder.trackArtist.setText(song.get_artist());
 
         Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO);
         holder.trackTitle.setTypeface(customFace);
 
-        holder.trackImage.setImageBitmap(song.getBitmap());
+        holder.trackImage.setImageBitmap(song.get_bitmap());
 //        if(!song.get_image().isEmpty()) {
 ////            Picasso.get().load(song.get_image()).into(holder.trackImage)
 ////            final ImageLoader imageLoader = ImageLoader.getInstance();
@@ -146,6 +149,7 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.My
 
         public TextView trackTitle;
         public ImageView trackImage;
+        public TextView trackArtist;
         public TextView trackDuration;
         public RelativeLayout contentHolder;
 
@@ -155,6 +159,7 @@ public class HomeScreenAdapter extends RecyclerView.Adapter<HomeScreenAdapter.My
             trackTitle = itemView.findViewById(R.id.trackTitle);
             trackImage = itemView.findViewById(R.id.trackImage);
             trackDuration = itemView.findViewById(R.id.trackDuration);
+            trackArtist = itemView.findViewById(R.id.trackArtist);
             contentHolder = itemView.findViewById(R.id.contentItemRow);
         }
     }

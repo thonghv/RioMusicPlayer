@@ -16,7 +16,6 @@
         <item>@color/fourth</item>
     </array>
 
-<!--    <color name="Transparent">#00000000</color>-->
     <color name="transparent">#954e1741</color>
     <color name="gray">#E1E1E1</color>
     <color name="p_gray">#9FA6AD</color>

@@ -27,7 +27,7 @@ public class ContactsFragment extends Fragment {
     }
 
     /**
-     * @return A new instance of fragment HomeFragment.
+     * @return A new instance of fragment SongsFragment.
      */
     public static ContactsFragment newInstance() {
         return new ContactsFragment();

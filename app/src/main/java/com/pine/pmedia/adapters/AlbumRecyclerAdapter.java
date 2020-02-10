@@ -25,8 +25,8 @@ import java.util.ArrayList;
 
 public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdapter.ViewHolder> {
 
-    ArrayList<Album> mValues = new ArrayList();
-    Context mContext;
+    private ArrayList<Album> mValues;
+    private Context mContext;
 
     public AlbumRecyclerAdapter(Context context, ArrayList values) {
 
@@ -34,50 +34,12 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         mContext = context;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public TextView albumName;
-        public TextView albumArtist;
-        public ImageView imgCover;
-        public RelativeLayout bottomCardLayout;
-        Album item;
-
-        public ViewHolder(View v) {
-
-            super(v);
-
-            v.setOnClickListener(this);
-            albumName =  v.findViewById(R.id.cardAlbumName);
-            albumArtist =  v.findViewById(R.id.cardAlbumArtist);
-            imgCover =  v.findViewById(R.id.cardImageView);
-            bottomCardLayout = v.findViewById(R.id.bottomCardLayout);
-
-            Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO);
-            albumName.setTypeface(customFace);
-            albumArtist.setTypeface(customFace);
-        }
-
-        public void setData(Album item) {
-            this.item = item;
-
-            imgCover.setImageBitmap(item.getImgCover());
-            albumName.setText(item.getName());
-            albumArtist.setText(item.getArtist());
-
-            bottomCardLayout.setBackgroundColor(
-                    Palette.from(item.getImgCover()).generate().getVibrantColor(Color.parseColor("#403f4d")));
-        }
-
-        @Override
-        public void onClick(View view) {
-
-        }
-    }
-
     @Override
     public AlbumRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item, parent, false);
+
+        // Clear background of card view
         CardView cardView = view.findViewById(R.id.cardView);
         cardView.setBackgroundResource(0);
 
@@ -95,7 +57,42 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         return mValues.size();
     }
 
-    public interface ItemListener {
-        void onItemClick(Album item);
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public TextView albumName;
+        public TextView albumArtist;
+        public ImageView imgCover;
+        public RelativeLayout bottomCardLayout;
+
+        public ViewHolder(View v) {
+
+            super(v);
+
+            v.setOnClickListener(this);
+            albumName =  v.findViewById(R.id.cardAlbumName);
+            albumArtist =  v.findViewById(R.id.cardAlbumArtist);
+            imgCover =  v.findViewById(R.id.cardImageView);
+            bottomCardLayout = v.findViewById(R.id.bottomCardLayout);
+
+            // Set font text
+            Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO);
+            albumName.setTypeface(customFace);
+            albumArtist.setTypeface(customFace);
+        }
+
+        public void setData(Album item) {
+
+            imgCover.setImageBitmap(item.getImgCover());
+            albumName.setText(item.getName());
+            albumArtist.setText(item.getArtist());
+
+            bottomCardLayout.setBackgroundColor(
+                    Palette.from(item.getImgCover()).generate().getVibrantColor(Color.parseColor(Constants.PALETTE_ALBUM_COLOR_DEFAUT)));
+        }
+
+        @Override
+        public void onClick(View view) {
+
+        }
     }
 }

@@ -21,9 +21,10 @@ public class Song implements Parcelable {
     private String _path;
     private int _duration;
     private int _likeCount;
-    private Long albumId;
-    private Bitmap bitmap;
-    private Uri uri;
+    private Long _albumId;
+    private Long _albumName;
+    private Bitmap _bitmap;
+    private Uri _uri;
 
     public Song(Long id, String image, String title, String path, int duration) {
         this._id = id;

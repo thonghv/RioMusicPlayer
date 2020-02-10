@@ -73,8 +73,7 @@ public class CommonHelper {
 
     public static String toFormatTime(int time) {
 
-        return String.format(Constants.TIME_FOMAT_H_M_S,
-                TimeUnit.MILLISECONDS.toHours(time),
+        return String.format(Constants.TIME_FOMAT_M_S,
                 TimeUnit.MILLISECONDS.toMinutes(time) -
                         TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
                 TimeUnit.MILLISECONDS.toSeconds(time) -

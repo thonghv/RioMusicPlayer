@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Echo Music</string>
+    <string name="app_name">Rio Music</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -20,11 +20,12 @@
     //========================
     // Tabs Info
     //========================
-    <string name="_tab_home">TRANG CHỦ</string>
-    <string name="_tab_category">CHỦ ĐỀ</string>
-    <string name="_tab_playlist">PLAYLIST</string>
-    <string name="_tab_love">YÊU THÍCH</string>
-    <string name="_tab_download">TẢI VỀ</string>
+    <string name="album">ALBUMS</string>
+    <string name="artist">ARTIST</string>
+    <string name="folder">FOLDER</string>
+    <string name="songs">SONGS</string>
+    <string name="playlist">PLAYLIST</string>
+    <string name="genres">GENRES</string>
 
     <string name="previous">Previous</string>
     <string name="playpause">Play / Pause</string>

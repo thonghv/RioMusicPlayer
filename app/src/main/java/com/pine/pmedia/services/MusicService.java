@@ -1,14 +1,11 @@
 package com.pine.pmedia.services;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -36,7 +33,6 @@ import com.pine.pmedia.R;
 import com.pine.pmedia.activities.MainActivity;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
-import com.pine.pmedia.helpers.CurrentSongHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.receivers.ControlActionsListener;
 
@@ -47,7 +43,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
     private final String NOTIFICATION_CHANNEL = "music_player_channel";
-    private CurrentSongHelper currentSongHelper;
     private MediaPlayer mPlayer;
     private Song mCurrSong;
     private Activity mActivity;
@@ -129,7 +124,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         super.onCreate();
 
         mMediaSession = new MediaSessionCompat(this, "MusicService");
-        currentSongHelper = new CurrentSongHelper();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

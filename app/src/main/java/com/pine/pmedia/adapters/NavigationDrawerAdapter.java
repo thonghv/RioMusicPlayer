@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.MainActivity;
-import com.pine.pmedia.fragments.AboutUsFragment;
-import com.pine.pmedia.fragments.FavoriteFragment;
-import com.pine.pmedia.fragments.SettingFragment;
 
 import java.util.ArrayList;
 
@@ -65,7 +62,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 //                } else {
 //                    ((MainActivity)_context).getSupportFragmentManager()
 //                            .beginTransaction()
-//                            .replace(R.id.detail_fragment, new AboutUsFragment())
+//                            .replace(R.id.detail_fragment, new AlbumsFragment())
 //                            .commit();
 //                }
 

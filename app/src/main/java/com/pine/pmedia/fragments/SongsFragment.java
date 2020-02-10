@@ -2,10 +2,8 @@ package com.pine.pmedia.fragments;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,28 +17,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
-import com.pine.pmedia.adapters.HomeScreenAdapter;
+import com.pine.pmedia.adapters.SongScreenAdapter;
 import com.pine.pmedia.helpers.CommonHelper;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class HomeFragment extends BaseFragment {
+public class SongsFragment extends BaseFragment {
 
-    private static HomeFragment instance;
-    private HomeScreenAdapter homeScreenAdapter;
+    private static SongsFragment instance = null;
+    private SongScreenAdapter songScreenAdapter;
     private RecyclerView recyclerView;
 
-    public static HomeFragment getInstance() {
+    public static SongsFragment getInstance() {
 
         if(instance == null) {
-            instance = new HomeFragment();
+            instance = new SongsFragment();
         }
 
-        return new HomeFragment();
+        return new SongsFragment();
     }
 
     @Override
@@ -53,8 +50,12 @@ public class HomeFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_home_screen, container, false);
-        recyclerView = view.findViewById(R.id.contentMain);
+        View view = inflater.inflate(R.layout.fragment_songs, container, false);
+        recyclerView = view.findViewById(R.id.recycleViewSongs);
+
+        // Clear background of recycle view
+        recyclerView.setBackgroundResource(0);
+
         return view;
     }
 
@@ -71,11 +72,10 @@ public class HomeFragment extends BaseFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(super.getmActivity()));
 
-        ArrayList<Song> songs = getSongsFromPhone();
-        ArrayList<Song> songs2 = initSongs();
+        ArrayList<Song> songs = MediaHelper.getSongs(getmActivity());
 
-        homeScreenAdapter = new HomeScreenAdapter(songs2, super.getmActivity());
-        recyclerView.setAdapter(homeScreenAdapter);
+        songScreenAdapter = new SongScreenAdapter(songs, super.getmActivity());
+        recyclerView.setAdapter(songScreenAdapter);
 
         initData(songs);
     }
@@ -142,68 +142,6 @@ public class HomeFragment extends BaseFragment {
 
 //                results.add(new Song(curId, curTitle, curArtist, curData, 0));
             } while (songCursor.moveToNext());
-        }
-
-        return results;
-    }
-
-    private ArrayList<Song> initSongs() {
-
-        ArrayList<Song> results = new ArrayList<>();
-
-        final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        final String[] cursor_cols = { MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.DURATION };
-        final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
-        final Cursor cursor = getmActivity().getContentResolver().query(uri,
-                cursor_cols, where, null, null);
-
-        while (cursor.moveToNext()) {
-            String artist = cursor.getString(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-            String album = cursor.getString(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-            String track = cursor.getString(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-            String data = cursor.getString(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-            Long albumId = cursor.getLong(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
-
-            int duration = cursor.getInt(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-
-            Uri sArtworkUri = Uri
-                    .parse("content://media/external/audio/albumart");
-            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
-
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(
-                        getmActivity().getContentResolver(), albumArtUri);
-//                bitmap = Bitmap.createScaledBitmap(bitmap, 30, 30, true);
-
-            } catch (FileNotFoundException exception) {
-                exception.printStackTrace();
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-
-            Song audioListModel = new Song();
-            audioListModel.set_artist(artist);
-            audioListModel.setBitmap(bitmap);
-            audioListModel.set_title(track);
-            audioListModel.set_path(data);
-            audioListModel.setAlbumId(albumId);
-            audioListModel.set_duration(duration);
-            audioListModel.setUri(albumArtUri);
-
-            results.add(audioListModel);
-
         }
 
         return results;

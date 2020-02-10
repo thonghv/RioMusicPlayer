@@ -202,7 +202,7 @@
 <!--            android:id="@+id/detail_fragment"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent"-->
-<!--            class="com.pine.pmedia.fragments.HomeFragment"-->
+<!--            class="com.pine.pmedia.fragments.SongsFragmentt"-->
 <!--            android:layout_below="@+id/appBarLayout"/>-->
 
 <!--        <include layout="@layout/content_main"></include>-->

@@ -103,4 +103,9 @@ public class Constants {
     //=================
     public static final String FONT_ROBOTO              = "fonts/Roboto-Regular.ttf";
 
+
+    //=================
+    // COLORS
+    //=================
+    public static final String PALETTE_ALBUM_COLOR_DEFAUT           = "#403f4d";
 }
