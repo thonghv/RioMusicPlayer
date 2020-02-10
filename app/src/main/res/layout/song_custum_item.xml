@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/contentItemRow">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1.5">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_centerVertical="true">
+
+                    <com.pine.pmedia.control.CustomImageView
+                        android:id="@+id/trackImage"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="13dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/trackImage"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:layout_marginTop="5dp"
+                        android:maxLines="1"
+                        android:textSize="13.5dp"
+                        android:text="If you have ... If you have ... If you have ... If you have ...If you have ..."
+                        android:paddingRight="9dp"
+                        android:paddingBottom="3dp"
+                        android:layout_marginLeft="10dp"
+                        android:ellipsize="end"
+                        android:id="@+id/trackTitle"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textStyle="normal"
+                        android:textSize="10.5dp"
+                        android:text="Hello"
+                        android:layout_below="@id/trackTitle"
+                        android:layout_toRightOf="@id/trackImage"
+                        android:layout_marginLeft="10dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="?android:textAppearance"
+                        android:id="@+id/trackArtist"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="8">
+
+<!--                <ImageView-->
+<!--                    android:layout_width="14dp"-->
+<!--                    android:layout_height="14dp"-->
+<!--                    android:id="@+id/clock"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_toRightOf="@id/trackImage"-->
+<!--                    android:layout_below="@id/trackTitle"-->
+<!--                    android:minHeight="0dp"-->
+<!--                    android:maxHeight="0dp"-->
+<!--                    android:background="@drawable/clock"/>-->
+
+                <TextView
+                    android:id="@+id/trackDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/white"
+                    android:textStyle="normal"
+                    android:textSize="10dp"
+                    android:text="12:67"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="?android:textAppearance" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="8.5">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_more_white"
+                    >
+                </ImageView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</RelativeLayout>

@@ -7,10 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
+import com.pine.pmedia.adapters.ArtistRecyclerAdapter;
+import com.pine.pmedia.adapters.SongRecyclerAdapter;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Album;
+import com.pine.pmedia.models.Artist;
+import com.pine.pmedia.models.Song;
 
 import java.util.ArrayList;
 
@@ -20,6 +27,7 @@ public class ArtistFragment extends BaseFragment {
 
     RecyclerView recyclerView;
     ArrayList<Album> arrayList = new ArrayList<>();
+    private ArtistRecyclerAdapter artistRecyclerAdapter;
 
     public ArtistFragment() {
     }
@@ -43,10 +51,25 @@ public class ArtistFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         View view = inflater.inflate(R.layout.fragment_artist, container, false);
-        recyclerView = view.findViewById(R.id.albumContent);
+        recyclerView = view.findViewById(R.id.recycleViewArtist);
+
+        // Clear background of recycle view
+        recyclerView.setBackgroundResource(0);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle bundle) {
+        super.onActivityCreated(bundle);
+
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(super.getmActivity()));
+
+        ArrayList<Artist> artists = MediaHelper.getArtist(getmActivity());
+
+        artistRecyclerAdapter = new ArtistRecyclerAdapter(artists, super.getmActivity());
+        recyclerView.setAdapter(artistRecyclerAdapter);
     }
 }

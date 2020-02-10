@@ -10,11 +10,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.palette.graphics.Palette;
-import androidx.palette.graphics.Target;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
@@ -61,6 +59,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
 
         public TextView albumName;
         public TextView albumArtist;
+        public TextView numberOfSong;
         public ImageView imgCover;
         public RelativeLayout bottomCardLayout;
 
@@ -72,10 +71,11 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             albumName =  v.findViewById(R.id.cardAlbumName);
             albumArtist =  v.findViewById(R.id.cardAlbumArtist);
             imgCover =  v.findViewById(R.id.cardImageView);
+            numberOfSong = v.findViewById(R.id.cardNumberOfSong);
             bottomCardLayout = v.findViewById(R.id.bottomCardLayout);
 
             // Set font text
-            Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO);
+            Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_REGULAR);
             albumName.setTypeface(customFace);
             albumArtist.setTypeface(customFace);
         }
@@ -85,6 +85,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             imgCover.setImageBitmap(item.getImgCover());
             albumName.setText(item.getName());
             albumArtist.setText(item.getArtist());
+            numberOfSong.setText(String.valueOf(item.getNumberOfSong()) + Constants.SONGS);
 
             bottomCardLayout.setBackgroundColor(
                     Palette.from(item.getImgCover()).generate().getVibrantColor(Color.parseColor(Constants.PALETTE_ALBUM_COLOR_DEFAUT)));

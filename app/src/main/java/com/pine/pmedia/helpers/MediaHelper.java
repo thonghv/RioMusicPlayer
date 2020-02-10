@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.pine.pmedia.models.Album;
+import com.pine.pmedia.models.Artist;
 import com.pine.pmedia.models.Song;
 
 import java.io.FileNotFoundException;
@@ -70,7 +71,6 @@ public class MediaHelper {
         return albums;
     }
 
-
     public static ArrayList<Song> getSongs(Activity activity) {
 
         ArrayList<Song> results = new ArrayList<>();
@@ -127,6 +127,58 @@ public class MediaHelper {
 
             results.add(audioListModel);
 
+        }
+
+        return results;
+    }
+
+    public static ArrayList<Artist> getArtist(Activity activity) {
+
+        ArrayList<Artist> results = new ArrayList<>();
+
+        final Uri uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
+        final String[] cursor_cols = { MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Artists.ARTIST,
+                MediaStore.Audio.Artists.Albums.ALBUM,
+                MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
+                MediaStore.Audio.Artists.NUMBER_OF_TRACKS,};
+        final Cursor cursor = activity.getContentResolver().query(uri,
+                cursor_cols, null, null, null);
+
+        while (cursor.moveToNext()) {
+
+            String artistName = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
+            Long artistId = cursor.getLong(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
+            Long albumId = cursor.getLong(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
+            int numberOfSong = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_TRACKS));
+
+
+            Uri sArtworkUri = Uri
+                    .parse("content://media/external/audio/albumart");
+            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, artistId);
+
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(
+                        activity.getContentResolver(), albumArtUri);
+
+            } catch (FileNotFoundException exception) {
+                exception.printStackTrace();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+
+            Artist artist = new Artist();
+            artist.setName(artistName);
+            artist.setNumberOfSong(numberOfSong);
+            artist.setImgCover(bitmap);
+
+            results.add(artist);
         }
 
         return results;

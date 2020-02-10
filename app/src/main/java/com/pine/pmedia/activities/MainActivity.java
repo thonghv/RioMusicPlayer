@@ -24,6 +24,7 @@ import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
 import com.pine.pmedia.fragments.AlbumsFragment;
+import com.pine.pmedia.fragments.ArtistFragment;
 import com.pine.pmedia.fragments.SongsFragment;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
@@ -157,6 +158,7 @@ public class MainActivity extends BaseActivity {
 
         tabsPagerAdapter.addFragment(AlbumsFragment.getInstance(), this.getResources().getString(R.string.album));
         tabsPagerAdapter.addFragment(SongsFragment.getInstance(), this.getResources().getString(R.string.songs));
+        tabsPagerAdapter.addFragment(ArtistFragment.getInstance(), this.getResources().getString(R.string.artist));
 
         return tabsPagerAdapter;
     }

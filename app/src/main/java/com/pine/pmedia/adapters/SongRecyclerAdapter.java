@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
@@ -28,7 +27,7 @@ import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
 
-public class SongScreenAdapter extends RecyclerView.Adapter<SongScreenAdapter.MyViewHolder>  {
+public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapter.MyViewHolder>  {
 
     private ArrayList<Song> songDetails;
     private Context mContext;
@@ -36,7 +35,7 @@ public class SongScreenAdapter extends RecyclerView.Adapter<SongScreenAdapter.My
     private Intent playIntent;
     private MusicService mService;
 
-    public SongScreenAdapter(ArrayList<Song> songDetails, Context mContext) {
+    public SongRecyclerAdapter(ArrayList<Song> songDetails, Context mContext) {
         this.songDetails = songDetails;
         this.mContext = mContext;
     }
@@ -65,7 +64,7 @@ public class SongScreenAdapter extends RecyclerView.Adapter<SongScreenAdapter.My
         inItService();
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_custum_mainscreen_adapter, parent, false);
+                .inflate(R.layout.song_custum_item, parent, false);
 
         return new MyViewHolder(view);
     }
@@ -78,7 +77,7 @@ public class SongScreenAdapter extends RecyclerView.Adapter<SongScreenAdapter.My
         holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
         holder.trackArtist.setText(song.get_artist());
 
-        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO);
+        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
         holder.trackTitle.setTypeface(customFace);
 
         holder.trackImage.setImageBitmap(song.get_bitmap());
