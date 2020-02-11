@@ -15,32 +15,28 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="3">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/circle_background"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="13dp"
+                    android:paddingLeft="0dp"
                     android:paddingRight="13dp"
+                    android:paddingTop="5dp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="6dp">
+                    android:layout_marginTop="2dp">
                     <ImageView
-                        android:id="@+id/iconShuffle"
-                        android:layout_width="20dp"
-                        android:scaleType="fitCenter"
-                        android:layout_height="14dp"
-                        android:layout_marginTop="2dp"
-                        android:src="@drawable/shuffle_white">
+                        android:id="@+id/iconSearch"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_search_white">
                     </ImageView>
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
                         android:layout_marginLeft="5dp"
-                        android:textSize="12dp"
-                        android:text="Shuffle"
+                        android:textSize="13dp"
+                        android:text="Search songs (23)"
                         android:textColor="@color/white">
                     </TextView>
                 </LinearLayout>
@@ -48,33 +44,43 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="14">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="5dp"
+                    android:paddingRight="3dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="7dp">
+                    <ImageView
+                        android:id="@+id/iconShuffle"
+                        android:layout_width="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="11dp"
+                        android:layout_marginTop="2dp"
+                        android:src="@drawable/shuffle_white">
+                    </ImageView>
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:paddingTop="5dp"
+                    android:paddingTop="1dp"
                     android:paddingBottom="5dp"
-                    android:paddingLeft="13dp"
-                    android:paddingRight="13dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="6dp">
                     <ImageView
                         android:id="@+id/iconSort"
                         android:layout_width="20dp"
-                        android:scaleType="fitCenter"
-                        android:layout_height="14dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="16dp"
                         android:layout_marginTop="2dp"
                         android:src="@drawable/sort_white">
                     </ImageView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="3dp"
-                        android:textSize="12dp"
-                        android:text="Sort"
-                        android:textColor="@color/white">
-                    </TextView>
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

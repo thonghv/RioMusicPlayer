@@ -1,24 +1,38 @@
 package com.pine.pmedia.activities;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.pine.pmedia.R;
-import com.pine.pmedia.services.MusicService;
 
-public class AlbumActivity extends BaseActivity  {
-
-    private MusicService mService;
+public class AlbumActivity extends AppCompatActivity {
 
     @Override
-    protected void onHandler() {
-        mService = getMService();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.album_detail_screen);
+        setContentView(R.layout.activity_album);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
+    }
+
 }

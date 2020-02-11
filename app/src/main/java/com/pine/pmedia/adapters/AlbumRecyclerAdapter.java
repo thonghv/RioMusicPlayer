@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
-import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.models.Album;
 
