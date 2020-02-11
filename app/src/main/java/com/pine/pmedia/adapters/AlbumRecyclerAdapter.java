@@ -1,8 +1,10 @@
 package com.pine.pmedia.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
+import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.models.Album;
 
@@ -93,7 +97,9 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
 
         @Override
         public void onClick(View view) {
-
+            Intent intent = new Intent(view.getContext(), AlbumActivity.class);
+            intent.putExtras(new Bundle());
+            mContext.startActivity(intent);
         }
     }
 }

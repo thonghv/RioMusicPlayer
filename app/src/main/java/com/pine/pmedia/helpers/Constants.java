@@ -3,6 +3,7 @@ package com.pine.pmedia.helpers;
 public class Constants {
 
     public static final String MAIN_ACTIVITY_NAME       = "com.pine.pmedia.activities.MainActivity";
+    public static final String DIRECTION_ALBUM_IMAGE    = "content://media/external/audio/albumart";
     public static final String API                      = "https://api.soundcloud.com";
     public static final String TOKEN                    = "0d4392665746d1ccedc7193e7338617e";
     public static final String TIME_FOMAT_M_S           = "%02d:%02d";

@@ -43,8 +43,7 @@ public class MediaHelper {
             int numberOfSong = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.NUMBER_OF_SONGS));
 
 
-            Uri sArtworkUri = Uri
-                    .parse("content://media/external/audio/albumart");
+            Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
             Bitmap bitmap = null;
@@ -100,8 +99,7 @@ public class MediaHelper {
             int duration = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
 
-            Uri sArtworkUri = Uri
-                    .parse("content://media/external/audio/albumart");
+            Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
             Bitmap bitmap = null;
@@ -139,7 +137,6 @@ public class MediaHelper {
         final Uri uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
         final String[] cursor_cols = { MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Artists.ARTIST,
-                MediaStore.Audio.Artists.Albums.ALBUM,
                 MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
                 MediaStore.Audio.Artists.NUMBER_OF_TRACKS,};
         final Cursor cursor = activity.getContentResolver().query(uri,
@@ -151,14 +148,15 @@ public class MediaHelper {
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
             Long artistId = cursor.getLong(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
-            Long albumId = cursor.getLong(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
-            int numberOfSong = cursor.getInt(cursor
+//            Long albumId = cursor.getLong(cursor
+//                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
+            int numberOfTracks = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_TRACKS));
+            int numberOfAlbums = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS));
 
 
-            Uri sArtworkUri = Uri
-                    .parse("content://media/external/audio/albumart");
+            Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, artistId);
 
             Bitmap bitmap = null;
@@ -175,7 +173,8 @@ public class MediaHelper {
 
             Artist artist = new Artist();
             artist.setName(artistName);
-            artist.setNumberOfSong(numberOfSong);
+            artist.setNumberOfTracks(numberOfTracks);
+            artist.setNumberOfAlbums(numberOfAlbums);
             artist.setImgCover(bitmap);
 
             results.add(artist);

@@ -50,23 +50,6 @@ public class PlaySongActivity extends BaseActivity {
     private boolean isTimerRunning = false;
     private Handler handler;
 
-    private TextView titleSongBottomBar;
-
-    private Runnable updateUITime = new Runnable() {
-        @Override
-        public void run() {
-            int startTime = getMService().getMPlayer().getCurrentPosition();
-            startTimeText.setText(CommonHelper.toFormatTime(startTime));
-            seekBar.setProgress(startTime);
-            if(!isTimerRunning) {
-                if(mService.isEndSong()) {
-                }
-            }
-            handler.postDelayed(this, 100);
-        }
-    };
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

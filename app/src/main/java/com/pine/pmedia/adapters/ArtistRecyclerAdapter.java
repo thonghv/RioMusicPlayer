@@ -70,7 +70,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
 
         final Artist artist = artistsDetails.get(position);
         holder.artistName.setText(artist.getName());
-        holder.artistNumberOfSong.setText(artist.getNumberOfSong() + Constants.SONGS);
+        holder.artistNumberOfSong.setText(artist.getNumberOfTracks() + Constants.SONGS);
         holder.artistAvatar.setImageBitmap(artist.getImgCover());
 
         Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
