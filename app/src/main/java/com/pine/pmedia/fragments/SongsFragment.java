@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongRecyclerAdapter;
 import com.pine.pmedia.helpers.CommonHelper;
+import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
@@ -30,6 +33,7 @@ public class SongsFragment extends BaseFragment {
     private static SongsFragment instance = null;
     private SongRecyclerAdapter songRecyclerAdapter;
     private RecyclerView recyclerView;
+    private TextView shuffleLabel;
 
     public static SongsFragment getInstance() {
 
@@ -52,6 +56,10 @@ public class SongsFragment extends BaseFragment {
 
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
         recyclerView = view.findViewById(R.id.recycleViewSongs);
+
+        shuffleLabel = view.findViewById(R.id.shuffleLabel);
+        Typeface customFace = Typeface.createFromAsset(getmActivity().getAssets(), Constants.FONT_ROBOTO_LIGHT);
+        shuffleLabel.setTypeface(customFace);
 
         // Clear background of recycle view
         recyclerView.setBackgroundResource(0);

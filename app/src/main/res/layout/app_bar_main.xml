@@ -55,7 +55,7 @@
                     app:stl_defaultTabBackground="?attr/selectableItemBackground"
                     app:stl_defaultTabTextAllCaps="true"
                     app:stl_defaultTabTextColor="#FFFFFF"
-                    app:stl_defaultTabTextSize="12sp"
+                    app:stl_defaultTabTextSize="13sp"
                     app:stl_defaultTabTextHorizontalPadding="16dp"
                     app:stl_defaultTabTextMinWidth="0dp"
                     app:stl_distributeEvenly="false"

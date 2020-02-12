@@ -15,37 +15,41 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="3">
+                android:layout_weight="1">
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="13dp"
-                    android:paddingTop="5dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="2dp">
+                    android:background="@drawable/circle_background"
+                    android:padding="5dp"
+                    android:layout_marginLeft="11dp"
+                    android:layout_marginTop="5dp">
                     <ImageView
                         android:id="@+id/iconSearch"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
+                        android:layout_width="21dp"
+                        android:layout_height="10dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_search_white">
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:src="@drawable/shuffle_yellow">
                     </ImageView>
                     <TextView
-                        android:layout_width="match_parent"
+                        android:id="@+id/shuffleLabel"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:textSize="13dp"
-                        android:text="Search songs (23)"
-                        android:textColor="@color/white">
+                        android:textSize="13.5dp"
+                        android:textStyle="bold"
+                        android:text="Play Shuffle"
+                        android:layout_marginRight="5dp"
+                        android:textColor="#E67E22">
                     </TextView>
                 </LinearLayout>
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="14">
-                <LinearLayout
+                android:layout_weight="1">
+                <!--<LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="4dp"
@@ -62,7 +66,7 @@
                         android:layout_marginTop="2dp"
                         android:src="@drawable/shuffle_white">
                     </ImageView>
-                </LinearLayout>
+                </LinearLayout>-->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
