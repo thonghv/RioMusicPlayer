@@ -13,8 +13,8 @@
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bd_transparent"
-            android:alpha="0.75"
+            android:background="@drawable/bk_02"
+            android:alpha="1"
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <androidx.appcompat.widget.Toolbar
@@ -34,7 +34,7 @@
                     android:layout_height="35dp"/>
 
                 <com.ogaclejapan.smarttablayout.SmartTabLayout
-                    android:id="@+id/viewpagertab"
+                    android:id="@+id/smartTabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     app:stl_indicatorAlwaysInCenter="false"
@@ -55,7 +55,7 @@
                     app:stl_defaultTabBackground="?attr/selectableItemBackground"
                     app:stl_defaultTabTextAllCaps="true"
                     app:stl_defaultTabTextColor="#FFFFFF"
-                    app:stl_defaultTabTextSize="13sp"
+                    app:stl_defaultTabTextSize="13.5sp"
                     app:stl_defaultTabTextHorizontalPadding="16dp"
                     app:stl_defaultTabTextMinWidth="0dp"
                     app:stl_distributeEvenly="false"
@@ -68,7 +68,7 @@
                     android:id="@+id/viewpager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/viewpagertab"
+                    android:layout_below="@id/smartTabLayout"
                     />
 
                 <RelativeLayout

@@ -1,11 +1,13 @@
 package com.pine.pmedia.activities;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.pine.pmedia.R;
 
@@ -20,6 +22,9 @@ public class AlbumActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.md_blue_grey_500_alpha)));
     }
 
     public boolean onOptionsItemSelected(MenuItem item){

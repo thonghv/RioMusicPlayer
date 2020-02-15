@@ -88,7 +88,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             imgCover.setImageBitmap(item.getImgCover());
             albumName.setText(item.getName());
             albumArtist.setText(item.getArtist());
-            numberOfSong.setText(String.valueOf(item.getNumberOfSong()) + Constants.SONGS);
+            numberOfSong.setText(item.getNumberOfSong() + Constants.SONGS);
 
             bottomCardLayout.setBackgroundColor(
                     Palette.from(item.getImgCover()).generate().getVibrantColor(Color.parseColor(Constants.PALETTE_ALBUM_COLOR_DEFAUT)));

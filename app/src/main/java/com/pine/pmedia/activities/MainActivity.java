@@ -10,13 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -87,13 +85,13 @@ public class MainActivity extends BaseActivity {
         recyclerView.setAdapter(navigationDrawerAdapter);
         recyclerView.setHasFixedSize(true);
 
-        // Handle tab on main screen
+        // Handle tab on menu screen
         ViewPager viewPager = findViewById(R.id.viewpager);
         TabsPagerAdapter tabsPagerAdapter = initTab();
         viewPager.setAdapter(tabsPagerAdapter);
 
-        SmartTabLayout viewPagerTab = findViewById(R.id.viewpagertab);
-        viewPagerTab.setViewPager(viewPager);
+        SmartTabLayout smartTabLayout = findViewById(R.id.smartTabLayout);
+        smartTabLayout.setViewPager(viewPager);
 
         // Init view control handle
         initViewControls();
@@ -101,7 +99,7 @@ public class MainActivity extends BaseActivity {
         // Init broadcast actions
         initBroadcastAction();
 
-        // Handle bottom play main screen.
+        // Handle bottom play menu screen.
         bottomPlayMainScreen = findViewById(R.id.hiddenBarMainScreen);
         bottomPlayMainScreen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,30 +120,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-
+        // Inflate the search; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
-        MenuItem searchViewItem = menu.findItem(R.id.app_bar_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchViewItem);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
-             /*   if(list.contains(query)){
-                    adapter.getFilter().filter(query);
-                }else{
-                    Toast.makeText(MainActivity.this, "No Match found",Toast.LENGTH_LONG).show();
-                }*/
-                return false;
+        getMenuInflater().inflate(R.menu.search, menu);
 
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -156,10 +134,7 @@ public class MainActivity extends BaseActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
-        if (id == R.id.app_bar_search) {
+        if (id == R.id.action_search) {
             Toast.makeText(this, "Android Menu is Clicked", Toast.LENGTH_LONG).show();
             return true;
         }

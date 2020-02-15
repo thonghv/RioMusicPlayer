@@ -362,7 +362,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             onPlayNextNormal();
         }
 
-        // Send broadcast data apply for current activity main
+        // Send broadcast data apply for current activity menu
         if(CommonHelper.getCurrentActivity(getBaseContext()).equals(Constants.MAIN_ACTIVITY_NAME)) {
             sendBroadcast(Constants.SONG_COMPLETE);
         }

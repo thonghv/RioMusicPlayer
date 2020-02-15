@@ -30,7 +30,7 @@
                         android:scaleType="centerCrop"
                         android:layout_marginTop="5dp"
                         android:layout_marginLeft="5dp"
-                        android:src="@drawable/shuffle_yellow">
+                        android:src="@drawable/shuffle_white">
                     </ImageView>
                     <TextView
                         android:id="@+id/shuffleLabel"
@@ -41,7 +41,7 @@
                         android:textStyle="bold"
                         android:text="Play Shuffle"
                         android:layout_marginRight="5dp"
-                        android:textColor="#E67E22">
+                        android:textColor="@color/white">
                     </TextView>
                 </LinearLayout>
             </RelativeLayout>
