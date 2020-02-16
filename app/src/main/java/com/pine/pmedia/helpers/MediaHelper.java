@@ -103,16 +103,16 @@ public class MediaHelper {
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
             Bitmap bitmap = null;
-//            try {
-//                bitmap = MediaStore.Images.Media.getBitmap(
-//                        activity.getContentResolver(), albumArtUri);
-//
-//            } catch (FileNotFoundException exception) {
-//                exception.printStackTrace();
-//            } catch (IOException e) {
-//
-//                e.printStackTrace();
-//            }
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(
+                        activity.getContentResolver(), albumArtUri);
+
+            } catch (FileNotFoundException exception) {
+                exception.printStackTrace();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
 
             Song audioListModel = new Song();
             audioListModel.set_artist(artist);

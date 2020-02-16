@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +19,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.CommonHelper;
@@ -83,6 +87,15 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 //        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
 //        holder.trackTitle.setTypeface(customFace);
 //
+        String urlPath;
+        if(song.get_bitmap() != null) {
+            urlPath = song.get_uri().toString();
+        } else {
+            urlPath = "drawable://" + R.drawable.icons_musical_white;
+        }
+
+        onLoadImageCover(urlPath, holder);
+
         if(song.get_bitmap() != null) {
 //            Rola Takizawa.displayImage(song.get_uri().toString(), holder.trackImage);
 //            holder.trackImage.setImageBitmap(song.get_bitmap());
@@ -119,6 +132,17 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 //                mContext.startActivity(intent);
 //            }
 //        });
+    }
+
+    private void onLoadImageCover(String imageUri, final MyViewHolder holder) {
+
+        ImageSize targetSize = new ImageSize(48, 48);
+        imageLoader.loadImage(imageUri, targetSize, DisplayImageOptions.createSimple(), new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                holder.trackImage.setImageBitmap(loadedImage);
+            }
+        });
     }
 
     private class onProcessStartPlay extends AsyncTask<String, Void, String> {
