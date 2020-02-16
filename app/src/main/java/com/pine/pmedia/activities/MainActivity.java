@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
@@ -108,6 +109,10 @@ public class MainActivity extends BaseActivity {
                 startActivity(nextActivity);
             }
         });
+
+
+//        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
+//        appBarLayout.setBackgroundResource(R.drawable.bk_03);
     }
 
     @Override

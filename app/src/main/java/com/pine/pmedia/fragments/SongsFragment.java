@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongRecyclerAdapter;
 import com.pine.pmedia.helpers.CommonHelper;
@@ -57,12 +59,16 @@ public class SongsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
         recyclerView = view.findViewById(R.id.recycleViewSongs);
 
+        // Clear background of recycle view
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setBackgroundResource(0);
+
         shuffleLabel = view.findViewById(R.id.shuffleLabel);
         Typeface customFace = Typeface.createFromAsset(getmActivity().getAssets(), Constants.FONT_ROBOTO_LIGHT);
         shuffleLabel.setTypeface(customFace);
 
-        // Clear background of recycle view
-        recyclerView.setBackgroundResource(0);
+        ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(getActivity()));
 
         return view;
     }

@@ -2,8 +2,10 @@ package com.pine.pmedia.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +16,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.models.Album;
 
@@ -84,15 +88,28 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         }
 
         public void setData(Album item) {
-
-            imgCover.setImageBitmap(item.getImgCover());
             albumName.setText(item.getName());
             albumArtist.setText(item.getArtist());
             numberOfSong.setText(item.getNumberOfSong() + Constants.SONGS);
 
-            bottomCardLayout.setBackgroundColor(
-                    Palette.from(item.getImgCover()).generate().getVibrantColor(Color.parseColor(Constants.PALETTE_ALBUM_COLOR_DEFAUT)));
-        }
+            if(item.getImgCover() != null) {
+                bottomCardLayout.setBackgroundColor(
+                        Palette.from(item.getImgCover()).generate()
+                                .getVibrantColor(Color.parseColor(Constants.PALETTE_ALBUM_COLOR_DEFAUT)));
+            }
+
+//            if(item.getImgCover() != null) {
+//                imgCover.setImageBitmap(item.getImgCover());
+//            } else {
+//                imgCover.setBackgroundResource(R.drawable.icon_album_custum);
+//
+//                Drawable drawable = ContextCompat.getDrawable(mContext, R.drawable.icon_album_custum);
+//                Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+//                bottomCardLayout.setBackgroundColor(
+//                        Palette.from(bitmap).generate()
+//                                .getVibrantColor(Color.parseColor(Constants.PALETTE_ALBUM_COLOR_DEFAUT)));
+//            }
+     }
 
         @Override
         public void onClick(View view) {
