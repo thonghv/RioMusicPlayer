@@ -62,6 +62,7 @@ public class MediaHelper {
             albumObject.setName(album);
             albumObject.setArtist(artist);
             albumObject.setImgCover(bitmap);
+            albumObject.setArtUri(albumArtUri.toString());
             albumObject.setNumberOfSong(numberOfSong);
 
             albums.add(albumObject);

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -13,15 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.PlaySongActivity;
@@ -32,7 +34,7 @@ import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
 
-public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapter.MyViewHolder>  {
+public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapter.SongRowHolder>  {
 
     private ArrayList<Song> songDetails;
     private Context mContext;
@@ -65,7 +67,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SongRowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         inItService();
         imageLoader = ImageLoader.getInstance();
@@ -73,11 +75,11 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.song_custum_item, parent, false);
 
-        return new MyViewHolder(view);
+        return new SongRowHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull SongRowHolder holder, final int position) {
 
         final Song song = songDetails.get(position);
         holder.trackTitle.setText(song.get_title());
@@ -91,17 +93,10 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         if(song.get_bitmap() != null) {
             urlPath = song.get_uri().toString();
         } else {
-            urlPath = "drawable://" + R.drawable.icons_musical_white;
+            urlPath = Constants.DRAWABLE_PATH + R.drawable.icons_musical_white;
         }
 
         onLoadImageCover(urlPath, holder);
-
-        if(song.get_bitmap() != null) {
-//            Rola Takizawa.displayImage(song.get_uri().toString(), holder.trackImage);
-//            holder.trackImage.setImageBitmap(song.get_bitmap());
-        } else {
-            //holder.trackImage.setBackgroundResource(R.drawable.icons_musical_white);
-        }
 
 //        if(!song.get_image().isEmpty()) {
 ////            Picasso.get().load(song.get_image()).into(holder.trackImage)
@@ -110,39 +105,58 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 //            holder.trackImage.setImageBitmap(song.getBitmap());
 //        }
 
-//        holder.contentHolder.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                new onProcessStartPlay(position).execute();
-//
-//                Bundle bundle = new Bundle();
-////                bundle.putLong(Constants.KEY_ID, song.get_id());
-////                bundle.putString(Constants.KEY_IMAGE, song.get_image());
-////                bundle.putString(Constants.KEY_TITLE, song.get_title());
-////                bundle.putString(Constants.KEY_ARTIST, song.get_artist());
-////                bundle.putInt(Constants.KEY_POSITION, position);
-////                bundle.putInt(Constants.KEY_DURATION, song.get_duration());
-////                bundle.putString(Constants.KEY_PATH, toUrlPlayTrack(song.get_id()));
-////                bundle.putParcelableArrayList(Constants.KEY_SONG_LIST, songDetails);
-//
-//                Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
-//                intent.putExtras(bundle);
-//
-//                mContext.startActivity(intent);
-//            }
-//        });
-    }
-
-    private void onLoadImageCover(String imageUri, final MyViewHolder holder) {
-
-        ImageSize targetSize = new ImageSize(48, 48);
-        imageLoader.loadImage(imageUri, targetSize, DisplayImageOptions.createSimple(), new SimpleImageLoadingListener() {
+        holder.contentHolder.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                holder.trackImage.setImageBitmap(loadedImage);
+            public void onClick(View v) {
+
+                new onProcessStartPlay(position).execute();
+
+                Bundle bundle = new Bundle();
+//                bundle.putLong(Constants.KEY_ID, song.get_id());
+//                bundle.putString(Constants.KEY_IMAGE, song.get_image());
+//                bundle.putString(Constants.KEY_TITLE, song.get_title());
+//                bundle.putString(Constants.KEY_ARTIST, song.get_artist());
+//                bundle.putInt(Constants.KEY_POSITION, position);
+//                bundle.putInt(Constants.KEY_DURATION, song.get_duration());
+//                bundle.putString(Constants.KEY_PATH, toUrlPlayTrack(song.get_id()));
+//                bundle.putParcelableArrayList(Constants.KEY_SONG_LIST, songDetails);
+
+                Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
+                intent.putExtras(bundle);
+
+                mContext.startActivity(intent);
             }
         });
+    }
+
+    private void onLoadImageCover(String imageUri, final SongRowHolder holder) {
+
+        ImageSize targetSize = new ImageSize(48, 48);
+        imageLoader.displayImage(imageUri, new ImageViewAware(holder.trackImage),
+                new DisplayImageOptions.Builder()
+                        .imageScaleType(ImageScaleType.EXACTLY)
+                        .cacheInMemory(true)
+                        .resetViewBeforeLoading(true)
+                        .bitmapConfig(Bitmap.Config.RGB_565)
+                        .build()
+                ,targetSize
+                , new SimpleImageLoadingListener() {
+                    @Override
+                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                    }
+                    @Override
+                    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+                    }
+                },null);
+
+//        imageLoader.loadImage(imageUri, targetSize, DisplayImageOptions.createSimple(), new SimpleImageLoadingListener() {
+//            @Override
+//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+//                holder.trackImage.setImageBitmap(loadedImage);
+//            }
+//        });
     }
 
     private class onProcessStartPlay extends AsyncTask<String, Void, String> {
@@ -159,13 +173,13 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         protected void onPostExecute(String response) {
             try {
 
-                Bundle bundleS = new Bundle();
-                bundleS.putInt(Constants.KEY_POSITION, position);
+                Bundle bundle = new Bundle();
+                bundle.putInt(Constants.KEY_POSITION, position);
                 if(mService.getPlayingQueue().isEmpty()) {
                     mService.updatePlayingQueue(songDetails);
                 }
 
-                mService.onProcess(Constants.PLAYPAUSE, bundleS);
+                mService.onProcess(Constants.PLAYPAUSE, bundle);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -177,22 +191,41 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         return songDetails == null ? 0 : songDetails.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class SongRowHolder extends RecyclerView.ViewHolder {
 
         public TextView trackTitle;
         public ImageView trackImage;
         public TextView trackArtist;
         public TextView trackDuration;
-        public RelativeLayout contentHolder;
+        public ConstraintLayout contentHolder;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public SongRowHolder(@NonNull View itemView) {
             super(itemView);
 
             trackTitle = itemView.findViewById(R.id.trackTitle);
             trackImage = itemView.findViewById(R.id.trackImage);
             trackDuration = itemView.findViewById(R.id.trackDuration);
             trackArtist = itemView.findViewById(R.id.trackArtist);
-//            contentHolder = itemView.findViewById(R.id.contentItemRow);
+            contentHolder = itemView.findViewById(R.id.contentItemRow);
+        }
+    }
+
+    public class ControlRowHolder extends RecyclerView.ViewHolder {
+
+        public TextView trackTitle;
+        public ImageView trackImage;
+        public TextView trackArtist;
+        public TextView trackDuration;
+        public ConstraintLayout contentHolder;
+
+        public ControlRowHolder(@NonNull View itemView) {
+            super(itemView);
+
+            trackTitle = itemView.findViewById(R.id.trackTitle);
+            trackImage = itemView.findViewById(R.id.trackImage);
+            trackDuration = itemView.findViewById(R.id.trackDuration);
+            trackArtist = itemView.findViewById(R.id.trackArtist);
+            contentHolder = itemView.findViewById(R.id.contentItemRow);
         }
     }
 }

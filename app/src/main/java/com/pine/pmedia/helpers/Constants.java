@@ -20,6 +20,7 @@ public class Constants {
     public static final String AVATAR_DEFAULT           = "large";
     public static final String AVATAR_DEFAULT_X500      = "t500x500";
     public static final String SONGS                    = " songs";
+    public static final String DRAWABLE_PATH            = "drawable://";
 
     public static final int LIMIT_RECENT                = 50;
     public static final int LIMIT_NUMBER                = 50;
