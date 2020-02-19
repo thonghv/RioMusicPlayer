@@ -554,7 +554,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
-    private void sendBroadcast(String data) {
+    public void sendBroadcast(String data) {
 
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction(MainActivity.mBroadcastAction);

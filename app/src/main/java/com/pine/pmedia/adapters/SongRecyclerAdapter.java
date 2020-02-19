@@ -89,21 +89,14 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 //        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
 //        holder.trackTitle.setTypeface(customFace);
 //
-        String urlPath;
-        if(song.get_bitmap() != null) {
-            urlPath = song.get_uri().toString();
-        } else {
-            urlPath = Constants.DRAWABLE_PATH + R.drawable.icons_musical_white;
-        }
-
-        onLoadImageCover(urlPath, holder);
-
-//        if(!song.get_image().isEmpty()) {
-////            Picasso.get().load(song.get_image()).into(holder.trackImage)
-////            final ImageLoader imageLoader = ImageLoader.getInstance();
-////            imageLoader.displayImage(song.getUri().toString(), holder.trackImage);
-//            holder.trackImage.setImageBitmap(song.getBitmap());
+//        String urlPath;
+//        if(song.get_bitmap() != null) {
+//            urlPath = song.get_uri().toString();
+//        } else {
+//            urlPath = Constants.DRAWABLE_PATH + R.drawable.icons_musical_white;
 //        }
+
+        this.onLoadImageCover(song.get_uri().toString(), holder);
 
         holder.contentHolder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +124,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
     private void onLoadImageCover(String imageUri, final SongRowHolder holder) {
 
-        ImageSize targetSize = new ImageSize(48, 48);
+        ImageSize targetSize = new ImageSize(124, 124);
         imageLoader.displayImage(imageUri, new ImageViewAware(holder.trackImage),
                 new DisplayImageOptions.Builder()
                         .imageScaleType(ImageScaleType.EXACTLY)
@@ -150,13 +143,6 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
                     }
                 },null);
-
-//        imageLoader.loadImage(imageUri, targetSize, DisplayImageOptions.createSimple(), new SimpleImageLoadingListener() {
-//            @Override
-//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                holder.trackImage.setImageBitmap(loadedImage);
-//            }
-//        });
     }
 
     private class onProcessStartPlay extends AsyncTask<String, Void, String> {
@@ -200,25 +186,6 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         public ConstraintLayout contentHolder;
 
         public SongRowHolder(@NonNull View itemView) {
-            super(itemView);
-
-            trackTitle = itemView.findViewById(R.id.trackTitle);
-            trackImage = itemView.findViewById(R.id.trackImage);
-            trackDuration = itemView.findViewById(R.id.trackDuration);
-            trackArtist = itemView.findViewById(R.id.trackArtist);
-            contentHolder = itemView.findViewById(R.id.contentItemRow);
-        }
-    }
-
-    public class ControlRowHolder extends RecyclerView.ViewHolder {
-
-        public TextView trackTitle;
-        public ImageView trackImage;
-        public TextView trackArtist;
-        public TextView trackDuration;
-        public ConstraintLayout contentHolder;
-
-        public ControlRowHolder(@NonNull View itemView) {
             super(itemView);
 
             trackTitle = itemView.findViewById(R.id.trackTitle);

@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,11 +24,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
+import com.pine.pmedia.control.HidingScrollListener;
 import com.pine.pmedia.fragments.AlbumsFragment;
 import com.pine.pmedia.fragments.ArtistFragment;
 import com.pine.pmedia.fragments.SongsFragment;
@@ -55,13 +58,14 @@ public class MainActivity extends BaseActivity {
     private ImageButton playPauseImageButton;
     private ImageButton nextImageButton;
     private ImageButton previousImageButton;
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
 
@@ -90,6 +94,7 @@ public class MainActivity extends BaseActivity {
         ViewPager viewPager = findViewById(R.id.viewpager);
         TabsPagerAdapter tabsPagerAdapter = initTab();
         viewPager.setAdapter(tabsPagerAdapter);
+        viewPager.setOffscreenPageLimit(viewPager.getAdapter().getCount());
 
         SmartTabLayout smartTabLayout = findViewById(R.id.smartTabLayout);
         smartTabLayout.setViewPager(viewPager);
@@ -110,9 +115,44 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        initRecyclerView();
 
 //        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
 //        appBarLayout.setBackgroundResource(R.drawable.bk_03);
+    }
+
+    private void initRecyclerView() {
+
+//        LayoutInflater inflater = LayoutInflater.from(this); // or (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View viewMyLayout = inflater.inflate(R.layout.fragment_songs, null);
+//
+//        RecyclerView recyclerView = viewMyLayout.findViewById(R.id.recycleViewSongs);
+//        recyclerView.setOnScrollListener(new HidingScrollListener() {
+//            @Override
+//            public void onHide() {
+//                System.out.println("D");
+//            }
+//            @Override
+//            public void onShow() {
+//                System.out.println("D");
+//            }
+//        });
+
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(createItemList());
+//        recyclerView.setAdapter(recyclerAdapter);
+//
+//        recyclerView.addOnScrollListener(new HidingScrollListener() {
+//            @Override
+//            public void onHide() {
+//                hideViews();
+//            }
+//
+//            @Override
+//            public void onShow() {
+//                showViews();
+//            }
+//        });
     }
 
     @Override
@@ -179,6 +219,23 @@ public class MainActivity extends BaseActivity {
     private TabsPagerAdapter initTab() {
 
         TabsPagerAdapter tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+
+//        SongsFragment songsFragment = SongsFragment.getInstance();
+//        LayoutInflater inflater = LayoutInflater.from(this); // or (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View viewMyLayout = inflater.inflate(R.layout.fragment_songs, null);
+//
+//        RecyclerView recyclerView = viewMyLayout.findViewById(R.id.recycleViewSongs);
+//        songsFragment.setRecyclerView(recyclerView);
+//        recyclerView.setOnScrollListener(new HidingScrollListener() {
+//            @Override
+//            public void onHide() {
+//                System.out.println("D");
+//            }
+//            @Override
+//            public void onShow() {
+//                System.out.println("D");
+//            }
+//        });
 
         tabsPagerAdapter.addFragment(SongsFragment.getInstance(), this.getResources().getString(R.string.songs));
         tabsPagerAdapter.addFragment(AlbumsFragment.getInstance(), this.getResources().getString(R.string.album));
@@ -282,7 +339,15 @@ public class MainActivity extends BaseActivity {
                 onUpdateBaseUI();
                 playPauseImageButton.setBackgroundResource(R.drawable.play_bottom);
                 mService.setNeedPause(true);
-            break;
+                break;
+            case Constants.HIDEN_BAR:
+                toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+//                toolbar.setVisibility(View.GONE);
+                break;
+            case Constants.SHOW_BAR:
+                toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+//                toolbar.setVisibility(View.VISIBLE);
+                break;
             default:
                 System.out.println(data);
                 break;

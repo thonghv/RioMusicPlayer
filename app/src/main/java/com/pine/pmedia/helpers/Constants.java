@@ -50,6 +50,8 @@ public class Constants {
     public static final String KEY_USER                 = "user";
     public static final String KEY_USERNAME             = "username";
     public static final String SONG_COMPLETE            = "songComplete";
+    public static final String HIDEN_BAR                = "hidenBar";
+    public static final String SHOW_BAR                 = "showBar";
 
     //=================
     // API SEARCH

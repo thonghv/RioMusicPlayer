@@ -1,19 +1,19 @@
 package com.pine.pmedia.fragments;
 
+import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +22,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongRecyclerAdapter;
-import com.pine.pmedia.helpers.CommonHelper;
+import com.pine.pmedia.control.HidingScrollListener;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
@@ -36,6 +36,7 @@ public class SongsFragment extends BaseFragment {
     private SongRecyclerAdapter songRecyclerAdapter;
     private RecyclerView recyclerView;
     private TextView shuffleLabel;
+    private Toolbar toolbar;
 
     public static SongsFragment getInstance() {
 
@@ -43,7 +44,7 @@ public class SongsFragment extends BaseFragment {
             instance = new SongsFragment();
         }
 
-        return new SongsFragment();
+        return instance;
     }
 
     @Override
@@ -57,7 +58,21 @@ public class SongsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
+
+        View viewActivityMain = inflater.inflate(R.layout.app_bar_main, container, false);
+        toolbar = viewActivityMain.findViewById(R.id.toolbar);
+
         recyclerView = view.findViewById(R.id.recycleViewSongs);
+        recyclerView.setOnScrollListener(new HidingScrollListener() {
+            @Override
+            public void onHide() {
+                hideViews();
+            }
+            @Override
+            public void onShow() {
+                showViews();
+            }
+        });
 
         // Clear background of recycle view
         recyclerView.setHasFixedSize(true);
@@ -103,5 +118,26 @@ public class SongsFragment extends BaseFragment {
 
         mService.setmActivity(getmActivity());
         mService.updatePlayingQueue(songs);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    private void hideViews() {
+
+        System.out.println("");
+        super.getmService().sendBroadcast(Constants.HIDEN_BAR);
+//        toolbar.animate().translationY(toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+//
+//        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFabButton.getLayoutParams();
+//        int fabBottomMargin = lp.bottomMargin;
+//        mFabButton.animate().translationY(mFabButton.getHeight()+fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
+    }
+
+    private void showViews() {
+        super.getmService().sendBroadcast(Constants.SHOW_BAR);
+//        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
     }
 }
