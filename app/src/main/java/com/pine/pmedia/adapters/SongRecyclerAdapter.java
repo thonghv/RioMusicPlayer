@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -65,6 +68,15 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         mContext.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(position == 0) {
+            return Constants.ITEM_TYPE_CONTROL;
+        }
+
+        return Constants.ITEM_TYPE_SONG;
+    }
+
     @NonNull
     @Override
     public SongRowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -72,39 +84,43 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         inItService();
         imageLoader = ImageLoader.getInstance();
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.song_custum_item, parent, false);
+        View view = null;
+        switch (viewType) {
+            case Constants.ITEM_TYPE_SONG:
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.song_custum_item, parent, false);
+                break;
+            case Constants.ITEM_TYPE_CONTROL:
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.shuffle_all_controll, parent, false);
+                break;
+        }
 
-        return new SongRowHolder(view);
+        return new SongRowHolder(view, viewType);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SongRowHolder holder, final int position) {
 
-        final Song song = songDetails.get(position);
-        holder.trackTitle.setText(song.get_title());
-        holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
-        holder.trackArtist.setText(song.get_artist());
+        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
+        switch (holder.getItemViewType()) {
+            case Constants.ITEM_TYPE_SONG:
 
-//        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
-//        holder.trackTitle.setTypeface(customFace);
-//
-//        String urlPath;
-//        if(song.get_bitmap() != null) {
-//            urlPath = song.get_uri().toString();
-//        } else {
-//            urlPath = Constants.DRAWABLE_PATH + R.drawable.icons_musical_white;
-//        }
+                final Song song = songDetails.get(position);
+                holder.trackTitle.setText(song.get_title());
+                holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
+                holder.trackArtist.setText(song.get_artist());
 
-        this.onLoadImageCover(song.get_uri().toString(), holder);
+                this.onLoadImageCover(song.get_uri().toString(), holder);
 
-        holder.contentHolder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                holder.trackTitle.setTypeface(customFace);
 
-                new onProcessStartPlay(position).execute();
+                holder.contentHolder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                Bundle bundle = new Bundle();
+                        new onProcessStartPlay(position).execute();
+                        Bundle bundle = new Bundle();
 //                bundle.putLong(Constants.KEY_ID, song.get_id());
 //                bundle.putString(Constants.KEY_IMAGE, song.get_image());
 //                bundle.putString(Constants.KEY_TITLE, song.get_title());
@@ -114,12 +130,24 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 //                bundle.putString(Constants.KEY_PATH, toUrlPlayTrack(song.get_id()));
 //                bundle.putParcelableArrayList(Constants.KEY_SONG_LIST, songDetails);
 
-                Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
-                intent.putExtras(bundle);
+                        Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
+                        intent.putExtras(bundle);
 
-                mContext.startActivity(intent);
-            }
-        });
+                        mContext.startActivity(intent);
+                    }
+                });
+
+                break;
+
+                case Constants.ITEM_TYPE_CONTROL:
+                    holder.shuffleAll.setTypeface(customFace);
+                    break;
+        }
+
+
+
+
+
     }
 
     private void onLoadImageCover(String imageUri, final SongRowHolder holder) {
@@ -183,16 +211,25 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         public ImageView trackImage;
         public TextView trackArtist;
         public TextView trackDuration;
+        public TextView shuffleAll;
         public ConstraintLayout contentHolder;
 
-        public SongRowHolder(@NonNull View itemView) {
+
+        public SongRowHolder(@NonNull View itemView, int itemType) {
             super(itemView);
 
-            trackTitle = itemView.findViewById(R.id.trackTitle);
-            trackImage = itemView.findViewById(R.id.trackImage);
-            trackDuration = itemView.findViewById(R.id.trackDuration);
-            trackArtist = itemView.findViewById(R.id.trackArtist);
-            contentHolder = itemView.findViewById(R.id.contentItemRow);
+            switch (itemType) {
+                case Constants.ITEM_TYPE_SONG:
+                    trackTitle = itemView.findViewById(R.id.trackTitle);
+                    trackImage = itemView.findViewById(R.id.trackImage);
+                    trackDuration = itemView.findViewById(R.id.trackDuration);
+                    trackArtist = itemView.findViewById(R.id.trackArtist);
+                    contentHolder = itemView.findViewById(R.id.contentItemRow);
+                    break;
+                case Constants.ITEM_TYPE_CONTROL:
+                    shuffleAll = itemView.findViewById(R.id.textShuffleAll);
+                    break;
+            }
         }
     }
 }

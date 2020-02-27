@@ -10,6 +10,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/songLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -18,7 +19,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="6.5dp"
                 android:paddingRight="10dp"
                 android:layout_centerVertical="true">
 
@@ -76,18 +77,6 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:layout_weight="8">
-
-            <!--                <ImageView-->
-            <!--                    android:layout_width="14dp"-->
-            <!--                    android:layout_height="14dp"-->
-            <!--                    android:id="@+id/clock"-->
-            <!--                    android:layout_marginLeft="10dp"-->
-            <!--                    android:layout_toRightOf="@id/trackImage"-->
-            <!--                    android:layout_below="@id/trackTitle"-->
-            <!--                    android:minHeight="0dp"-->
-            <!--                    android:maxHeight="0dp"-->
-            <!--                    android:background="@drawable/clock"/>-->
-
             <TextView
                 android:id="@+id/trackDuration"
                 android:layout_width="wrap_content"
@@ -119,5 +108,6 @@
         </RelativeLayout>
 
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

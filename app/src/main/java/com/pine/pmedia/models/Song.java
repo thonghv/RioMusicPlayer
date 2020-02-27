@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class Song implements Parcelable {
 
@@ -25,6 +24,10 @@ public class Song implements Parcelable {
     private Long _albumName;
     private Bitmap _bitmap;
     private Uri _uri;
+
+    public Song() {
+
+    }
 
     public Song(Long id, String image, String title, String path, int duration) {
         this._id = id;

@@ -29,6 +29,7 @@ import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SongsFragment extends BaseFragment {
 
@@ -63,25 +64,25 @@ public class SongsFragment extends BaseFragment {
         toolbar = viewActivityMain.findViewById(R.id.toolbar);
 
         recyclerView = view.findViewById(R.id.recycleViewSongs);
-        recyclerView.setOnScrollListener(new HidingScrollListener() {
-            @Override
-            public void onHide() {
-                hideViews();
-            }
-            @Override
-            public void onShow() {
-                showViews();
-            }
-        });
+//        recyclerView.setOnScrollListener(new HidingScrollListener() {
+//            @Override
+//            public void onHide() {
+//                hideViews();
+//            }
+//            @Override
+//            public void onShow() {
+//                showViews();
+//            }
+//        });
 
         // Clear background of recycle view
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setBackgroundResource(0);
 
-        shuffleLabel = view.findViewById(R.id.shuffleLabel);
-        Typeface customFace = Typeface.createFromAsset(getmActivity().getAssets(), Constants.FONT_ROBOTO_LIGHT);
-        shuffleLabel.setTypeface(customFace);
+//        shuffleLabel = view.findViewById(R.id.shuffleLabel);
+//        Typeface customFace = Typeface.createFromAsset(getmActivity().getAssets(), Constants.FONT_ROBOTO_LIGHT);
+//        shuffleLabel.setTypeface(customFace);
 
         ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(getActivity()));
 
@@ -101,7 +102,9 @@ public class SongsFragment extends BaseFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(super.getmActivity()));
 
-        ArrayList<Song> songs = MediaHelper.getSongs(getmActivity());
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(new Song());
+        songs.addAll(MediaHelper.getSongs(getmActivity()));
 
         songRecyclerAdapter = new SongRecyclerAdapter(songs, super.getmActivity());
         recyclerView.setAdapter(songRecyclerAdapter);
@@ -125,19 +128,19 @@ public class SongsFragment extends BaseFragment {
         super.onDetach();
     }
 
-    private void hideViews() {
-
-        System.out.println("");
-        super.getmService().sendBroadcast(Constants.HIDEN_BAR);
-//        toolbar.animate().translationY(toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+//    private void hideViews() {
 //
-//        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFabButton.getLayoutParams();
-//        int fabBottomMargin = lp.bottomMargin;
-//        mFabButton.animate().translationY(mFabButton.getHeight()+fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
-    }
-
-    private void showViews() {
-        super.getmService().sendBroadcast(Constants.SHOW_BAR);
-//        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-    }
+//        System.out.println("");
+//        super.getmService().sendBroadcast(Constants.HIDEN_BAR);
+////        toolbar.animate().translationY(toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+////
+////        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFabButton.getLayoutParams();
+////        int fabBottomMargin = lp.bottomMargin;
+////        mFabButton.animate().translationY(mFabButton.getHeight()+fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
+//    }
+//
+//    private void showViews() {
+//        super.getmService().sendBroadcast(Constants.SHOW_BAR);
+////        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+//    }
 }

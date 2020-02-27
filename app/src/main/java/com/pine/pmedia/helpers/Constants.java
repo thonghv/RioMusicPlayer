@@ -26,6 +26,9 @@ public class Constants {
     public static final int LIMIT_NUMBER                = 50;
     public static final int OFFSET_NUMBER               = 0;
 
+    public static final int ITEM_TYPE_SONG              = 1;
+    public static final int ITEM_TYPE_CONTROL           = 2;
+    public static final int ITEM_TYPE_ADS               = 3;
 
     //=================
     // API KEY

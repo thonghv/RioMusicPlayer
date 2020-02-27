@@ -20,4 +20,7 @@
     <color name="gray">#E1E1E1</color>
     <color name="p_gray">#9FA6AD</color>
 
+    <color name="p_background_01">#363644</color>
+    <color name="p_background_02">#363644</color>
+
 </resources>
