@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class CommonHelper {
             for (int i = 0; i < jsonArrays.length(); i++) {
                 String songId = jsonArrays.getJSONObject(i).getString(Constants.KEY_ID);
                 String songTitle = jsonArrays.getJSONObject(i).getString(Constants.KEY_TITLE);
-                String songImage = jsonArrays.getJSONObject(i).getString(Constants.KEY_IMAGE);
+                String songImage = jsonArrays.getJSONObject(i).getString(Constants.KEY_ARTWORK);
                 String songDuration = jsonArrays.getJSONObject(i).getString(Constants.KEY_DURATION);
                 String songLikeCount = jsonArrays.getJSONObject(i).getString(Constants.KEY_LIKE_COUNT);
 
@@ -47,7 +47,7 @@ public class CommonHelper {
                 Song song = new Song();
                 result.add(song);
 
-                song.set_id(Long.valueOf(songId));
+                song.set_id(Integer.parseInt(songId));
                 song.set_title(songTitle);
                 song.set_image(songImage);
                 song.set_duration(Integer.parseInt(songDuration));
@@ -80,10 +80,10 @@ public class CommonHelper {
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
     }
 
-    public static String toUrlPlayTrack(Long id) {
+    public static String toUrlPlayTrack(int id) {
 
         return Constants.API + Constants.KEY_TRACKS
-                + "/" + id.toString()
+                + "/" + id
                 + Constants.KEY_STREAM
                 + Constants.Q_CLIENT_ID + Constants.TOKEN;
     }
@@ -107,7 +107,7 @@ public class CommonHelper {
 
     public static int getTextColor(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
-        return prefs.getInt("text_color", context.getResources().getColor(R.color.av_dark_blue));
+        return prefs.getInt("text_color", context.getResources().getColor(R.color.p_background_01));
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {
@@ -130,6 +130,23 @@ public class CommonHelper {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    /**
+     * https://stackoverflow.com/questions/33072365/how-to-darken-a-given-color-int
+     * @param color color provided
+     * @param factor factor to make color darker
+     * @return int as darker color
+     */
+    public static int manipulateColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r, 255),
+                Math.min(g, 255),
+                Math.min(b, 255));
     }
 
     static public void addRecent(Context context, String streamUrl, String name, String author, String imgUrl) {

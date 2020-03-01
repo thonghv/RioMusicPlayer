@@ -122,7 +122,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                         new onProcessStartPlay(position).execute();
                         Bundle bundle = new Bundle();
 //                bundle.putLong(Constants.KEY_ID, song.get_id());
-//                bundle.putString(Constants.KEY_IMAGE, song.get_image());
+//                bundle.putString(Constants.KEY_ARTWORK, song.get_image());
 //                bundle.putString(Constants.KEY_TITLE, song.get_title());
 //                bundle.putString(Constants.KEY_ARTIST, song.get_artist());
 //                bundle.putInt(Constants.KEY_POSITION, position);

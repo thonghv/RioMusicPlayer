@@ -55,7 +55,7 @@ public class AlbumsFragment extends BaseFragment {
 
 
         View view = inflater.inflate(R.layout.fragment_albums, container, false);
-        recyclerView = view.findViewById(R.id.albumContent);
+        recyclerView = view.findViewById(R.id.albumRecycleContent);
 
         // Load album list
         ArrayList<Album> albums = MediaHelper.getAlbums(getmActivity());

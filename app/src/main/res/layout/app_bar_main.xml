@@ -62,24 +62,25 @@
         <include layout="@layout/content_main" />
 
         <RelativeLayout
+            android:id="@+id/contentBottomLayout"
             app:layout_collapseMode="parallax"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="47dp"
                 android:id="@+id/hiddenBarMainScreen"
                 android:layout_alignParentBottom="true"
-                android:background="#8C000000"
-                android:visibility="visible">
+                android:background="@color/p_background_01">
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="1.1dp"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="0.5dp"
                     android:layout_alignParentTop="true"
-                    android:background="#eeeeee" />
+                    android:background="#6E6F71" />
 
                 <ImageButton
                     android:id="@+id/nextButtonBottom"
@@ -144,7 +145,7 @@
                     android:id="@+id/songArtistMainScreen"
                     android:layout_alignLeft="@id/songTitleMainScreen"
                     android:textAppearance="?android:textAppearance"
-                    android:textColor="#7A7A8D" />
+                    android:textColor="@color/gray" />
             </RelativeLayout>
 
         </RelativeLayout>

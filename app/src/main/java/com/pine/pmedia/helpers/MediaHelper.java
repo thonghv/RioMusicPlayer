@@ -37,7 +37,7 @@ public class MediaHelper {
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
             String album = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-            Long albumId = cursor.getLong(cursor
+            int albumId = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
 
             int numberOfSong = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.NUMBER_OF_SONGS));
@@ -59,6 +59,7 @@ public class MediaHelper {
             }
 
             Album albumObject = new Album();
+            albumObject.setId(albumId);
             albumObject.setName(album);
             albumObject.setArtist(artist);
             albumObject.setImgCover(bitmap);
@@ -71,7 +72,7 @@ public class MediaHelper {
         return albums;
     }
 
-    public static ArrayList<Song> getSongs(Activity activity) {
+    public static ArrayList<Song> getSongs(Activity activity, int albumIdCompare, int artistIdCompare) {
 
         ArrayList<Song> results = new ArrayList<>();
 
@@ -80,6 +81,7 @@ public class MediaHelper {
                 MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.ARTIST_ID,
                 MediaStore.Audio.Media.DURATION };
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final Cursor cursor = activity.getContentResolver().query(uri,
@@ -88,20 +90,28 @@ public class MediaHelper {
         while (cursor.moveToNext()) {
             String artist = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-            String album = cursor.getString(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
             String track = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
             String data = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-            Long albumId = cursor.getLong(cursor
+            int albumId = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
+            int artistId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID));
 
             int duration = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
 
             Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+
+            if(albumIdCompare != 0 && albumIdCompare != albumId) {
+                continue;
+            }
+
+            if(artistIdCompare != 0 && artistIdCompare != artistId) {
+                continue;
+            }
 
             Bitmap bitmap = null;
             try {
@@ -121,6 +131,7 @@ public class MediaHelper {
             audioListModel.set_title(track);
             audioListModel.set_path(data);
             audioListModel.set_albumId(albumId);
+            audioListModel.set_artistId(artistId);
             audioListModel.set_duration(duration);
             audioListModel.set_uri(albumArtUri);
 

@@ -1,18 +1,13 @@
 package com.pine.pmedia.fragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,7 +24,6 @@ import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SongsFragment extends BaseFragment {
 
@@ -64,16 +58,16 @@ public class SongsFragment extends BaseFragment {
         toolbar = viewActivityMain.findViewById(R.id.toolbar);
 
         recyclerView = view.findViewById(R.id.recycleViewSongs);
-//        recyclerView.setOnScrollListener(new HidingScrollListener() {
-//            @Override
-//            public void onHide() {
-//                hideViews();
-//            }
-//            @Override
-//            public void onShow() {
-//                showViews();
-//            }
-//        });
+        recyclerView.setOnScrollListener(new HidingScrollListener() {
+            @Override
+            public void onHide() {
+                //hideViews();
+            }
+            @Override
+            public void onShow() {
+                //showViews();
+            }
+        });
 
         // Clear background of recycle view
         recyclerView.setHasFixedSize(true);
@@ -104,7 +98,7 @@ public class SongsFragment extends BaseFragment {
 
         ArrayList<Song> songs = new ArrayList<>();
         songs.add(new Song());
-        songs.addAll(MediaHelper.getSongs(getmActivity()));
+        songs.addAll(MediaHelper.getSongs(getmActivity(), 0 , 0));
 
         songRecyclerAdapter = new SongRecyclerAdapter(songs, super.getmActivity());
         recyclerView.setAdapter(songRecyclerAdapter);
@@ -128,19 +122,11 @@ public class SongsFragment extends BaseFragment {
         super.onDetach();
     }
 
-//    private void hideViews() {
-//
-//        System.out.println("");
-//        super.getmService().sendBroadcast(Constants.HIDEN_BAR);
-////        toolbar.animate().translationY(toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
-////
-////        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFabButton.getLayoutParams();
-////        int fabBottomMargin = lp.bottomMargin;
-////        mFabButton.animate().translationY(mFabButton.getHeight()+fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
-//    }
-//
-//    private void showViews() {
-//        super.getmService().sendBroadcast(Constants.SHOW_BAR);
-////        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-//    }
+    private void hideViews() {
+        super.getmService().sendBroadcast(Constants.SHOW_CONTENT_BOTTOM);
+    }
+
+    private void showViews() {
+        super.getmService().sendBroadcast(Constants.HIDE_CONTENT_BOTTOM);
+    }
 }

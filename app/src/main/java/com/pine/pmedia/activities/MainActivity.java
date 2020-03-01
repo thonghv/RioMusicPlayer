@@ -4,21 +4,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,10 +37,10 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
-import com.pine.pmedia.control.HidingScrollListener;
 import com.pine.pmedia.fragments.AlbumsFragment;
 import com.pine.pmedia.fragments.ArtistFragment;
 import com.pine.pmedia.fragments.SongsFragment;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
 
@@ -116,45 +124,48 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        initRecyclerView();
+        Bitmap bitmap = CommonHelper.drawableToBitmap(getResources().getDrawable(R.drawable.bk_01));
+        Palette p = Palette.from(bitmap).generate();
+        int color1 = p.getMutedColor(ContextCompat.getColor(this, R.color.p_background_01));
+        int color2 = CommonHelper.manipulateColor(color1, 0.22f);
 
-        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
+        GradientDrawable gd = new GradientDrawable(
+                            GradientDrawable.Orientation.TR_BL,
+                            new int[] {color1, color2});
+                    gd.setCornerRadius(0f);
 
+
+                    bottomPlayMainScreen.setBackgroundDrawable(gd);
+
+//        bottomPlayMainScreen.setBackgroundColor(color);
+
+//        int newColor = CommonHelper.getTextColor(this);
+//        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.bk_01);
+//        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(bitmap);
+//        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+//        drawable.setColorFilter(new PorterDuffColorFilter(newColor, PorterDuff.Mode.SRC_IN));
+//        drawable.draw(canvas);
+
+
+//        new Palette.Builder(bitmap).generate(new Palette.PaletteAsyncListener() {
+//            @Override
+//            public void onGenerated(@NonNull Palette palette) {
+//                Palette.Swatch swatch = palette.getVibrantSwatch();
+//                if (swatch != null) {
+//                    int color1= swatch.getRgb();
+//                    GradientDrawable gd = new GradientDrawable(
+//                            GradientDrawable.Orientation.LEFT_RIGHT,
+//                            new int[] {color1, R.color.p_background_01});
+////                    gd.setCornerRadius(0f);
+//
+//                    bottomPlayMainScreen.setBackgroundDrawable(gd);
+//                }
+//            }
+//        });
+
+//        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
 //        appBarLayout.setBackgroundResource(R.drawable.bk_03);
-    }
-
-    private void initRecyclerView() {
-
-//        LayoutInflater inflater = LayoutInflater.from(this); // or (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View viewMyLayout = inflater.inflate(R.layout.fragment_songs, null);
-//
-//        RecyclerView recyclerView = viewMyLayout.findViewById(R.id.recycleViewSongs);
-//        recyclerView.setOnScrollListener(new HidingScrollListener() {
-//            @Override
-//            public void onHide() {
-//                System.out.println("D");
-//            }
-//            @Override
-//            public void onShow() {
-//                System.out.println("D");
-//            }
-//        });
-
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(createItemList());
-//        recyclerView.setAdapter(recyclerAdapter);
-//
-//        recyclerView.addOnScrollListener(new HidingScrollListener() {
-//            @Override
-//            public void onHide() {
-//                hideViews();
-//            }
-//
-//            @Override
-//            public void onShow() {
-//                showViews();
-//            }
-//        });
     }
 
     @Override
@@ -221,24 +232,6 @@ public class MainActivity extends BaseActivity {
     private TabsPagerAdapter initTab() {
 
         TabsPagerAdapter tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-
-//        SongsFragment songsFragment = SongsFragment.getInstance();
-//        LayoutInflater inflater = LayoutInflater.from(this); // or (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View viewMyLayout = inflater.inflate(R.layout.fragment_songs, null);
-//
-//        RecyclerView recyclerView = viewMyLayout.findViewById(R.id.recycleViewSongs);
-//        songsFragment.setRecyclerView(recyclerView);
-//        recyclerView.setOnScrollListener(new HidingScrollListener() {
-//            @Override
-//            public void onHide() {
-//                System.out.println("D");
-//            }
-//            @Override
-//            public void onShow() {
-//                System.out.println("D");
-//            }
-//        });
-
         tabsPagerAdapter.addFragment(SongsFragment.getInstance(), this.getResources().getString(R.string.songs));
         tabsPagerAdapter.addFragment(AlbumsFragment.getInstance(), this.getResources().getString(R.string.album));
         tabsPagerAdapter.addFragment(ArtistFragment.getInstance(), this.getResources().getString(R.string.artist));
@@ -318,6 +311,12 @@ public class MainActivity extends BaseActivity {
         playPauseImageButton.setBackgroundResource(R.drawable.pause_bottom);
     }
 
+    private void onSongComplete() {
+        onUpdateBaseUI();
+        playPauseImageButton.setBackgroundResource(R.drawable.play_bottom);
+        mService.setNeedPause(true);
+    }
+
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -338,17 +337,18 @@ public class MainActivity extends BaseActivity {
 
         switch (data) {
             case Constants.SONG_COMPLETE:
-                onUpdateBaseUI();
-                playPauseImageButton.setBackgroundResource(R.drawable.play_bottom);
-                mService.setNeedPause(true);
+                onSongComplete();
                 break;
-            case Constants.HIDEN_BAR:
-                toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
-//                toolbar.setVisibility(View.GONE);
+            case Constants.SHOW_CONTENT_BOTTOM:
+                RelativeLayout contentBottomLayout1 = findViewById(R.id.hiddenBarMainScreen);
+                contentBottomLayout1.animate()
+                        .translationY(-contentBottomLayout1.getHeight());
                 break;
-            case Constants.SHOW_BAR:
-                toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-//                toolbar.setVisibility(View.VISIBLE);
+            case Constants.HIDE_CONTENT_BOTTOM:
+                RelativeLayout contentBottomLayout = findViewById(R.id.hiddenBarMainScreen);
+                contentBottomLayout.animate()
+                        .translationY(0)
+                        .setInterpolator(new DecelerateInterpolator(2));
                 break;
             default:
                 System.out.println(data);

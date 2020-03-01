@@ -43,18 +43,20 @@ public class Constants {
     public static final String KEY_DATA                 = "data";
     public static final String KEY_ID                   = "id";
     public static final String KEY_TITLE                = "title";
+    public static final String KEY_NAME                 = "name";
     public static final String KEY_ARTIST               = "artist";
-    public static final String KEY_IMAGE                = "artwork_url";
+    public static final String KEY_ARTWORK              = "artwork_url";
     public static final String KEY_PATH                 = "path";
     public static final String KEY_DURATION             = "duration";
     public static final String KEY_LIKE_COUNT           = "likes_count";
     public static final String KEY_POSITION             = "position";
     public static final String KEY_SONG_LIST            = "songList";
+    public static final String KEY_SONG_NUMBER          = "songsNumber";
     public static final String KEY_USER                 = "user";
     public static final String KEY_USERNAME             = "username";
     public static final String SONG_COMPLETE            = "songComplete";
-    public static final String HIDEN_BAR                = "hidenBar";
-    public static final String SHOW_BAR                 = "showBar";
+    public static final String HIDE_CONTENT_BOTTOM      = "hideContentBottom";
+    public static final String SHOW_CONTENT_BOTTOM      = "showContentBottom";
 
     //=================
     // API SEARCH

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Album implements Parcelable {
 
+    private int id;
     private String name;
     private String artist;
     private Bitmap imgCover;
