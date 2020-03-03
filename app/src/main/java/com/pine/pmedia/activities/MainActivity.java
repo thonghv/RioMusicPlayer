@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -125,6 +126,11 @@ public class MainActivity extends BaseActivity {
         });
 
         Bitmap bitmap = CommonHelper.drawableToBitmap(getResources().getDrawable(R.drawable.bk_01));
+
+        //Bitmap bitmapBlur = CommonHelper.blur(this, bitmap);
+//        Drawable dr = new BitmapDrawable(bitmapBlur);
+//        bottomPlayMainScreen.setBackground(dr);
+
         Palette p = Palette.from(bitmap).generate();
         int color1 = p.getMutedColor(ContextCompat.getColor(this, R.color.p_background_01));
         int color2 = CommonHelper.manipulateColor(color1, 0.22f);

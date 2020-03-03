@@ -13,6 +13,10 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 
 import androidx.core.content.ContextCompat;
 
@@ -190,5 +194,21 @@ public class CommonHelper {
         ComponentName componentName = am.getRunningTasks(1).get(0).topActivity;
 
         return componentName.getClassName();
+    }
+
+    private static final float BLUR_RADIUS = 25f;
+    static public Bitmap blur(Context context, Bitmap image) {
+        if (null == image) return null;
+        Bitmap outputBitmap = Bitmap.createBitmap(image);
+        final RenderScript renderScript = RenderScript.create(context);
+        Allocation tmpIn = Allocation.createFromBitmap(renderScript, image);
+        Allocation tmpOut = Allocation.createFromBitmap(renderScript, outputBitmap);
+        //Intrinsic Gausian blur filter
+        ScriptIntrinsicBlur theIntrinsic = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
+        theIntrinsic.setRadius(BLUR_RADIUS);
+        theIntrinsic.setInput(tmpIn);
+        theIntrinsic.forEach(tmpOut);
+        tmpOut.copyTo(outputBitmap);
+        return outputBitmap;
     }
 }
