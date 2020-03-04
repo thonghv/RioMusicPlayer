@@ -2,19 +2,9 @@ package com.pine.pmedia.activities;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -27,23 +17,34 @@ import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
-public class AlbumActivity extends AppCompatActivity {
+public class ArtistActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private ImageView albumCoverImage;
-    private TextView albumNameControl;
-    private TextView albumArtistControl;
-    private TextView albumSongCountControl;
-
-
-    private int albumId;
+    private ImageView coverImage;
+    private TextView nameControl;
+    private TextView numberOfAlbumsControl;
+    private TextView numberOfTracksControl;
+    private int artistId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_album);
+        setContentView(R.layout.activity_artist);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -71,10 +72,10 @@ public class AlbumActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycleViewSongsCat);
 
-        albumCoverImage = findViewById(R.id.albumCoverImage);
-        albumNameControl = findViewById(R.id.albumName);
-        albumArtistControl = findViewById(R.id.albumArtist);
-        albumSongCountControl = findViewById(R.id.albumSongCount);
+        coverImage = findViewById(R.id.artistCoverImage);
+        nameControl = findViewById(R.id.artistName);
+        numberOfAlbumsControl = findViewById(R.id.numberOfAlbums);
+        numberOfTracksControl = findViewById(R.id.numberOfTracks);
     }
 
     private void onLoadDataBundle() {
@@ -82,18 +83,19 @@ public class AlbumActivity extends AppCompatActivity {
         Bundle data = getIntent().getExtras();
 
         String albumName = data.getString(Constants.KEY_NAME);
-        String albumArtist = data.getString(Constants.KEY_ARTIST);
         String artUrl = data.getString(Constants.KEY_ARTWORK);
-        int numberOfSong = data.getInt(Constants.KEY_NUMBER_OF_TRACK);
 
-        albumId = data.getInt(Constants.KEY_ID);
+        int numberOfSong = data.getInt(Constants.KEY_NUMBER_OF_TRACK);
+        int numberOfAlbum = data.getInt(Constants.KEY_NUMBER_OF_ALBUM);
+
+        artistId = data.getInt(Constants.KEY_ID);
 
         setTitle(null);
-        albumNameControl.setText(albumName);
-        albumArtistControl.setText(albumArtist);
-        albumSongCountControl.setText(numberOfSong + Constants.SONGS);
+        nameControl.setText(albumName);
+        numberOfAlbumsControl.setText(numberOfAlbum + Constants.SPACE + Constants.ALBUMS);
+        numberOfTracksControl.setText(numberOfSong + Constants.SPACE + Constants.SONGS);
 
-        ImageLoader.getInstance().displayImage(artUrl, new ImageViewAware(albumCoverImage),
+        ImageLoader.getInstance().displayImage(artUrl, new ImageViewAware(coverImage),
                 new DisplayImageOptions.Builder()
                         .imageScaleType(ImageScaleType.EXACTLY)
                         .cacheInMemory(true)
@@ -117,7 +119,7 @@ public class AlbumActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<Song> songs = MediaHelper.getSongs(this, albumId,0);
+        ArrayList<Song> songs = MediaHelper.getSongs(this, null, artistId);
         SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs);
         recyclerView.setAdapter(songCatRecyclerAdapter);
     }

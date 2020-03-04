@@ -15,17 +15,21 @@ public class Album implements Parcelable {
 
     private int id;
     private String name;
-    private String artist;
     private Bitmap imgCover;
     private String artUri;
     private int numberOfSong;
 
+    private int artistId;
+    private String artist;
+
     protected Album(Parcel in) {
+        id = in.readInt();
         name = in.readString();
-        artist = in.readString();
         imgCover = in.readParcelable(Bitmap.class.getClassLoader());
         artUri = in.readString();
         numberOfSong = in.readInt();
+        artistId = in.readInt();
+        artist = in.readString();
     }
 
     public static final Creator<Album> CREATOR = new Creator<Album>() {
@@ -47,10 +51,12 @@ public class Album implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(name);
-        dest.writeString(artist);
         dest.writeParcelable(imgCover, flags);
         dest.writeString(artUri);
         dest.writeInt(numberOfSong);
+        dest.writeInt(artistId);
+        dest.writeString(artist);
     }
 }

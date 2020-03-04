@@ -17,12 +17,13 @@ import java.util.ArrayList;
 
 public class MediaHelper {
 
-    public static ArrayList<Album> getAlbums(Activity activity) {
+    public static ArrayList<Album> getAlbums(Activity activity, Integer artistIdCompare) {
 
         String[] projection = new String[] {
                 MediaStore.Audio.Albums._ID,
                 MediaStore.Audio.Albums.ALBUM,
                 MediaStore.Audio.Albums.ARTIST,
+                MediaStore.Audio.Albums.ARTIST_ID,
                 MediaStore.Audio.Albums.ALBUM_ART,
                 MediaStore.Audio.Albums.NUMBER_OF_SONGS };
         String selection = null;
@@ -33,6 +34,8 @@ public class MediaHelper {
 
         ArrayList<Album> albums = new ArrayList<>();
         while (cursor.moveToNext()) {
+            int artistId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID));
             String artist = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
             String album = cursor.getString(cursor
@@ -42,6 +45,9 @@ public class MediaHelper {
 
             int numberOfSong = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.NUMBER_OF_SONGS));
 
+            if(artistIdCompare != 0 && artistIdCompare != artistId) {
+                continue;
+            }
 
             Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
@@ -61,6 +67,7 @@ public class MediaHelper {
             Album albumObject = new Album();
             albumObject.setId(albumId);
             albumObject.setName(album);
+            albumObject.setArtistId(artistId);
             albumObject.setArtist(artist);
             albumObject.setImgCover(bitmap);
             albumObject.setArtUri(albumArtUri.toString());
@@ -72,7 +79,7 @@ public class MediaHelper {
         return albums;
     }
 
-    public static ArrayList<Song> getSongs(Activity activity, int albumIdCompare, int artistIdCompare) {
+    public static ArrayList<Song> getSongs(Activity activity, Integer albumIdCompare, Integer artistIdCompare) {
 
         ArrayList<Song> results = new ArrayList<>();
 
@@ -188,6 +195,7 @@ public class MediaHelper {
             artist.setNumberOfTracks(numberOfTracks);
             artist.setNumberOfAlbums(numberOfAlbums);
             artist.setImgCover(bitmap);
+            artist.setUri(albumArtUri);
 
             results.add(artist);
         }

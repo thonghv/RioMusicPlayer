@@ -13,11 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.ArtistRecyclerAdapter;
-import com.pine.pmedia.adapters.SongRecyclerAdapter;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Album;
 import com.pine.pmedia.models.Artist;
-import com.pine.pmedia.models.Song;
 
 import java.util.ArrayList;
 

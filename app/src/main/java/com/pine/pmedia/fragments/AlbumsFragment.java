@@ -58,7 +58,7 @@ public class AlbumsFragment extends BaseFragment {
         recyclerView = view.findViewById(R.id.albumRecycleContent);
 
         // Load album list
-        ArrayList<Album> albums = MediaHelper.getAlbums(getmActivity());
+        ArrayList<Album> albums = MediaHelper.getAlbums(getmActivity(), null);
         AlbumRecyclerAdapter adapter = new AlbumRecyclerAdapter(super.getActivity(), albums);
         recyclerView.setAdapter(adapter);
         GridLayoutManager manager = new GridLayoutManager(super.getContext(), 3, GridLayoutManager.VERTICAL, false);

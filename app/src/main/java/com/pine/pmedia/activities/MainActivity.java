@@ -5,12 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,7 +16,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -33,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.appbar.AppBarLayout;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
@@ -116,6 +108,13 @@ public class MainActivity extends BaseActivity {
         initBroadcastAction();
 
         // Handle bottom play menu screen.
+        initBottomBarPlay();
+
+//        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
+//        appBarLayout.setBackgroundResource(R.drawable.bk_03);
+    }
+
+    private void initBottomBarPlay() {
         bottomPlayMainScreen = findViewById(R.id.hiddenBarMainScreen);
         bottomPlayMainScreen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,52 +125,13 @@ public class MainActivity extends BaseActivity {
         });
 
         Bitmap bitmap = CommonHelper.drawableToBitmap(getResources().getDrawable(R.drawable.bk_01));
-
-        //Bitmap bitmapBlur = CommonHelper.blur(this, bitmap);
-//        Drawable dr = new BitmapDrawable(bitmapBlur);
-//        bottomPlayMainScreen.setBackground(dr);
-
         Palette p = Palette.from(bitmap).generate();
         int color1 = p.getMutedColor(ContextCompat.getColor(this, R.color.p_background_01));
         int color2 = CommonHelper.manipulateColor(color1, 0.22f);
 
-        GradientDrawable gd = new GradientDrawable(
-                            GradientDrawable.Orientation.TR_BL,
-                            new int[] {color1, color2});
-                    gd.setCornerRadius(0f);
-
-
-                    bottomPlayMainScreen.setBackgroundDrawable(gd);
-
-//        bottomPlayMainScreen.setBackgroundColor(color);
-
-//        int newColor = CommonHelper.getTextColor(this);
-//        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.bk_01);
-//        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(bitmap);
-//        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-//        drawable.setColorFilter(new PorterDuffColorFilter(newColor, PorterDuff.Mode.SRC_IN));
-//        drawable.draw(canvas);
-
-
-//        new Palette.Builder(bitmap).generate(new Palette.PaletteAsyncListener() {
-//            @Override
-//            public void onGenerated(@NonNull Palette palette) {
-//                Palette.Swatch swatch = palette.getVibrantSwatch();
-//                if (swatch != null) {
-//                    int color1= swatch.getRgb();
-//                    GradientDrawable gd = new GradientDrawable(
-//                            GradientDrawable.Orientation.LEFT_RIGHT,
-//                            new int[] {color1, R.color.p_background_01});
-////                    gd.setCornerRadius(0f);
-//
-//                    bottomPlayMainScreen.setBackgroundDrawable(gd);
-//                }
-//            }
-//        });
-
-//        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
-//        appBarLayout.setBackgroundResource(R.drawable.bk_03);
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TR_BL, new int[] {color1, color2});
+        gd.setCornerRadius(0f);
+        bottomPlayMainScreen.setBackgroundDrawable(gd);
     }
 
     @Override

@@ -68,7 +68,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                 param.putString(Constants.KEY_NAME, album.getName());
                 param.putString(Constants.KEY_ARTWORK, album.getArtUri());
                 param.putString(Constants.KEY_ARTIST, album.getArtist());
-                param.putInt(Constants.KEY_SONG_NUMBER, album.getNumberOfSong());
+                param.putInt(Constants.KEY_NUMBER_OF_TRACK, album.getNumberOfSong());
 
                 Intent intent = new Intent(v.getContext(), AlbumActivity.class);
                 intent.putExtras(param);

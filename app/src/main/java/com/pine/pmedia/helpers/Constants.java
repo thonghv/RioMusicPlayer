@@ -19,7 +19,9 @@ public class Constants {
     public static final String SPLITSTR                 = "|*|*|";
     public static final String AVATAR_DEFAULT           = "large";
     public static final String AVATAR_DEFAULT_X500      = "t500x500";
-    public static final String SONGS                    = " songs";
+    public static final String ALBUMS                   = "albums";
+    public static final String SONGS                    = "songs";
+    public static final String SPACE                    = " ";
     public static final String DRAWABLE_PATH            = "drawable://";
 
     public static final int LIMIT_RECENT                = 50;
@@ -51,7 +53,8 @@ public class Constants {
     public static final String KEY_LIKE_COUNT           = "likes_count";
     public static final String KEY_POSITION             = "position";
     public static final String KEY_SONG_LIST            = "songList";
-    public static final String KEY_SONG_NUMBER          = "songsNumber";
+    public static final String KEY_NUMBER_OF_TRACK      = "songsNumber";
+    public static final String KEY_NUMBER_OF_ALBUM      = "numberOfAlbum";
     public static final String KEY_USER                 = "user";
     public static final String KEY_USERNAME             = "username";
     public static final String SONG_COMPLETE            = "songComplete";

@@ -143,11 +143,6 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                     holder.shuffleAll.setTypeface(customFace);
                     break;
         }
-
-
-
-
-
     }
 
     private void onLoadImageCover(String imageUri, final SongRowHolder holder) {
