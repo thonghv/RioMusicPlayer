@@ -23,6 +23,7 @@ public class Constants {
     public static final String SONGS                    = "songs";
     public static final String SPACE                    = " ";
     public static final String DRAWABLE_PATH            = "drawable://";
+    public static final String EXTERNAL                 = "external";
 
     public static final int LIMIT_RECENT                = 50;
     public static final int LIMIT_NUMBER                = 50;
@@ -31,6 +32,9 @@ public class Constants {
     public static final int ITEM_TYPE_SONG              = 1;
     public static final int ITEM_TYPE_CONTROL           = 2;
     public static final int ITEM_TYPE_ADS               = 3;
+
+    public static final int VIEW_ALBUM                  = 1;
+    public static final int VIEW_ARTIST                 = 2;
 
     //=================
     // API KEY

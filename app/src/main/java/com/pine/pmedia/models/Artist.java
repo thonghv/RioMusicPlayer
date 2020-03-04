@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,18 +21,19 @@ public class Artist implements Parcelable {
     private String name;
     private String artUri;
     private Bitmap imgCover;
-    private Uri uri;
     private int numberOfTracks;
     private int numberOfAlbums;
+
+    private ArrayList<Album> albumList;
 
     protected Artist(Parcel in) {
         id = in.readInt();
         name = in.readString();
         artUri = in.readString();
         imgCover = in.readParcelable(Bitmap.class.getClassLoader());
-        uri = in.readParcelable(Uri.class.getClassLoader());
         numberOfTracks = in.readInt();
         numberOfAlbums = in.readInt();
+        albumList = in.createTypedArrayList(Album.CREATOR);
     }
 
     public static final Creator<Artist> CREATOR = new Creator<Artist>() {
@@ -55,9 +59,9 @@ public class Artist implements Parcelable {
         dest.writeString(name);
         dest.writeString(artUri);
         dest.writeParcelable(imgCover, flags);
-        dest.writeParcelable(uri, flags);
         dest.writeInt(numberOfTracks);
         dest.writeInt(numberOfAlbums);
+        dest.writeTypedList(albumList);
     }
 }
 

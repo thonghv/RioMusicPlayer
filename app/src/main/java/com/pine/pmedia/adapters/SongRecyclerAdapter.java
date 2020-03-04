@@ -121,14 +121,6 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
                         new onProcessStartPlay(position).execute();
                         Bundle bundle = new Bundle();
-//                bundle.putLong(Constants.KEY_ID, song.get_id());
-//                bundle.putString(Constants.KEY_ARTWORK, song.get_image());
-//                bundle.putString(Constants.KEY_TITLE, song.get_title());
-//                bundle.putString(Constants.KEY_ARTIST, song.get_artist());
-//                bundle.putInt(Constants.KEY_POSITION, position);
-//                bundle.putInt(Constants.KEY_DURATION, song.get_duration());
-//                bundle.putString(Constants.KEY_PATH, toUrlPlayTrack(song.get_id()));
-//                bundle.putParcelableArrayList(Constants.KEY_SONG_LIST, songDetails);
 
                         Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
                         intent.putExtras(bundle);

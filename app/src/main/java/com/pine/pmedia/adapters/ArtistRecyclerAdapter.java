@@ -83,12 +83,15 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
 
         final Artist artist = artistsDetails.get(position);
         holder.artistName.setText(artist.getName());
-        holder.artistNumberOfSong.setText(artist.getNumberOfTracks() + Constants.SONGS);
+
+        String artistInfo = artist.getNumberOfAlbums() + Constants.SPACE + Constants.ALBUMS
+                + " - " + artist.getNumberOfTracks() + Constants.SPACE + Constants.SONGS;
+        holder.artistNumberOfSong.setText(artistInfo);
 
         Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
         holder.artistName.setTypeface(customFace);
 
-        this.onLoadImageCover(artist.getUri().toString(), holder);
+        this.onLoadImageCover(artist.getArtUri(), holder);
 
         holder.contentHolder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +103,8 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
                 param.putString(Constants.KEY_ARTWORK, artist.getArtUri());
                 param.putInt(Constants.KEY_NUMBER_OF_ALBUM, artist.getNumberOfAlbums());
                 param.putInt(Constants.KEY_NUMBER_OF_TRACK, artist.getNumberOfTracks());
+
+                param.putParcelableArrayList(Constants.KEY_SONG_LIST, artist.getAlbumList());
 
                 Intent intent = new Intent(v.getContext(), ArtistActivity.class);
                 intent.putExtras(param);

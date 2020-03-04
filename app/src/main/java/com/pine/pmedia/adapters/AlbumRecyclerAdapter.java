@@ -36,46 +36,69 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
 
     private ArrayList<Album> mValues;
     private Context mContext;
+    private int viewType;
 
-    public AlbumRecyclerAdapter(Context context, ArrayList values) {
+    public AlbumRecyclerAdapter(Context context, ArrayList values, int viewType) {
 
-        mValues = values;
-        mContext = context;
+        this.mValues = values;
+        this.mContext = context;
+        this.viewType = viewType;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return viewType;
     }
 
     @Override
     public AlbumRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item, parent, false);
+        View view = null;
+        switch (viewType) {
+            case Constants.VIEW_ALBUM:
+                view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item, parent, false);
+                break;
+            case Constants.VIEW_ARTIST:
+                view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item_min, parent, false);
+                break;
+        }
 
         // Clear background of card view
         CardView cardView = view.findViewById(R.id.cardView);
         cardView.setBackgroundResource(0);
 
-        return new ViewHolder(view);
+        return new ViewHolder(view, viewType);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         final Album album = mValues.get(position);
-        viewHolder.setData(mValues.get(position));
-        viewHolder.albumCardItemLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Bundle param = new Bundle();
-                param.putInt(Constants.KEY_ID, album.getId());
-                param.putString(Constants.KEY_NAME, album.getName());
-                param.putString(Constants.KEY_ARTWORK, album.getArtUri());
-                param.putString(Constants.KEY_ARTIST, album.getArtist());
-                param.putInt(Constants.KEY_NUMBER_OF_TRACK, album.getNumberOfSong());
+        if(viewType == Constants.VIEW_ARTIST) {
+            viewHolder.setDataAlbumArtist(album);
+        }
 
-                Intent intent = new Intent(v.getContext(), AlbumActivity.class);
-                intent.putExtras(param);
+        if(viewType == Constants.VIEW_ALBUM) {
+            viewHolder.setData(mValues.get(position));
+            viewHolder.albumCardItemLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                mContext.startActivity(intent);
-            }
-        });
+                    Bundle param = new Bundle();
+                    param.putInt(Constants.KEY_ID, album.getId());
+                    param.putString(Constants.KEY_NAME, album.getName());
+                    param.putString(Constants.KEY_ARTWORK, album.getArtUri());
+                    param.putString(Constants.KEY_ARTIST, album.getArtist());
+                    param.putInt(Constants.KEY_NUMBER_OF_TRACK, album.getNumberOfSong());
+
+                    Intent intent = new Intent(v.getContext(), AlbumActivity.class);
+                    intent.putExtras(param);
+
+                    mContext.startActivity(intent);
+                }
+            });
+        }
+
     }
 
     @Override
@@ -93,35 +116,44 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         public RelativeLayout bottomCardLayout;
         public LinearLayout albumCardItemLayout;
 
-        public ViewHolder(View v) {
+        public ViewHolder(@NonNull View v, int itemType) {
 
             super(v);
 
-            albumName =  v.findViewById(R.id.cardAlbumName);
-            albumArtist =  v.findViewById(R.id.cardAlbumArtist);
-            imgCover =  v.findViewById(R.id.cardImageView);
-            numberOfSong = v.findViewById(R.id.cardNumberOfSong);
-            bottomCardLayout = v.findViewById(R.id.bottomCardLayout);
-            albumCardItemLayout = v.findViewById(R.id.albumCardItemLayout);
+            switch (itemType) {
+                case Constants.VIEW_ALBUM:
+                    albumName =  v.findViewById(R.id.cardAlbumName);
+                    albumArtist =  v.findViewById(R.id.cardAlbumArtist);
+                    imgCover =  v.findViewById(R.id.cardImageView);
+                    numberOfSong = v.findViewById(R.id.cardNumberOfSong);
+                    bottomCardLayout = v.findViewById(R.id.bottomCardLayout);
+                    albumCardItemLayout = v.findViewById(R.id.albumCardItemLayout);
 
-            // Set font text
-            Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_REGULAR);
-            albumName.setTypeface(customFace);
-            albumArtist.setTypeface(customFace);
+                    // Set font text
+                    Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_REGULAR);
+                    albumName.setTypeface(customFace);
+                    albumArtist.setTypeface(customFace);
+                    break;
+                case Constants.VIEW_ARTIST:
+                    albumName =  v.findViewById(R.id.cardAlbumName);
+                    imgCover =  v.findViewById(R.id.cardImageView);
+                    break;
+            }
         }
 
         public void setData(Album item) {
             albumName.setText(item.getName());
-            albumArtist.setText(item.getArtist());
-            numberOfSong.setText(item.getNumberOfSong() + Constants.SONGS);
 
-            String artUrl = Constants.DRAWABLE_PATH + R.drawable.icon_album_custum;
+            albumArtist.setText(item.getArtist());
+            numberOfSong.setText(item.getNumberOfSong() + Constants.SPACE + Constants.SONGS);
+
+           /* String artUrl = Constants.DRAWABLE_PATH + R.drawable.icon_album_custum;
             if(item.getImgCover() != null) {
                 artUrl = item.getArtUri();
-            }
+            }*/
 
             ImageSize targetSize = new ImageSize(120, 125);
-            ImageLoader.getInstance().displayImage(artUrl, new ImageViewAware(imgCover),
+            ImageLoader.getInstance().displayImage(item.getArtUri(), new ImageViewAware(imgCover),
                     new DisplayImageOptions.Builder()
                             .imageScaleType(ImageScaleType.EXACTLY)
                             .cacheInMemory(true)
@@ -148,6 +180,29 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                                     }
                                 }
                             });
+                        }
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            System.out.println("Error ...");
+                        }
+                    },null);
+        }
+
+        public void setDataAlbumArtist(Album item) {
+            albumName.setText(item.getName());
+
+            ImageSize targetSize = new ImageSize(120, 125);
+            ImageLoader.getInstance().displayImage(item.getArtUri(), new ImageViewAware(imgCover),
+                    new DisplayImageOptions.Builder()
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true)
+                            .resetViewBeforeLoading(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build()
+                    , targetSize
+                    , new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                         }
                         @Override
                         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {

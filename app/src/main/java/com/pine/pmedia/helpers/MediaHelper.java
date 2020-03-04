@@ -2,6 +2,7 @@ package com.pine.pmedia.helpers;
 
 import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import com.pine.pmedia.models.Song;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MediaHelper {
 
@@ -165,41 +167,71 @@ public class MediaHelper {
 
             String artistName = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
-            Long artistId = cursor.getLong(cursor
+            int artistId = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
-//            Long albumId = cursor.getLong(cursor
-//                    .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
             int numberOfTracks = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_TRACKS));
             int numberOfAlbums = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS));
 
-
-            Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
-            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, artistId);
-
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(
-                        activity.getContentResolver(), albumArtUri);
-
-            } catch (FileNotFoundException exception) {
-                exception.printStackTrace();
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
+            ArrayList<Album> albums = makeAlbumForArtistCursor(activity, artistId);
 
             Artist artist = new Artist();
+            artist.setId(artistId);
             artist.setName(artistName);
             artist.setNumberOfTracks(numberOfTracks);
             artist.setNumberOfAlbums(numberOfAlbums);
-            artist.setImgCover(bitmap);
-            artist.setUri(albumArtUri);
+            artist.setAlbumList(albums);
+
+            if(!albums.isEmpty()) {
+                artist.setArtUri(albums.get(0).getArtUri());
+            }
 
             results.add(artist);
         }
 
         return results;
+    }
+
+    public static ArrayList<Album> makeAlbumForArtistCursor(Context context, long artistID) {
+
+        if (artistID == -1)
+            return new ArrayList<>();
+
+        ArrayList<Album> albums = new ArrayList<>();
+
+        Cursor cursor = context.getContentResolver()
+                .query(MediaStore.Audio.Artists.Albums.getContentUri(Constants.EXTERNAL, artistID),
+                        new String[]{
+                                MediaStore.Audio.Media._ID,
+                                MediaStore.Audio.Albums.ALBUM,
+                                MediaStore.Audio.Artists.ARTIST,
+                                MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+                                MediaStore.Audio.Albums.FIRST_YEAR},
+                        null,
+                        null,
+                        MediaStore.Audio.Albums.FIRST_YEAR);
+
+        while (cursor.moveToNext()) {
+            int albumId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+            String albumName = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+            int numSongs = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Albums.NUMBER_OF_SONGS));
+
+            Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
+            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+
+            Album album = new Album();
+            album.setId(albumId);
+            album.setName(albumName);
+            album.setNumberOfSong(numSongs);
+            album.setArtUri(albumArtUri.toString());
+
+            albums.add(album);
+        }
+
+        return albums;
     }
 }
