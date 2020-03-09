@@ -24,7 +24,6 @@ public class Song implements Parcelable {
     private int _artistId;
     private String _albumName;
     private Bitmap _bitmap;
-    private Uri _uri;
 
     public Song() {
     }
@@ -41,7 +40,6 @@ public class Song implements Parcelable {
         _artistId = in.readInt();
         _albumName = in.readString();
         _bitmap = in.readParcelable(Bitmap.class.getClassLoader());
-        _uri = in.readParcelable(Uri.class.getClassLoader());
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -74,6 +72,5 @@ public class Song implements Parcelable {
         dest.writeInt(_artistId);
         dest.writeString(_albumName);
         dest.writeParcelable(_bitmap, flags);
-        dest.writeParcelable(_uri, flags);
     }
 }

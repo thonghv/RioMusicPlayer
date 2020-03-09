@@ -99,13 +99,7 @@ public class ArtistActivity extends AppCompatActivity {
         int numberOfSong = data.getInt(Constants.KEY_NUMBER_OF_TRACK);
         int numberOfAlbum = data.getInt(Constants.KEY_NUMBER_OF_ALBUM);
 
-        ArrayList<Album> datas = data.getParcelableArrayList(Constants.KEY_SONG_LIST);
         albums = data.getParcelableArrayList(Constants.KEY_SONG_LIST);
-        albums.addAll(datas);
-        albums.addAll(datas);
-        albums.addAll(datas);
-        albums.addAll(datas);
-        albums.addAll(datas);
 
         artistId = data.getInt(Constants.KEY_ID);
 

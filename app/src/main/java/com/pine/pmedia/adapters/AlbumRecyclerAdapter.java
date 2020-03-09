@@ -64,8 +64,8 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         }
 
         // Clear background of card view
-        CardView cardView = view.findViewById(R.id.cardView);
-        cardView.setBackgroundResource(0);
+//        CardView cardView = view.findViewById(R.id.cardView);
+//        cardView.setBackgroundResource(0);
 
         return new ViewHolder(view, viewType);
     }

@@ -11,7 +11,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_album"
         android:layout_width="match_parent"
-        android:layout_height="235dp"
+        android:layout_height="240dp"
         android:fitsSystemWindows="true"
         android:background="@null"
         android:paddingBottom="10dp"
@@ -60,10 +60,10 @@
                         android:orientation="vertical"
                         android:paddingRight="12dp">
                         <TextView
-                            android:id="@+id/albumName"
+                            android:id="@+id/cateName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Hello "
+                            android:text="Name Category"
                             android:textStyle="bold"
                             android:textColor="@color/white"
                             android:textSize="17.5dp"
@@ -71,18 +71,18 @@
                             android:ellipsize="end"/>
 
                         <TextView
-                            android:id="@+id/albumArtist"
+                            android:id="@+id/cateNote"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/gray"
                             android:layout_marginTop="5dp"
                             android:textSize="15dp"
-                            android:text="Tran Anh Khoa"
+                            android:text="Note Category"
                             android:layout_marginLeft="12dp"
                             android:ellipsize="end"/>
 
                         <TextView
-                            android:id="@+id/albumSongCount"
+                            android:id="@+id/numberOfTracks"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/gray"
@@ -99,7 +99,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2">
                         <ImageView
-                            android:id="@+id/settingAlbumIcon"
+                            android:id="@+id/iconSettingMore"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:src="@drawable/ic_more_white"
@@ -107,11 +107,12 @@
                             android:layout_alignParentRight="true"
                             />
                         <ImageView
+                            android:id="@+id/iconShufflePlay"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:src="@drawable/ic_shuffle_white"
                             android:layout_alignParentBottom="true"
-                            android:layout_toLeftOf="@id/settingAlbumIcon"
+                            android:layout_toLeftOf="@id/iconSettingMore"
                             android:layout_marginRight="5dp"
                             />
                     </RelativeLayout>
@@ -133,7 +134,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_activity_album" />
+    <include layout="@layout/content_cate_common" />
 
 
 

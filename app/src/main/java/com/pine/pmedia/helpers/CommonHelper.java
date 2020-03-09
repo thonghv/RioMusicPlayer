@@ -1,5 +1,6 @@
 package com.pine.pmedia.helpers;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class CommonHelper {
@@ -210,5 +212,21 @@ public class CommonHelper {
         theIntrinsic.forEach(tmpOut);
         tmpOut.copyTo(outputBitmap);
         return outputBitmap;
+    }
+
+    public static int generateImgCover() {
+
+        final int index = new Random().nextInt(5);
+        switch (index) {
+            case 0:
+                return R.drawable.g_02;
+            case 1:
+                return R.drawable.g_03;
+            case 2:
+                return R.drawable.g_04;
+            case 3:
+                return R.drawable.g_05;
+            default:return R.drawable.g_01;
+        }
     }
 }

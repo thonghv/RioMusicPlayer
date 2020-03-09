@@ -22,7 +22,11 @@
         <activity
             android:name=".activities.ArtistActivity"
             android:label="@string/title_activity_artist"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.GenreActivity"
+            android:label="@string/title_activity_genre"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.AlbumActivity"
             android:theme="@style/AppTheme.NoActionBar" />

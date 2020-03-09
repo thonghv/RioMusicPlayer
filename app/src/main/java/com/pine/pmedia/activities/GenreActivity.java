@@ -23,21 +23,22 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongCatRecyclerAdapter;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 
 import java.util.ArrayList;
 
-public class AlbumActivity extends AppCompatActivity {
+public class GenreActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ImageView albumCoverImage;
-    private TextView albumNameControl;
-    private TextView albumArtistControl;
+    private TextView cateNameControl;
+    private TextView cateNoteControl;
     private TextView albumSongCountControl;
 
-    private int albumId;
+    private int genreId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +72,8 @@ public class AlbumActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycleViewSongsCat);
 
         albumCoverImage = findViewById(R.id.albumCoverImage);
-        albumNameControl = findViewById(R.id.cateName);
-        albumArtistControl = findViewById(R.id.cateNote);
+        cateNameControl = findViewById(R.id.cateName);
+        cateNoteControl = findViewById(R.id.cateNote);
         albumSongCountControl = findViewById(R.id.numberOfTracks);
     }
 
@@ -80,17 +81,17 @@ public class AlbumActivity extends AppCompatActivity {
 
         Bundle data = getIntent().getExtras();
 
-        String albumName = data.getString(Constants.KEY_NAME);
-        String albumArtist = data.getString(Constants.KEY_ARTIST);
+        String cateName = data.getString(Constants.KEY_NAME);
         String artUrl = data.getString(Constants.KEY_ARTWORK);
         int numberOfSong = data.getInt(Constants.KEY_NUMBER_OF_TRACK);
+        int totalDuration = data.getInt(Constants.KEY_DURATION);
 
-        albumId = data.getInt(Constants.KEY_ID);
+        genreId = data.getInt(Constants.KEY_ID);
 
         setTitle(null);
-        albumNameControl.setText(albumName);
-        albumArtistControl.setText(albumArtist);
-        albumSongCountControl.setText(numberOfSong + Constants.SPACE + Constants.SONGS);
+        cateNameControl.setText(cateName);
+        cateNoteControl.setText(numberOfSong + Constants.SPACE + Constants.SONGS);
+        albumSongCountControl.setText(CommonHelper.toFormatTime(totalDuration));
 
         ImageLoader.getInstance().displayImage(artUrl, new ImageViewAware(albumCoverImage),
                 new DisplayImageOptions.Builder()
@@ -116,7 +117,7 @@ public class AlbumActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<Song> songs = MediaHelper.getSongs(this, albumId,0);
+        ArrayList<Song> songs = MediaHelper.getSongListForGenre(this, genreId);
         SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs);
         recyclerView.setAdapter(songCatRecyclerAdapter);
     }

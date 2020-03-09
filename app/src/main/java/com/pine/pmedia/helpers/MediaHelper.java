@@ -6,16 +6,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.provider.MediaStore;
 
 import com.pine.pmedia.models.Album;
 import com.pine.pmedia.models.Artist;
+import com.pine.pmedia.models.Genre;
 import com.pine.pmedia.models.Song;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MediaHelper {
 
@@ -91,7 +95,8 @@ public class MediaHelper {
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.ARTIST_ID,
-                MediaStore.Audio.Media.DURATION };
+                MediaStore.Audio.Media.DURATION
+        };
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final Cursor cursor = activity.getContentResolver().query(uri,
                 cursor_cols, where, null, null);
@@ -134,17 +139,17 @@ public class MediaHelper {
                 e.printStackTrace();
             }
 
-            Song audioListModel = new Song();
-            audioListModel.set_artist(artist);
-            audioListModel.set_bitmap(bitmap);
-            audioListModel.set_title(track);
-            audioListModel.set_path(data);
-            audioListModel.set_albumId(albumId);
-            audioListModel.set_artistId(artistId);
-            audioListModel.set_duration(duration);
-            audioListModel.set_uri(albumArtUri);
+            Song song = new Song();
+            song.set_artist(artist);
+            song.set_bitmap(bitmap);
+            song.set_title(track);
+            song.set_path(data);
+            song.set_albumId(albumId);
+            song.set_artistId(artistId);
+            song.set_duration(duration);
+            song.set_image(albumArtUri.toString());
 
-            results.add(audioListModel);
+            results.add(song);
 
         }
 
@@ -205,6 +210,7 @@ public class MediaHelper {
                         new String[]{
                                 MediaStore.Audio.Media._ID,
                                 MediaStore.Audio.Albums.ALBUM,
+                                MediaStore.Audio.Genres._ID,
                                 MediaStore.Audio.Artists.ARTIST,
                                 MediaStore.Audio.Albums.NUMBER_OF_SONGS,
                                 MediaStore.Audio.Albums.FIRST_YEAR},
@@ -233,5 +239,114 @@ public class MediaHelper {
         }
 
         return albums;
+    }
+
+    public static ArrayList<Genre> getGenres(Context context) {
+
+        ArrayList<Genre> genres = new ArrayList<>();
+        Cursor cursor = context.getContentResolver()
+                .query(MediaStore.Audio.Genres.getContentUri(Constants.EXTERNAL),
+                        new String[]{
+                                MediaStore.Audio.Media._ID,
+                                MediaStore.Audio.Genres.NAME,
+                        },null, null,null);
+
+        while (cursor.moveToNext()) {
+            int _id = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+            String _name = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Genres.NAME));
+
+            Map<String, Object> baseInfo = getInfoBaseGenre(context, _id);
+            int _count = (int) baseInfo.get(Constants.KEY_NUMBER_OF_TRACK);
+            int _totalDuration = (int) baseInfo.get(Constants.KEY_DURATION);
+
+            ArrayList<Song> songs = getSongListForGenre(context, _id);
+            String _artRepresent = _count > 0 ? songs.get(0).get_image() : "";
+            genres.add(new Genre(_id, _name, _count, _artRepresent, _totalDuration));
+        }
+
+        return genres;
+    }
+
+    public static ArrayList<Song> getSongListForGenre(Context context, long id) {
+
+        ArrayList<Song> songs = new ArrayList<>();
+
+        String[] projection = new String[] {
+                BaseColumns._ID,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.ARTIST_ID,
+                MediaStore.Audio.Media.DURATION };
+        StringBuilder selection = new StringBuilder();
+        selection.append(MediaStore.Audio.AudioColumns.IS_MUSIC + "=1");
+        selection.append(" AND " + MediaStore.MediaColumns.TITLE + "!=''");
+        Uri uri = MediaStore.Audio.Genres.Members.getContentUri(Constants.EXTERNAL, id);
+
+        Cursor cursor = context.getContentResolver().query(uri, projection, selection.toString(), null, null);
+        while (cursor.moveToNext()) {
+            int _id = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+            String _artist = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+            String _track = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+            int _albumId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
+            int _artistId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID));
+
+            int _duration = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+
+            Uri _sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
+            Uri _albumArtUri = ContentUris.withAppendedId(_sArtworkUri, _albumId);
+
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(
+                        context.getContentResolver(), _albumArtUri);
+
+            } catch (FileNotFoundException exception) {
+                exception.printStackTrace();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+
+            Song song = new Song();
+            song.set_id(_id);
+            song.set_artist(_artist);
+            song.set_bitmap(bitmap);
+            song.set_title(_track);
+            song.set_albumId(_albumId);
+            song.set_artistId(_artistId);
+            song.set_duration(_duration);
+            song.set_image(_albumArtUri.toString());
+
+            songs.add(song);
+        }
+
+        return songs;
+    }
+
+    public static Map<String, Object> getInfoBaseGenre(Context context, long id) {
+
+        ArrayList<Song> songs = getSongListForGenre(context, id);
+
+        int totalDuration = 0;
+        for(Song song : songs) {
+            totalDuration += song.get_duration();
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put(Constants.KEY_NUMBER_OF_TRACK, songs.size());
+        result.put(Constants.KEY_DURATION, totalDuration);
+
+        return result;
     }
 }

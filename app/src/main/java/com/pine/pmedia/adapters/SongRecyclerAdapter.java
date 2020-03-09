@@ -111,7 +111,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                 holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
                 holder.trackArtist.setText(song.get_artist());
 
-                this.onLoadImageCover(song.get_uri().toString(), holder);
+                this.onLoadImageCover(song.get_image(), holder);
 
                 holder.trackTitle.setTypeface(customFace);
 
