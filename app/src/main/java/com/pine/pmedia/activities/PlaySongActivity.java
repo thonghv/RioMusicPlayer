@@ -3,7 +3,6 @@ package com.pine.pmedia.activities;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongPagerAdapter;
 import com.pine.pmedia.helpers.CommonHelper;
@@ -47,7 +45,7 @@ public class PlaySongActivity extends BaseActivity {
     private ImageButton nextImageButton;
     private ImageButton loopImageButton;
     private ImageButton shuffleImageButton;
-    private ImageButton downImageButton;
+    private LinearLayout downImageButton;
     private ImageView avatarSong;
     private Timer timerOnReadyPlay;
     private boolean isTimerRunning = false;
@@ -56,7 +54,9 @@ public class PlaySongActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_song_play);
+        setContentView(R.layout.activity_play_song);
+
+        getSupportActionBar().hide();
 
         handler = new Handler();
 
