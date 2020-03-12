@@ -1,26 +1,30 @@
 package com.pine.pmedia.activities;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
-import com.bumptech.glide.Glide;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongPagerAdapter;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
-import com.squareup.picasso.Picasso;
 import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 
 import java.util.ArrayList;
@@ -44,7 +48,6 @@ public class PlaySongActivity extends BaseActivity {
     private ImageButton loopImageButton;
     private ImageButton shuffleImageButton;
     private ImageButton downImageButton;
-    private ImageView imageLoading;
     private ImageView avatarSong;
     private Timer timerOnReadyPlay;
     private boolean isTimerRunning = false;
@@ -74,7 +77,6 @@ public class PlaySongActivity extends BaseActivity {
         loopImageButton = findViewById(R.id.loopButton);
         shuffleImageButton = findViewById(R.id.shuffleButton);
         downImageButton = findViewById(R.id.downPlaySong);
-        imageLoading = findViewById(R.id.imgLoading);
 
         // For paper viewer
         pager = findViewById(R.id.viewPager);
@@ -87,7 +89,7 @@ public class PlaySongActivity extends BaseActivity {
 
         seekBar.getProgressDrawable().setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC_IN);
 
-        // For button dropdown
+        // Handle for button dropdown
         onHandlerDownPlayScreen();
     }
 
@@ -97,9 +99,6 @@ public class PlaySongActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 finish();
-//                Intent nextActivity = new Intent(getApplicationContext(), MainActivity.class);
-//                startActivity(nextActivity);
-//                overridePendingTransition(R.animator.push_down_in, R.animator.push_down_out);
             }
         });
     }
@@ -145,8 +144,11 @@ public class PlaySongActivity extends BaseActivity {
         // Handle action
         onHandlerActionsPlay();
 
-        // Update avatar for screen song play
-        onLoadBackgroundSong();
+        // Handle view paper of song screen
+        onLoadViewPagerSong();
+
+        // Cal background color by image song
+        onCalBackgroundColorScreen();
     }
 
     private void onStartTimer(){
@@ -157,46 +159,13 @@ public class PlaySongActivity extends BaseActivity {
             public void run() {
                 PlaySongActivity.this.runOnUiThread(new Runnable(){
                     public void run(){
-
                         if(mService.isMusicReady) {
                             isTimerRunning= false;
                             onUpdateUI();
-                            onStopLoading();
-
-                        } else {
-                            onStartLoading();
                         }
-
                     }});
             }
         }, 100, 1000);
-    }
-
-    private void onStartLoading() {
-
-        if(imageLoading.getVisibility() == View.INVISIBLE) {
-
-            // Update start time of new song (00:00:00)
-            endTimeText.setText(CommonHelper.toFormatTime(mService.getMCurrSong().get_duration()));
-            startTimeText.setText(CommonHelper.toFormatTime(0));
-
-            imageLoading.setVisibility(View.VISIBLE);
-            playPauseImageButton.setVisibility(View.INVISIBLE);
-
-            Glide.with(this).load(R.drawable.loading).into(imageLoading);
-        }
-    }
-
-    private void onStopLoading() {
-
-        if(imageLoading.getVisibility() == View.VISIBLE) {
-            imageLoading.setVisibility(View.INVISIBLE);
-            playPauseImageButton.setVisibility(View.VISIBLE);
-
-            Glide.with(this).onStop();
-
-            onLoadBackgroundSong();
-        }
     }
 
     @NonNull
@@ -223,16 +192,35 @@ public class PlaySongActivity extends BaseActivity {
         return pageList;
     }
 
+    private void onCalBackgroundColorScreen() {
 
-    private void onLoadBackgroundSong() {
+        final LinearLayout layoutSongScreen = findViewById(R.id.layoutSongScreen);
+        Bitmap bmp =  ImageLoader.getInstance().loadImageSync(mService.getMCurrSong().get_image());
+        Drawable drawable = CommonHelper.createBlurredImageFromBitmap(bmp, this, 10);
+        layoutSongScreen.setBackground(drawable);
+
+//        ImageLoader.getInstance().loadImage(mService.getMCurrSong().get_image(), new SimpleImageLoadingListener() {
+//            @Override
+//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+//                Bitmap bitmapBlur = CommonHelper.blur(getApplicationContext(), loadedImage);
+//                BitmapDrawable ob = new BitmapDrawable(getResources(), bitmapBlur);
+//                layoutSongScreen.setBackground(ob);
+//            }
+//        });
+    }
+
+    private void onLoadViewPagerSong() {
 
         LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.avatar_song_play, null);
-        avatarSong = view.findViewById(R.id.avatarSong);
-        avatarSong.setImageResource(R.drawable.disk);
+        View viewArtSong = inflater.inflate(R.layout.avatar_song_play, null);
+        avatarSong = viewArtSong.findViewById(R.id.avatarSong);
+
+        // Display image song
+        String artUrl = mService.getMCurrSong().get_image();
+        CommonHelper.onDisplayImage(artUrl, avatarSong);
 
         List<View> pageList = new ArrayList<>();
-        pageList.add(view);
+        pageList.add(viewArtSong);
         pageList.add(createPageView(R.color.av_orange));
         pageList.add(createPageView(R.color.av_green));
 
@@ -240,18 +228,6 @@ public class PlaySongActivity extends BaseActivity {
         adapter.setData(pageList);
 
         pager.setAdapter(adapter);
-
-        try {
-//            LayoutInflater inflater = LayoutInflater.from(this);
-//            View view = inflater.inflate(R.layout.avatar_song_play, null);
-//            avatarSong = view.findViewById(R.id.avatarSong);
-
-//            avatarSong = this.findViewById(R.id.avatarSong);
-            String urlAvatar = mService.getMCurrSong().get_image().replace(Constants.AVATAR_DEFAULT, Constants.AVATAR_DEFAULT_X500);
-            Picasso.get().load(urlAvatar).into(avatarSong);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
     }
 
     private void onUpdateBaseUI() {

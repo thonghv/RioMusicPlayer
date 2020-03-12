@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -18,9 +19,17 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.core.content.ContextCompat;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.models.Song;
 
@@ -28,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -228,5 +239,49 @@ public class CommonHelper {
                 return R.drawable.g_05;
             default:return R.drawable.g_01;
         }
+    }
+
+    public static Drawable createBlurredImageFromBitmap(Bitmap bitmap, Context context, int inSampleSize) {
+
+        android.renderscript.RenderScript rs = android.renderscript.RenderScript.create(context);
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = inSampleSize;
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] imageInByte = stream.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
+        Bitmap blurTemplate = BitmapFactory.decodeStream(bis, null, options);
+
+        final android.renderscript.Allocation input = android.renderscript.Allocation.createFromBitmap(rs, blurTemplate);
+        final android.renderscript.Allocation output = android.renderscript.Allocation.createTyped(rs, input.getType());
+        final android.renderscript.ScriptIntrinsicBlur script = android.renderscript.ScriptIntrinsicBlur.create(rs, android.renderscript.Element.U8_4(rs));
+        script.setRadius(8f);
+        script.setInput(input);
+        script.forEach(output);
+        output.copyTo(blurTemplate);
+
+        return new BitmapDrawable(context.getResources(), blurTemplate);
+    }
+
+    public static void onDisplayImage(String url, ImageView imageView) {
+
+        ImageLoader.getInstance().displayImage(url, new ImageViewAware(imageView),
+                new DisplayImageOptions.Builder()
+                        .imageScaleType(ImageScaleType.EXACTLY)
+                        .cacheInMemory(true)
+                        .resetViewBeforeLoading(true)
+                        .bitmapConfig(Bitmap.Config.RGB_565)
+                        .build()
+                , new SimpleImageLoadingListener() {
+                    @Override
+                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                    }
+                    @Override
+                    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                        System.out.println("Error ...");
+                    }
+                },null);
     }
 }

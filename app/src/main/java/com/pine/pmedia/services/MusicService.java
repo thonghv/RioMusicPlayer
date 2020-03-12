@@ -440,8 +440,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         } else {
             onPlayNextNormal();
         }
-
-
     }
 
     private void handlePrevious() {
@@ -480,7 +478,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
-
     private void initMusicPlayer(){
 
         mPlayer = new MediaPlayer();
@@ -500,31 +497,28 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             if(!isNeedPause) {
                 mp.start();
             }
-//            CommonHelper.addRecent(getApplicationContext(), mCurrSong.get_path(), mCurrSong.get_title(), mCurrSong.get_artist(), mCurrSong.get_image());
             isMusicReady = true;
         }
     }
 
     private void playAudio() {
-        if (mPlayer == null) {
-            initMusicPlayer();
-        }
+        synchronized(this) {
+            if (mPlayer == null) {
+                initMusicPlayer();
+            }
 
-        this.isPlaying = true;
-        mPlayer.reset();
+            this.isPlaying = true;
+            mPlayer.reset();
 
-        Song songPlay = this.getSong(mPosition);
-        if(songPlay == null) {
-            System.out.println("ERROR : " + mPosition);
-            return;
-        }
+            Song songPlay = this.getSong(mPosition);
+            this.mCurrSong = songPlay;
 
-        this.mCurrSong = songPlay;
-
-        if(songPlay.get_path().contains("http")){
-            new RunBackgroundMusic().execute("");
-        } else {
-            System.out.println("D");
+            try {
+                mPlayer.setDataSource(mCurrSong.get_path());
+                mPlayer.prepareAsync();
+            } catch (Exception e) {
+                isPlaying = false;
+            }
         }
     }
 
@@ -545,7 +539,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
         protected void onPostExecute(String response) {
             try {
-//                loadBitmapFromFile(mCurrSong.get_image());
                 mPlayer.setDataSource(mCurrSong.get_path());
                 mPlayer.prepareAsync();
             } catch (Exception e) {

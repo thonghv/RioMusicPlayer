@@ -9,7 +9,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/p_gray"
             android:layout_weight="1"/>
 
         <RelativeLayout
@@ -29,7 +28,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:padding="25dp"
+            android:padding="60dp"
             android:layout_weight="3">
             <ImageView
                 android:layout_width="match_parent"
