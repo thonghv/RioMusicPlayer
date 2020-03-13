@@ -17,8 +17,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongRecyclerAdapter;
-import com.pine.pmedia.control.HidingScrollListener;
-import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
@@ -30,8 +28,6 @@ public class SongsFragment extends BaseFragment {
     private static SongsFragment instance = null;
     private SongRecyclerAdapter songRecyclerAdapter;
     private RecyclerView recyclerView;
-    private TextView shuffleLabel;
-    private Toolbar toolbar;
 
     public static SongsFragment getInstance() {
 
@@ -45,38 +41,29 @@ public class SongsFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
-         // callData();
+    @Override
+    protected void onHandler() {
+
+        MusicService mService = super.getmService();
+        mService.setmActivity(getmActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
-
-        View viewActivityMain = inflater.inflate(R.layout.app_bar_main, container, false);
-        toolbar = viewActivityMain.findViewById(R.id.toolbar);
-
         recyclerView = view.findViewById(R.id.recycleViewSongs);
-        recyclerView.setOnScrollListener(new HidingScrollListener() {
-            @Override
-            public void onHide() {
-                //hideViews();
-            }
-            @Override
-            public void onShow() {
-                //showViews();
-            }
-        });
 
         // Clear background of recycle view
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setBackgroundResource(0);
 
-//        shuffleLabel = view.findViewById(R.id.shuffleLabel);
-//        Typeface customFace = Typeface.createFromAsset(getmActivity().getAssets(), Constants.FONT_ROBOTO_LIGHT);
-//        shuffleLabel.setTypeface(customFace);
+/*        shuffleLabel = view.findViewById(R.id.shuffleLabel);
+        Typeface customFace = Typeface.createFromAsset(getmActivity().getAssets(), Constants.FONT_ROBOTO_LIGHT);
+        shuffleLabel.setTypeface(customFace);*/
 
         ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(getActivity()));
 
@@ -96,37 +83,18 @@ public class SongsFragment extends BaseFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(super.getmActivity()));
 
+        ArrayList<Song> songsLibrary = MediaHelper.getSongs(getmActivity(), 0 , 0);
+
         ArrayList<Song> songs = new ArrayList<>();
         songs.add(new Song());
-        songs.addAll(MediaHelper.getSongs(getmActivity(), 0 , 0));
+        songs.addAll(songsLibrary);
 
         songRecyclerAdapter = new SongRecyclerAdapter(songs, super.getmActivity());
         recyclerView.setAdapter(songRecyclerAdapter);
-
-        initData(songs);
-    }
-
-    private void initData(ArrayList<Song> songs) {
-
-        MusicService mService = super.getmService();
-        if(mService == null) {
-            return;
-        }
-
-        mService.setmActivity(getmActivity());
-        mService.updatePlayingQueue(songs);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    private void hideViews() {
-        super.getmService().sendBroadcast(Constants.SHOW_CONTENT_BOTTOM);
-    }
-
-    private void showViews() {
-        super.getmService().sendBroadcast(Constants.HIDE_CONTENT_BOTTOM);
     }
 }

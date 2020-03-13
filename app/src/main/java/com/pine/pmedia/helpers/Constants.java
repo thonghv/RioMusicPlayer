@@ -3,6 +3,8 @@ package com.pine.pmedia.helpers;
 public class Constants {
 
     public static final String MAIN_ACTIVITY_NAME       = "com.pine.pmedia.activities.MainActivity";
+    public static final String PLAY_ACTIVITY_NAME       = "com.pine.pmedia.activities.PlaySongActivity";
+
     public static final String DIRECTION_ALBUM_IMAGE    = "content://media/external/audio/albumart";
     public static final String API                      = "https://api.soundcloud.com";
     public static final String TOKEN                    = "0d4392665746d1ccedc7193e7338617e";
@@ -24,6 +26,12 @@ public class Constants {
     public static final String SPACE                    = " ";
     public static final String DRAWABLE_PATH            = "drawable://";
     public static final String EXTERNAL                 = "external";
+
+    //=================
+    // Broadcast action
+    //=================
+    public static final String ACTION_SONG_COMPLETE      = "action_song_complete";
+
 
     public static final int LIMIT_RECENT                = 50;
     public static final int LIMIT_NUMBER                = 50;
@@ -61,7 +69,6 @@ public class Constants {
     public static final String KEY_NUMBER_OF_ALBUM      = "numberOfAlbum";
     public static final String KEY_USER                 = "user";
     public static final String KEY_USERNAME             = "username";
-    public static final String SONG_COMPLETE            = "songComplete";
     public static final String HIDE_CONTENT_BOTTOM      = "hideContentBottom";
     public static final String SHOW_CONTENT_BOTTOM      = "showContentBottom";
 

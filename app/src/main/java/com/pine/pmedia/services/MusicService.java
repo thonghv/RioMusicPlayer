@@ -80,7 +80,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return playingQueue;
     }
 
-    public void updatePlayingQueue(ArrayList<Song> playingQueue) {
+    public void setPlayingQueue(ArrayList<Song> playingQueue) {
         this.playingQueue = playingQueue;
     }
 
@@ -214,10 +214,16 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         initNotification();
     }
 
+    public void checkAndResetPlay() {
+        if(mCurrSong != null) {
+            mPlayer.reset();
+            mPlayer = null;
+        }
+    }
+
     private void initNotification() {
         if(mCurrSong != null) {
-            int color = CommonHelper.getTextColor(this);
-            mCurrSongCover = CommonHelper.getColoredBitmap(mActivity, color);
+            mCurrSongCover = ImageLoader.getInstance().loadImageSync(mCurrSong.get_image());
             setupNotification();
         } else {
             setupFakeNotification();
@@ -228,7 +234,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_headset_small)
                 .setContentTitle("My notification")
-                .setContentText("Hello A")
+                .setContentText("Have nice day")
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("Much longer text that cannot fit one line..."))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -362,10 +368,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             onPlayNextNormal();
         }
 
-        // Send broadcast data apply for current activity menu
-        if(CommonHelper.getCurrentActivity(getBaseContext()).equals(Constants.MAIN_ACTIVITY_NAME)) {
-            sendBroadcast(Constants.SONG_COMPLETE);
-        }
+        sendBroadcast(Constants.ACTION_SONG_COMPLETE, null);
     }
 
     @Override
@@ -547,11 +550,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
-    public void sendBroadcast(String data) {
+    public void sendBroadcast(String action, String data) {
 
         Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(MainActivity.mBroadcastAction);
         broadcastIntent.putExtra(Constants.KEY_DATA, data);
+        broadcastIntent.setAction(action);
+
         sendBroadcast(broadcastIntent);
     }
 }

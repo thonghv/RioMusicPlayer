@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -172,14 +171,13 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         }
 
         protected void onPostExecute(String response) {
+
             try {
+                mService.setPlayingQueue(songDetails);
+                mService.checkAndResetPlay();
 
                 Bundle bundle = new Bundle();
                 bundle.putInt(Constants.KEY_POSITION, position);
-                if(mService.getPlayingQueue().isEmpty()) {
-                    mService.updatePlayingQueue(songDetails);
-                }
-
                 mService.onProcess(Constants.PLAYPAUSE, bundle);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -199,7 +197,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         public TextView trackArtist;
         public TextView trackDuration;
         public TextView shuffleAll;
-        public ConstraintLayout contentHolder;
+        public LinearLayout contentHolder;
 
 
         public SongRowHolder(@NonNull View itemView, int itemType) {
@@ -211,7 +209,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                     trackImage = itemView.findViewById(R.id.trackImage);
                     trackDuration = itemView.findViewById(R.id.trackDuration);
                     trackArtist = itemView.findViewById(R.id.trackArtist);
-                    contentHolder = itemView.findViewById(R.id.contentItemRow);
+                    contentHolder = itemView.findViewById(R.id.songLayout);
                     break;
                 case Constants.ITEM_TYPE_CONTROL:
                     shuffleAll = itemView.findViewById(R.id.textShuffleAll);

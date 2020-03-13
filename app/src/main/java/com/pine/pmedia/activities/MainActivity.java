@@ -40,9 +40,8 @@ import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements IActivity{
 
-    public static final String mBroadcastAction = "STRING_BROADCAST_ACTION";
     private IntentFilter mIntentFilter;
 
     //=====================
@@ -106,7 +105,7 @@ public class MainActivity extends BaseActivity {
         initViewControls();
 
         // Init broadcast actions
-        initBroadcastAction();
+        initBroadcast();
 
         // Handle bottom play menu screen.
         initBottomBarPlay();
@@ -144,13 +143,21 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public void initBroadcast() {
+
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(Constants.ACTION_SONG_COMPLETE);
+        Intent serviceIntent = new Intent(this, MusicService.class);
+        startService(serviceIntent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the search; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
         getMenuInflater().inflate(R.menu.search, menu);
 
         return super.onCreateOptionsMenu(menu);
-
     }
 
     @Override
@@ -206,15 +213,6 @@ public class MainActivity extends BaseActivity {
 
         return tabsPagerAdapter;
     }
-
-    private void initBroadcastAction() {
-
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(mBroadcastAction);
-        Intent serviceIntent = new Intent(this, MusicService.class);
-        startService(serviceIntent);
-    }
-
     private void onUpdateBaseUI() {
 
         this.songTitleView.setText(mService.getMCurrSong().get_title());
@@ -290,37 +288,13 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (intent.getAction().equals(mBroadcastAction)) {
-
-                String data = intent.getStringExtra(Constants.KEY_DATA);
-                handleBroadcastAction(data);
-                Intent stopIntent = new Intent(MainActivity.this,
-                        MusicService.class);
-                stopService(stopIntent);
+            if (intent.getAction().equals(Constants.ACTION_SONG_COMPLETE)) {
+                onSongComplete();
             }
+
+            Intent stopIntent = new Intent(MainActivity.this,
+                    MusicService.class);
+            stopService(stopIntent);
         }
     };
-
-    private void handleBroadcastAction(String data) {
-
-        switch (data) {
-            case Constants.SONG_COMPLETE:
-                onSongComplete();
-                break;
-            case Constants.SHOW_CONTENT_BOTTOM:
-                RelativeLayout contentBottomLayout1 = findViewById(R.id.hiddenBarMainScreen);
-                contentBottomLayout1.animate()
-                        .translationY(-contentBottomLayout1.getHeight());
-                break;
-            case Constants.HIDE_CONTENT_BOTTOM:
-                RelativeLayout contentBottomLayout = findViewById(R.id.hiddenBarMainScreen);
-                contentBottomLayout.animate()
-                        .translationY(0)
-                        .setInterpolator(new DecelerateInterpolator(2));
-                break;
-            default:
-                System.out.println(data);
-                break;
-        }
-    }
 }

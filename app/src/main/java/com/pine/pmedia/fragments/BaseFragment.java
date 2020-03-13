@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.pine.pmedia.services.MusicService;
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     private Intent playIntent;
     private MusicService mService;
@@ -30,6 +30,8 @@ public class BaseFragment extends Fragment {
         public void onServiceConnected(ComponentName name, IBinder service) {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             mService = binder.getService();
+
+            onHandler();
         }
 
         @Override
@@ -57,4 +59,6 @@ public class BaseFragment extends Fragment {
     public void setmActivity(Activity mActivity) {
         this.mActivity = mActivity;
     }
+
+    protected abstract void onHandler();
 }

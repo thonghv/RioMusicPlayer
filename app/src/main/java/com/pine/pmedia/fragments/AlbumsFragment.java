@@ -67,4 +67,9 @@ public class AlbumsFragment extends BaseFragment {
 
         return view;
     }
+
+    @Override
+    protected void onHandler() {
+
+    }
 }

@@ -90,7 +90,7 @@
                         android:scaleType="centerCrop"
                         android:background="@null"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/clock"/>
+                        android:src="@drawable/ic_clock_white"/>
 
                 </LinearLayout>
 
@@ -144,8 +144,8 @@
 
                 <RelativeLayout
                     android:layout_marginTop="40dp"
-                    android:paddingLeft="19dp"
-                    android:paddingRight="19dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/control_song"
@@ -153,13 +153,14 @@
                     android:layout_centerVertical="true">
 
                     <TextView
+                        android:id="@+id/indexSongControl"
                         android:layout_centerInParent="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1/2"
                         android:textColor="@color/white"/>
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/shareControl"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
@@ -167,7 +168,7 @@
                         android:layout_alignParentLeft="true"
                         android:src="@drawable/ic_share_white"/>
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/equalizerControl"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
@@ -175,15 +176,16 @@
                         android:layout_toRightOf="@id/shareControl"
                         android:src="@drawable/ic_equalizer_white"/>
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/addControl"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_marginRight="30dp"
+                        android:layout_marginTop="3dp"
                         android:layout_toLeftOf="@id/queueControl"
                         android:src="@drawable/ic_add_white" />
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/queueControl"
                         android:layout_width="28dp"
                         android:layout_height="28dp"

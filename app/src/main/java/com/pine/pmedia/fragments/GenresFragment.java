@@ -69,4 +69,9 @@ public class GenresFragment extends BaseFragment {
 
         return view;
     }
+
+    @Override
+    protected void onHandler() {
+
+    }
 }

@@ -70,4 +70,9 @@ public class ArtistFragment extends BaseFragment {
         artistRecyclerAdapter = new ArtistRecyclerAdapter(artists, super.getmActivity());
         recyclerView.setAdapter(artistRecyclerAdapter);
     }
+
+    @Override
+    protected void onHandler() {
+
+    }
 }

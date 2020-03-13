@@ -1,16 +1,20 @@
 package com.pine.pmedia.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -30,9 +34,16 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class PlaySongActivity extends BaseActivity {
+public class PlaySongActivity extends BaseActivity implements IActivity{
 
+    private IntentFilter mIntentFilter;
     private MusicService mService;
+
+    private TextView indexSongControl;
+    private ImageButton shareControl;
+    private ImageButton equalizerControl;
+    private ImageButton addControl;
+    private ImageButton queueControl;
 
     private ViewPager pager;
     private TextView songTitleView;
@@ -48,7 +59,6 @@ public class PlaySongActivity extends BaseActivity {
     private LinearLayout downImageButton;
     private ImageView avatarSong;
     private Timer timerOnReadyPlay;
-    private boolean isTimerRunning = false;
     private Handler handler;
 
     @Override
@@ -61,6 +71,9 @@ public class PlaySongActivity extends BaseActivity {
         handler = new Handler();
 
         initViews();
+
+        // Init broadcast actions
+        initBroadcast();
     }
 
     private void initViews() {
@@ -78,6 +91,12 @@ public class PlaySongActivity extends BaseActivity {
         shuffleImageButton = findViewById(R.id.shuffleButton);
         downImageButton = findViewById(R.id.downPlaySong);
 
+        indexSongControl = findViewById(R.id.indexSongControl);
+        shareControl = findViewById(R.id.shareControl);
+        addControl = findViewById(R.id.addControl);
+        queueControl = findViewById(R.id.queueControl);
+        equalizerControl = findViewById(R.id.equalizerControl);
+
         // For paper viewer
         pager = findViewById(R.id.viewPager);
         SongPagerAdapter adapter = new SongPagerAdapter();
@@ -86,8 +105,6 @@ public class PlaySongActivity extends BaseActivity {
         pager.setPageTransformer(true, new ZoomOutPageTransformer());
         SpringDotsIndicator dotsIndicator = findViewById(R.id.spring_dots_indicator);
         dotsIndicator.setViewPager(pager);
-
-        seekBar.getProgressDrawable().setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC_IN);
 
         // Handle for button dropdown
         onHandlerDownPlayScreen();
@@ -107,7 +124,6 @@ public class PlaySongActivity extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         timerOnReadyPlay.cancel();
-        isTimerRunning = false;
     }
 
     @Override
@@ -118,10 +134,12 @@ public class PlaySongActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver(mReceiver);
         super.onPause();
     }
 
@@ -147,20 +165,18 @@ public class PlaySongActivity extends BaseActivity {
         // Handle view paper of song screen
         onLoadViewPagerSong();
 
-        // Cal background color by image song
-        onCalBackgroundColorScreen();
+        // Update image and background color
+        onUpdateArtworkUI();
     }
 
     private void onStartTimer(){
         timerOnReadyPlay = new Timer();
-        isTimerRunning = true;
         timerOnReadyPlay.schedule(new TimerTask() {
             @Override
             public void run() {
                 PlaySongActivity.this.runOnUiThread(new Runnable(){
                     public void run(){
                         if(mService.isMusicReady) {
-                            isTimerRunning= false;
                             onUpdateUI();
                         }
                     }});
@@ -192,21 +208,38 @@ public class PlaySongActivity extends BaseActivity {
         return pageList;
     }
 
-    private void onCalBackgroundColorScreen() {
+    @Override
+    public void initBroadcast() {
 
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(Constants.ACTION_SONG_COMPLETE);
+        Intent serviceIntent = new Intent(this, MusicService.class);
+        startService(serviceIntent);
+    }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals(Constants.ACTION_SONG_COMPLETE)) {
+                onUpdateArtworkUI();
+            }
+
+            Intent stopIntent = new Intent(PlaySongActivity.this, MusicService.class);
+            stopService(stopIntent);
+        }
+    };
+
+    private void onUpdateArtworkUI() {
+
+        // Update image art for song
+        CommonHelper.onDisplayImage(mService.getMCurrSong().get_image(), avatarSong);
+
+        // Update background color for song screen
         final LinearLayout layoutSongScreen = findViewById(R.id.layoutSongScreen);
         Bitmap bmp =  ImageLoader.getInstance().loadImageSync(mService.getMCurrSong().get_image());
         Drawable drawable = CommonHelper.createBlurredImageFromBitmap(bmp, this, 10);
         layoutSongScreen.setBackground(drawable);
-
-//        ImageLoader.getInstance().loadImage(mService.getMCurrSong().get_image(), new SimpleImageLoadingListener() {
-//            @Override
-//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                Bitmap bitmapBlur = CommonHelper.blur(getApplicationContext(), loadedImage);
-//                BitmapDrawable ob = new BitmapDrawable(getResources(), bitmapBlur);
-//                layoutSongScreen.setBackground(ob);
-//            }
-//        });
     }
 
     private void onLoadViewPagerSong() {
@@ -214,10 +247,6 @@ public class PlaySongActivity extends BaseActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         View viewArtSong = inflater.inflate(R.layout.avatar_song_play, null);
         avatarSong = viewArtSong.findViewById(R.id.avatarSong);
-
-        // Display image song
-        String artUrl = mService.getMCurrSong().get_image();
-        CommonHelper.onDisplayImage(artUrl, avatarSong);
 
         List<View> pageList = new ArrayList<>();
         pageList.add(viewArtSong);
@@ -258,10 +287,10 @@ public class PlaySongActivity extends BaseActivity {
 
         onUpdateBaseUI();
 
-        onUpdateSeekbar();
+        onUpdateSeekBar();
     }
 
-    private void onUpdateSeekbar() {
+    private void onUpdateSeekBar() {
 
         int finalTime = getMService().getMPlayer().getDuration();
 
@@ -310,6 +339,34 @@ public class PlaySongActivity extends BaseActivity {
                 onUpdateUI();
             }
         });
+
+        shareControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        addControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        equalizerControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        queueControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void onNext() {
@@ -317,6 +374,8 @@ public class PlaySongActivity extends BaseActivity {
         mService.onProcess(Constants.NEXT, null);
 
         onUpdateBaseUI();
+
+        onUpdateArtworkUI();
     }
 
     private void onPrevious() {
@@ -324,5 +383,7 @@ public class PlaySongActivity extends BaseActivity {
         mService.onProcess(Constants.PREVIOUS, null);
 
         onUpdateBaseUI();
+
+        onUpdateArtworkUI();
     }
 }
