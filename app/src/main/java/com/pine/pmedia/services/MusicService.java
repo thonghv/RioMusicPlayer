@@ -30,8 +30,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
-import com.pine.pmedia.activities.MainActivity;
-import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.receivers.ControlActionsListener;
@@ -260,7 +258,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                         .setShowActionsInCompactView(0, 1, 2)
                         .setMediaSession(mMediaSession.getSessionToken()))
                 .addAction(R.drawable.ic_previous_vector, getString(R.string.previous), getIntent(Constants.PREVIOUS))
-                .addAction(playPauseIcon, getString(R.string.playpause), getIntent(Constants.PLAYPAUSE))
+                .addAction(playPauseIcon, getString(R.string.playPause), getIntent(Constants.PLAYPAUSE))
                 .addAction(R.drawable.ic_next_vector, getString(R.string.next), getIntent(Constants.NEXT));
 
         startForeground(1, builder.build());

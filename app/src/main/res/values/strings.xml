@@ -24,13 +24,27 @@
     <string name="artist">ARTIST</string>
     <string name="folder">FOLDER</string>
     <string name="songs">SONGS</string>
+    <string name="suggest">SUGGEST</string>
     <string name="playlist">PLAYLIST</string>
     <string name="genres">GENRES</string>
-
     <string name="previous">Previous</string>
-    <string name="playpause">Play / Pause</string>
+    <string name="playPause">Play / Pause</string>
     <string name="next">Next</string>
     <string name="title_activity_album">activity_album</string>
+
+    <string name="myPlaylist">My Playlist</string>
+    <string name="favorite">Favorite</string>
+    <string name="lastPlayed">Last Played</string>
+    <string name="recentAdded">Recent Added</string>
+    <string name="playListNew">Playlist News</string>
+    <string name="cancel">CANCEL</string>
+    <string name="changeName">Change Name</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="playNext">Play Next</string>
+    <string name="addInPlayNext">Add in play next</string>
+    <string name="playListNameIsExist">Play list name is exist</string>
+
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

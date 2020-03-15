@@ -1,7 +1,9 @@
 package com.pine.pmedia.helpers;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -348,5 +350,199 @@ public class MediaHelper {
         result.put(Constants.KEY_DURATION, totalDuration);
 
         return result;
+    }
+
+    public static ArrayList<Song> getAllPLayList(Context context) {
+
+        ArrayList<Song> result = new ArrayList<>();
+
+        ContentResolver resolver = context.getContentResolver();
+        String[] cols = new String[] {
+                MediaStore.Audio.Playlists._ID,
+                MediaStore.Audio.Playlists.NAME
+        };
+        String sortOrder = MediaStore.Audio.Media.DATE_ADDED + " DESC";
+        Cursor cursor = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, cols, null,
+                null, sortOrder);
+        while (cursor.moveToNext()) {
+            int _id = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Playlists._ID));
+            String _name = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME));
+
+            Song song = new Song();
+            song.set_id(_id);
+            song.set_title(_name);
+            song.set_numberOfTrack(countPlaylist(context, _id));
+
+            result.add(song);
+        }
+
+        return result;
+    }
+
+    public static final long createPlaylist(final Context context, final String name) {
+
+        if (name != null && name.length() > 0) {
+            final ContentResolver resolver = context.getContentResolver();
+            final String[] projection = new String[]{
+                    MediaStore.Audio.PlaylistsColumns.NAME
+            };
+            final String selection = MediaStore.Audio.PlaylistsColumns.NAME + " = '" + name + "'";
+            Cursor cursor = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
+                    projection, selection, null, null);
+            if (cursor.getCount() <= 0) {
+                final ContentValues values = new ContentValues(1);
+                values.put(MediaStore.Audio.PlaylistsColumns.NAME, name);
+                final Uri uri = resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
+                return Long.parseLong(uri.getLastPathSegment());
+            }
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+
+            return -1;
+        }
+
+        return -1;
+    }
+
+    public static void addToPlaylist(ContentResolver resolver, int audioId, long playListId) {
+
+        String[] cols = new String[] {
+                "count(*)"
+        };
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playListId);
+        Cursor cur = resolver.query(uri, cols, null, null, null);
+        cur.moveToFirst();
+        final int base = cur.getInt(0);
+        cur.close();
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, Integer.valueOf(base + audioId));
+        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, audioId);
+        resolver.insert(uri, values);
+    }
+
+    public static int countPlaylist(final Context context, final int playlistId) {
+        Cursor c = null;
+        try {
+            c = context.getContentResolver().query(
+                    MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId),
+                    new String[]{
+                            MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                    }, null, null,
+                    MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
+
+            if (c != null) {
+                return c.getCount();
+            }
+        } finally {
+            if (c != null) {
+                c.close();
+                c = null;
+            }
+        }
+
+        return 0;
+    }
+
+    public static final Cursor makePlaylistSongCursor(final Context context, final Long playlistID) {
+        final StringBuilder mSelection = new StringBuilder();
+        mSelection.append(MediaStore.Audio.AudioColumns.IS_MUSIC + "=1");
+        mSelection.append(" AND " + MediaStore.Audio.AudioColumns.TITLE + " != ''");
+        return context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external", playlistID),
+                new String[]{
+                        MediaStore.Audio.Playlists.Members._ID,
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                        MediaStore.Audio.AudioColumns.TITLE,
+                        MediaStore.Audio.AudioColumns.ARTIST,
+                        MediaStore.Audio.AudioColumns.ALBUM_ID,
+                        MediaStore.Audio.AudioColumns.ARTIST_ID,
+                        MediaStore.Audio.AudioColumns.ALBUM,
+                        MediaStore.Audio.AudioColumns.DURATION,
+                        MediaStore.Audio.AudioColumns.TRACK,
+                        MediaStore.Audio.Playlists.Members.PLAY_ORDER,
+                }, mSelection.toString(), null,
+                MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
+    }
+
+    public static void removeFromPlaylist(ContentResolver resolver, int audioId, long playListId) {
+        String[] cols = new String[] {
+                "count(*)"
+        };
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playListId);
+        Cursor cur = resolver.query(uri, cols, null, null, null);
+        cur.moveToFirst();
+        final int base = cur.getInt(0);
+        cur.close();
+        ContentValues values = new ContentValues();
+
+        resolver.delete(uri, MediaStore.Audio.Playlists.Members.AUDIO_ID +" = "+audioId, null);
+    }
+
+    public static long getIdForPlaylist(final Context context, final String name) {
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, new String[] {
+                        BaseColumns._ID
+                }, MediaStore.Audio.PlaylistsColumns.NAME + "=?", new String[] {
+                        name
+                }, MediaStore.Audio.PlaylistsColumns.NAME);
+        int id = -1;
+        if (cursor != null) {
+            cursor.moveToFirst();
+            if (!cursor.isAfterLast()) {
+                id = cursor.getInt(0);
+            }
+            cursor.close();
+        }
+        return id;
+    }
+
+    /**
+     * @param context The {@link Context} to sue
+     * @param playlistId The playlist Id
+     * @return The track list for a playlist
+     */
+    public static final long[] getSongListForPlaylist(final Context context, final String playlistId) {
+        final String[] projection = new String[] {
+                MediaStore.Audio.Playlists.Members.AUDIO_ID,
+        };
+
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Audio.Playlists.Members.getContentUri("external",
+                        Long.valueOf(playlistId)), projection, null, null,
+                MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
+
+        long[] list = null;
+        if (cursor != null) {
+            list = getSongListForCursor(cursor);
+            cursor.close();
+            cursor = null;
+            return list;
+        }
+
+        return list;
+    }
+
+    public static long[] getSongListForCursor(Cursor cursor) {
+        if (cursor == null) {
+            return new long[0];
+        }
+        int len = cursor.getCount();
+        long[] list = new long[len];
+        cursor.moveToFirst();
+        int colidx;
+        try {
+            colidx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.DISPLAY_NAME);
+        } catch (IllegalArgumentException ex) {
+            colidx = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+        }
+        for (int i = 0; i < len; i++) {
+            list[i] = cursor.getLong(colidx);
+            cursor.moveToNext();
+        }
+        return list;
     }
 }

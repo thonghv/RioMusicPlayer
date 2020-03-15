@@ -118,7 +118,7 @@ public class GenreActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ArrayList<Song> songs = MediaHelper.getSongListForGenre(this, genreId);
-        SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs);
+        SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs, Constants.VIEW_GENRE);
         recyclerView.setAdapter(songCatRecyclerAdapter);
     }
 

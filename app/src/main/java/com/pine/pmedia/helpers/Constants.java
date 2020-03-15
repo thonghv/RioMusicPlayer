@@ -26,6 +26,7 @@ public class Constants {
     public static final String SPACE                    = " ";
     public static final String DRAWABLE_PATH            = "drawable://";
     public static final String EXTERNAL                 = "external";
+    public static final String PLAY_LIST_DIALOG_NAME    = "play_list_dialog";
 
     //=================
     // Broadcast action
@@ -43,6 +44,8 @@ public class Constants {
 
     public static final int VIEW_ALBUM                  = 1;
     public static final int VIEW_ARTIST                 = 2;
+    public static final int VIEW_GENRE                  = 3;
+    public static final int VIEW_SUGGEST                = 4;
 
     //=================
     // API KEY

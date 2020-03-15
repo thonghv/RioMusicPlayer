@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="65dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/songLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1.5">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6.5dp"
+                android:paddingRight="10dp"
+                android:layout_centerVertical="true">
+
+                <!--8E8E92-->
+                <RelativeLayout
+                    android:id="@+id/trackImageLayout"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@color/p_gray"
+                    android:padding="10dp"
+                    android:layout_marginLeft="13dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/icons_musical_white"
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/trackImageLayout"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"
+                    android:maxLines="1"
+                    android:textSize="15dp"
+                    android:text="If you have ... If you have ... If you have ... If you have ...If you have ..."
+                    android:paddingRight="9dp"
+                    android:paddingBottom="3dp"
+                    android:layout_marginLeft="12dp"
+                    android:ellipsize="end"
+                    android:id="@+id/trackTitle"/>
+
+                <TextView
+                    android:id="@+id/trackArtist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/trackTitle"
+                    android:layout_marginLeft="12dp"
+                    android:layout_toRightOf="@id/trackImageLayout"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="Hello"
+                    android:textAppearance="?android:textAppearance"
+                    android:textColor="@color/gray"
+                    android:textSize="12dp"
+                    android:textStyle="normal" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="8">
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/moreRowControl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="8.1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_more_white"
+                android:layout_alignParentLeft="true">
+            </ImageView>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
