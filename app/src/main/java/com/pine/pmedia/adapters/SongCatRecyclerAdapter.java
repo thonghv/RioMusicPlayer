@@ -21,8 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 
 import java.util.ArrayList;
@@ -32,7 +34,10 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     private ArrayList data;
     private Context mContext;
     private int viewType;
+    private BottomSheetDialog dialog;
     private long playListIdTemp;
+
+    private TextView headerSheetDialog;
 
     public SongCatRecyclerAdapter(Context context, ArrayList values, int viewType) {
 
@@ -88,11 +93,23 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         viewHolder.moreRowControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onShowBottomSheetDialog(song.get_id(), song.get_title());
+                switch (viewType) {
+                    case Constants.VIEW_ALBUM:
+                    case Constants.VIEW_ARTIST:
+                    case Constants.VIEW_GENRE:
+
+                        break;
+                    case Constants.VIEW_SUGGEST:
+                        onShowBottomSheetDialog(song.get_id(), song.get_title());
+                        break;
+                }
             }
         });
     }
 
+    //=======================
+    // START SUGGEST
+    //=======================
     private void onShowBottomSheetDialog(long playListId, String playListName) {
 
         this.playListIdTemp = playListId;
@@ -100,24 +117,89 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = li.inflate(R.layout.bottom_sheet_dialog, null);
 
-        LinearLayout sheetDialog = view.findViewById(R.id.bottomSheetDialogLayout);
-        Bitmap bitmap = CommonHelper.drawableToBitmap(mContext.getResources().getDrawable(R.drawable.bk_01));
-        Palette p = Palette.from(bitmap).generate();
-        int colorFollow = p.getMutedColor(ContextCompat.getColor(mContext, R.color.p_background_01));
-        int colorCal = CommonHelper.manipulateColor(colorFollow, 1);
-        sheetDialog.setBackgroundColor(colorCal);
-
-        int colorR = CommonHelper.manipulateColor(colorFollow, 0.8f);
-        View r01 = view.findViewById(R.id.r_01);
-        r01.setBackgroundColor(colorR);
-
-        TextView headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
+        headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
         headerSheetDialog.setText(playListName);
 
-        BottomSheetDialog dialog = new BottomSheetDialog(mContext);
+        onCalColorComponentControl(view);
+        onHandleActionControl(view);
+
+        dialog = new BottomSheetDialog(mContext);
         dialog.setContentView(view);
         dialog.show();
     }
+
+    private void onCalColorComponentControl(View v) {
+
+        LinearLayout sheetDialog = v.findViewById(R.id.bottomSheetDialogLayout);
+
+        Bitmap loadedImage = CommonHelper.drawableToBitmap(mContext.getResources().getDrawable(R.color.p_background_01));
+        Palette p = Palette.from(loadedImage).generate();
+        int color = p.getDarkVibrantColor(ContextCompat.getColor(mContext, R.color.p_background_01));
+        sheetDialog.setBackgroundColor(color);
+
+        int colorR = CommonHelper.manipulateColor(color, 1.3f);
+
+        View r01 = v.findViewById(R.id.r_01);
+        View r02 = v.findViewById(R.id.r_02);
+        View r03 = v.findViewById(R.id.r_03);
+        View r04 = v.findViewById(R.id.r_04);
+
+        r01.setBackgroundColor(colorR);
+        r02.setBackgroundColor(colorR);
+        r03.setBackgroundColor(colorR);
+        r04.setBackgroundColor(colorR);
+
+        headerSheetDialog.setTextColor(colorR);
+    }
+
+    private void onHandleActionControl(View v) {
+
+        LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
+        playNextControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        LinearLayout addPlayNextControl = v.findViewById(R.id.addPlayNextControl);
+        addPlayNextControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        LinearLayout updateControl = v.findViewById(R.id.updateControl);
+        updateControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.hide();
+                CommonHelper.showPlayListDialog(mContext, SuggestFragment.getInstance(), null);
+                onReloadData();
+            }
+        });
+
+        LinearLayout deleteControl = v.findViewById(R.id.deleteControl);
+        deleteControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.hide();
+                MediaHelper.deletePlaylist(mContext, playListIdTemp);
+                onReloadData();
+            }
+        });
+    }
+
+    private void onReloadData() {
+        data = MediaHelper.getAllPLayList(mContext);
+        notifyDataSetChanged();
+    }
+
+    //=======================
+    // END SUGGEST
+    //=======================
+
 
     @Override
     public int getItemCount() {

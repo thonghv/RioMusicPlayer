@@ -25,6 +25,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -33,6 +36,8 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
+import com.pine.pmedia.control.PlayListDialog;
+import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.models.Song;
 
 import org.json.JSONArray;
@@ -296,4 +301,14 @@ public class CommonHelper {
         InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
+
+    public static void showPlayListDialog(Context context, Fragment fragment, String playListName) {
+
+        FragmentActivity fragmentActivity = (FragmentActivity) context;
+        FragmentManager fm = fragmentActivity.getSupportFragmentManager();
+        PlayListDialog editNameDialogFragment = new PlayListDialog(playListName);
+        editNameDialogFragment.setTargetFragment(fragment, 300);
+        editNameDialogFragment.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
+    }
+
 }

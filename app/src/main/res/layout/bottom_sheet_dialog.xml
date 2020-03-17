@@ -17,7 +17,7 @@
             android:foreground="?attr/selectableItemBackground"
             android:orientation="horizontal"
             android:paddingBottom="8dp"
-            android:paddingLeft="10dp"
+            android:paddingLeft="14dp"
             android:paddingRight="10dp"
             android:paddingTop="12dp">
 
@@ -28,12 +28,12 @@
                 android:layout_gravity="center_vertical"
                 android:text="PLay List Target"
                 android:textColor="#737373"
-                android:textStyle="bold"
                 android:textSize="17sp" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/playNextControl"
             android:layout_marginTop="6dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,17 +61,19 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
+
         <View
             android:id="@+id/r_01"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:layout_marginTop="3dp"
             android:layout_alignParentTop="true"
-            android:background="#EDEEEE" />
+            android:background="@color/md_black_1000" />
 
         <LinearLayout
+            android:id="@+id/addPlayNextControl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -98,16 +100,20 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
+
         <View
+            android:id="@+id/r_02"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
             android:layout_alignParentTop="true"
-            android:background="#EDEEEE" />
+            android:background="@color/md_black_1000"  />
 
         <LinearLayout
+            android:id="@+id/updateControl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -134,15 +140,19 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
+
         <View
+            android:id="@+id/r_03"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:layout_marginTop="3dp"
-            android:layout_alignParentTop="true"
-            android:background="#EDEEEE" />
+            android:layout_marginBottom="3dp"
+            android:background="@color/md_black_1000" />
+
         <LinearLayout
+            android:id="@+id/deleteControl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -169,14 +179,17 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
+
         <View
+            android:id="@+id/r_04"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="20dp"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
             android:layout_alignParentTop="true"
-            android:background="#EDEEEE" />
+            android:background="@color/md_black_1000" />
 
     </LinearLayout>
 </LinearLayout>

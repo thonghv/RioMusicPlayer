@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
 import com.pine.pmedia.models.Album;
 import com.pine.pmedia.models.Artist;
@@ -20,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MediaHelper {
@@ -544,5 +544,13 @@ public class MediaHelper {
             cursor.moveToNext();
         }
         return list;
+    }
+
+    public static void deletePlaylist(Context context, long playListid) {
+
+        ContentResolver resolver = context.getContentResolver();
+        String where = MediaStore.Audio.Playlists._ID + "=?";
+        String[] whereVal = {String.valueOf(playListid)};
+        resolver.delete(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, where, whereVal);
     }
 }

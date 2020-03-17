@@ -25,11 +25,17 @@ public class PlayListDialog extends DialogFragment {
     private LinearLayout confirmDialogLayout;
     private TextView dialogOKText;
 
+    private String playListName;
+
     public interface PlayListDialogListener {
         void onFinishPlayListDialog(String inputText);
     }
 
     public PlayListDialog() {
+    }
+
+    public PlayListDialog(String playListName) {
+        this.playListName = playListName;
     }
 
     @Override
@@ -49,6 +55,9 @@ public class PlayListDialog extends DialogFragment {
         confirmDialogLayout = view.findViewById(R.id.dialogOK);
         confirmDialogLayout.setEnabled(false);
 
+        if(!playListName.isEmpty()) {
+            mEditText.setText(playListName);
+        }
         mEditText.addTextChangedListener(new TextWatcher() {
 
             @Override

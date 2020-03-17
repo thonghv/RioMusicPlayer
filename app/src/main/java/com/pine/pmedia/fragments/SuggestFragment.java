@@ -19,6 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongCatRecyclerAdapter;
 import com.pine.pmedia.control.PlayListDialog;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.services.MusicService;
@@ -34,7 +35,7 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
     private ImageButton addPlayListSmall;
     private ImageButton addPlayListLarge;
 
-    private ArrayList playListData;
+    private ArrayList playListData = new ArrayList();
 
     public static SuggestFragment getInstance() {
 
@@ -73,8 +74,6 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         recyclePlayList.setItemViewCacheSize(20);
         recyclePlayList.setBackgroundResource(0);
 
-       /* ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(getActivity()));*/
-
         // Handle action on screen
         onHandleActions();
 
@@ -86,14 +85,14 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         addPlayListLarge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPlayListDialog(getContext());
+               CommonHelper.showPlayListDialog(getContext(), SuggestFragment.this, null);
             }
         });
 
         addPlayListSmall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPlayListDialog(getContext());
+                CommonHelper.showPlayListDialog(getContext(), SuggestFragment.this, null);
             }
         });
     }
@@ -141,14 +140,14 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         super.onDetach();
     }
 
-    private FragmentActivity myContext;
-    private void showPlayListDialog(Context context) {
-        myContext = (FragmentActivity) context;
-        FragmentManager fm = myContext.getSupportFragmentManager();
+/*    private void showPlayListDialog(Context context) {
+
+        FragmentActivity fragmentActivity = (FragmentActivity) context;
+        FragmentManager fm = fragmentActivity.getSupportFragmentManager();
         PlayListDialog editNameDialogFragment = new PlayListDialog();
         editNameDialogFragment.setTargetFragment(SuggestFragment.this, 300);
         editNameDialogFragment.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
-    }
+    }*/
 
     @Override
     public void onFinishPlayListDialog(String playListName) {

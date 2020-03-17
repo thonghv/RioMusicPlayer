@@ -22,5 +22,6 @@
 
     <color name="p_background_01">#363644</color>
     <color name="p_background_02">#363644</color>
+    <color name="p_background_03">#ffffff</color>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.pine.pmedia.activities;
+package com.pine.pmedia.extensions;
 
 import android.view.View;
 
