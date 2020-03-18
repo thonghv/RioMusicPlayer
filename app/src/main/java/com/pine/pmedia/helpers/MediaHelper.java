@@ -158,6 +158,22 @@ public class MediaHelper {
         return results;
     }
 
+    public static ArrayList<Song> getSongsByPlayListId(Activity activity, long playListId) {
+
+        ArrayList<Song> results= new ArrayList<>();
+        final long [] ids = getSongListForPlaylist(activity, playListId);
+        for(int i = 0; i < ids.length; i++){
+            ArrayList<Song> songs = getSongs(activity, null, null);
+            for(Song s : songs) {
+                if(s.get_id() == ids[i]) {
+                    results.add(s);
+                }
+            }
+        }
+
+        return results;
+    }
+
     public static ArrayList<Artist> getArtist(Activity activity) {
 
         ArrayList<Artist> results = new ArrayList<>();
@@ -505,21 +521,20 @@ public class MediaHelper {
      * @param playlistId The playlist Id
      * @return The track list for a playlist
      */
-    public static final long[] getSongListForPlaylist(final Context context, final String playlistId) {
+    public static final long[] getSongListForPlaylist(final Context context, final long playlistId) {
         final String[] projection = new String[] {
                 MediaStore.Audio.Playlists.Members.AUDIO_ID,
         };
 
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external",
-                        Long.valueOf(playlistId)), projection, null, null,
+                        playlistId), projection, null, null,
                 MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
 
         long[] list = null;
         if (cursor != null) {
             list = getSongListForCursor(cursor);
             cursor.close();
-            cursor = null;
             return list;
         }
 
@@ -537,7 +552,7 @@ public class MediaHelper {
         try {
             colidx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.DISPLAY_NAME);
         } catch (IllegalArgumentException ex) {
-            colidx = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+            colidx = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID);
         }
         for (int i = 0; i < len; i++) {
             list[i] = cursor.getLong(colidx);

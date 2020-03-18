@@ -55,7 +55,7 @@ public class PlayListDialog extends DialogFragment {
         confirmDialogLayout = view.findViewById(R.id.dialogOK);
         confirmDialogLayout.setEnabled(false);
 
-        if(!playListName.isEmpty()) {
+        if(playListName!= null && !playListName.isEmpty()) {
             mEditText.setText(playListName);
         }
         mEditText.addTextChangedListener(new TextWatcher() {
@@ -107,6 +107,7 @@ public class PlayListDialog extends DialogFragment {
     }
 
     public long onCreatePlayList() {
+
         String playListName = mEditText.getText().toString();
         long playListId = MediaHelper.createPlaylist(getContext(), playListName);
         if(playListId == -1) {

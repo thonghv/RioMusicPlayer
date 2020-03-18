@@ -24,6 +24,7 @@ public class Constants {
     public static final String ALBUMS                   = "albums";
     public static final String SONGS                    = "songs";
     public static final String SPACE                    = " ";
+    public static final String MINUS                    = " - ";
     public static final String DRAWABLE_PATH            = "drawable://";
     public static final String EXTERNAL                 = "external";
     public static final String PLAY_LIST_DIALOG_NAME    = "play_list_dialog";
@@ -46,6 +47,7 @@ public class Constants {
     public static final int VIEW_ARTIST                 = 2;
     public static final int VIEW_GENRE                  = 3;
     public static final int VIEW_SUGGEST                = 4;
+    public static final int VIEW_FILTER                 = 5;
 
     //=================
     // API KEY
@@ -74,6 +76,8 @@ public class Constants {
     public static final String KEY_USERNAME             = "username";
     public static final String HIDE_CONTENT_BOTTOM      = "hideContentBottom";
     public static final String SHOW_CONTENT_BOTTOM      = "showContentBottom";
+    public static final String KEY_TITLE_CAT            = "titleCat";
+    public static final String KEY_NOTE_CAT             = "noteCat";
 
     //=================
     // API SEARCH

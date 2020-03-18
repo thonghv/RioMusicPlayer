@@ -8,4 +8,49 @@
     tools:context=".activities.FilterActivity"
     tools:showIn="@layout/activity_filter">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+            <TextView
+                android:id="@+id/titleCatControl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pcode Eris"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:id="@+id/noteCatControl"
+                android:layout_marginTop="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2 Songs - 12:07"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:textColor="@color/md_yellow_700"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:id="@+id/recycleViewSongsCat">
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

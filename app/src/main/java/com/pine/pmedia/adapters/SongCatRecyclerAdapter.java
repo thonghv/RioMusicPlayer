@@ -1,6 +1,8 @@
 package com.pine.pmedia.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
@@ -64,6 +67,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             case Constants.VIEW_ALBUM:
             case Constants.VIEW_ARTIST:
             case Constants.VIEW_GENRE:
+            case Constants.VIEW_FILTER:
                 view = LayoutInflater.from(mContext).inflate(R.layout.song_custum_item, parent, false);
                 break;
             case Constants.VIEW_SUGGEST:
@@ -81,11 +85,26 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         viewHolder.contentHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Bundle param = new Bundle();
-                Intent intent = new Intent(v.getContext(), AlbumActivity.class);
-                intent.putExtras(param);
+                Intent intent = null;
+                switch (viewType) {
+                    case Constants.VIEW_ALBUM:
+                    case Constants.VIEW_ARTIST:
+                    case Constants.VIEW_GENRE:
+                        intent = new Intent(v.getContext(), AlbumActivity.class);
+                        break;
+                    case Constants.VIEW_SUGGEST:
+                        intent = new Intent(v.getContext(), FilterActivity.class);
 
+                        param.putString(Constants.KEY_TITLE_CAT, song.get_title());
+                        String note = song.get_numberOfTrack() + Constants.SPACE + Constants.SONGS
+                                + Constants.MINUS + CommonHelper.toFormatTime(0);
+                        param.putString(Constants.KEY_NOTE_CAT, note);
+                        break;
+                }
+
+                param.putInt(Constants.KEY_ID, song.get_id());
+                intent.putExtras(param);
                 mContext.startActivity(intent);
             }
         });
@@ -185,21 +204,40 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 dialog.hide();
+                onOpenDialogConfirm();
+            }
+        });
+    }
+
+    private void onOpenDialogConfirm(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        alertDialogBuilder.setTitle(R.string.titleDeletePlayList);
+        alertDialogBuilder.setMessage(R.string.messageDeletePlayList);
+        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 MediaHelper.deletePlaylist(mContext, playListIdTemp);
                 onReloadData();
             }
         });
+        alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void onReloadData() {
         data = MediaHelper.getAllPLayList(mContext);
         notifyDataSetChanged();
     }
-
     //=======================
     // END SUGGEST
     //=======================
-
 
     @Override
     public int getItemCount() {
@@ -231,6 +269,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     trackDuration = itemView.findViewById(R.id.trackDuration);
                     trackArtist = itemView.findViewById(R.id.trackArtist);
                     contentHolder = itemView.findViewById(R.id.songLayout);
+                    moreRowControl = itemView.findViewById(R.id.moreRowControl);
 
                     break;
                 case Constants.VIEW_SUGGEST:
