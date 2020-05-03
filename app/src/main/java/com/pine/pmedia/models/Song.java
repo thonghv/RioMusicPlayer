@@ -13,17 +13,22 @@ import lombok.NoArgsConstructor;
 @Data
 public class Song implements Parcelable {
 
-    private int _id;
+    private long _id;
     private String _image;
     private String _title;
     private String _artist;
+    private String _album;
     private String _path;
+    private int _size;
     private int _duration;
     private int _likeCount;
+
     private int _albumId;
     private int _artistId;
-    private String _albumName;
     private Bitmap _bitmap;
+
+    private long _favoriteId;
+    private long _historyId;
 
     private int _numberOfTrack;
 
@@ -31,7 +36,7 @@ public class Song implements Parcelable {
     }
 
     protected Song(Parcel in) {
-        _id = in.readInt();
+        _id = in.readLong();
         _image = in.readString();
         _title = in.readString();
         _artist = in.readString();
@@ -40,7 +45,7 @@ public class Song implements Parcelable {
         _likeCount = in.readInt();
         _albumId = in.readInt();
         _artistId = in.readInt();
-        _albumName = in.readString();
+        _size = in.readInt();
         _bitmap = in.readParcelable(Bitmap.class.getClassLoader());
         _numberOfTrack = in.readInt();
     }
@@ -64,7 +69,7 @@ public class Song implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(_id);
+        dest.writeLong(_id);
         dest.writeString(_image);
         dest.writeString(_title);
         dest.writeString(_artist);
@@ -73,7 +78,7 @@ public class Song implements Parcelable {
         dest.writeInt(_likeCount);
         dest.writeInt(_albumId);
         dest.writeInt(_artistId);
-        dest.writeString(_albumName);
+        dest.writeInt(_size);
         dest.writeParcelable(_bitmap, flags);
         dest.writeInt(_numberOfTrack);
     }

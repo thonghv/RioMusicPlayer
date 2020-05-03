@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -38,15 +37,15 @@ import java.util.ArrayList;
 
 public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapter.SongRowHolder>  {
 
-    private ArrayList<Song> songDetails;
+    private ArrayList<Song> songs;
     private Context mContext;
 
     private Intent playIntent;
     private MusicService mService;
     private ImageLoader imageLoader;
 
-    public SongRecyclerAdapter(ArrayList<Song> songDetails, Context mContext) {
-        this.songDetails = songDetails;
+    public SongRecyclerAdapter(ArrayList<Song> songs, Context mContext) {
+        this.songs = songs;
         this.mContext = mContext;
     }
 
@@ -105,7 +104,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         switch (holder.getItemViewType()) {
             case Constants.ITEM_TYPE_SONG:
 
-                final Song song = songDetails.get(position);
+                final Song song = songs.get(position);
                 holder.trackTitle.setText(song.get_title());
                 holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
                 holder.trackArtist.setText(song.get_artist());
@@ -173,7 +172,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         protected void onPostExecute(String response) {
 
             try {
-                mService.setPlayingQueue(songDetails);
+                mService.setPlayingQueue(songs);
                 mService.checkAndResetPlay();
 
                 Bundle bundle = new Bundle();
@@ -187,7 +186,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
     @Override
     public int getItemCount() {
-        return songDetails == null ? 0 : songDetails.size();
+        return songs == null ? 0 : songs.size();
     }
 
     public class SongRowHolder extends RecyclerView.ViewHolder {

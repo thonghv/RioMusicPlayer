@@ -14,12 +14,15 @@ import android.widget.Toast;
 
 import com.pine.pmedia.models.Album;
 import com.pine.pmedia.models.Artist;
+import com.pine.pmedia.models.Filter;
 import com.pine.pmedia.models.Genre;
 import com.pine.pmedia.models.Song;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,13 +100,115 @@ public class MediaHelper {
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.ARTIST_ID,
-                MediaStore.Audio.Media.DURATION
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media.SIZE
         };
         final String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         final Cursor cursor = activity.getContentResolver().query(uri,
                 cursor_cols, where, null, null);
 
         while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+            String artist = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+            String album = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+            String track = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+            String data = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+            int albumId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
+            int artistId = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID));
+
+            int duration = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+
+            int size = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
+
+            Uri sArtworkUri = Uri.parse(Constants.DIRECTION_ALBUM_IMAGE);
+            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+
+            if(albumIdCompare != 0 && albumIdCompare != albumId) {
+                continue;
+            }
+
+            if(artistIdCompare != 0 && artistIdCompare != artistId) {
+                continue;
+            }
+
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(
+                        activity.getContentResolver(), albumArtUri);
+
+            } catch (FileNotFoundException exception) {
+                exception.printStackTrace();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+
+            Song song = new Song();
+            song.set_id(id);
+            song.set_album(album);
+            song.set_artist(artist);
+            song.set_bitmap(bitmap);
+            song.set_title(track);
+            song.set_path(data);
+            song.set_albumId(albumId);
+            song.set_artistId(artistId);
+            song.set_size(size);
+            song.set_duration(duration);
+            song.set_image(albumArtUri.toString());
+
+            results.add(song);
+
+        }
+
+        return results;
+    }
+
+
+    public static final Cursor makeLastAddedCursor(final Activity activity) {
+
+        //four weeks ago
+        long fourWeeksAgo = (System.currentTimeMillis() / 1000) - (4 * 3600 * 24 * 7);
+
+        final StringBuilder selection = new StringBuilder();
+        selection.append(MediaStore.Audio.AudioColumns.IS_MUSIC + "=1");
+        selection.append(" AND " + MediaStore.Audio.AudioColumns.TITLE + " != ''");
+        selection.append(" AND " + MediaStore.Audio.Media.DATE_ADDED + ">");
+        selection.append(fourWeeksAgo);
+
+        final String[] cursor_cols = {
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.ARTIST_ID,
+                MediaStore.Audio.Media.DURATION
+        };
+
+        return activity.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                cursor_cols, selection.toString(), null,
+                MediaStore.Audio.Media.DATE_ADDED + " DESC");
+    }
+
+    public static Filter parseSong(Activity activity, Cursor cursor,
+                                            Integer albumIdCompare, Integer artistIdCompare) {
+
+        int totalDuration = 0;
+        ArrayList<Song> results = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
             String artist = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
             String track = cursor.getString(cursor
@@ -142,6 +247,7 @@ public class MediaHelper {
             }
 
             Song song = new Song();
+            song.set_id(id);
             song.set_artist(artist);
             song.set_bitmap(bitmap);
             song.set_title(track);
@@ -152,26 +258,29 @@ public class MediaHelper {
             song.set_image(albumArtUri.toString());
 
             results.add(song);
+            totalDuration += duration;
 
         }
 
-        return results;
+        return new Filter(totalDuration, results);
     }
 
-    public static ArrayList<Song> getSongsByPlayListId(Activity activity, long playListId) {
+    public static Filter getSongsByPlayListId(Activity activity, long playListId) {
 
+        int totalDuration = 0;
         ArrayList<Song> results= new ArrayList<>();
         final long [] ids = getSongListForPlaylist(activity, playListId);
+        ArrayList<Song> songs = getSongs(activity, 0, 0);
         for(int i = 0; i < ids.length; i++){
-            ArrayList<Song> songs = getSongs(activity, null, null);
             for(Song s : songs) {
                 if(s.get_id() == ids[i]) {
                     results.add(s);
+                    totalDuration += s.get_duration();
                 }
             }
         }
 
-        return results;
+        return new Filter(totalDuration, results);
     }
 
     public static ArrayList<Artist> getArtist(Activity activity) {
@@ -424,7 +533,38 @@ public class MediaHelper {
         return -1;
     }
 
-    public static void addToPlaylist(ContentResolver resolver, int audioId, long playListId) {
+    public static final long updatePlaylist(Context context, long playListId, String playListName) {
+
+        if (playListName != null && playListName.length() > 0) {
+            final ContentResolver resolver = context.getContentResolver();
+            long idFind = getIdForPlaylist(context, playListName);
+            if(idFind > 0 && idFind != playListId) {
+                return -1;
+            } else {
+                String where = MediaStore.Audio.Playlists._ID + "=?";
+                String[] whereVal = {String.valueOf(playListId)};
+
+                final ContentValues values = new ContentValues(1);
+                values.put(MediaStore.Audio.PlaylistsColumns.NAME, playListName);
+                resolver.update(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values, where, whereVal);
+                return 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public static void deletePlaylist(Context context, long playListId) {
+
+        ContentResolver resolver = context.getContentResolver();
+        String where = MediaStore.Audio.Playlists._ID + "=?";
+        String[] whereVal = {String.valueOf(playListId)};
+        resolver.delete(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, where, whereVal);
+    }
+
+    public static void addToPlaylist(Context context, long audioId, long playListId) {
+
+        final ContentResolver resolver = context.getContentResolver();
 
         String[] cols = new String[] {
                 "count(*)"
@@ -435,7 +575,7 @@ public class MediaHelper {
         final int base = cur.getInt(0);
         cur.close();
         ContentValues values = new ContentValues();
-        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, Integer.valueOf(base + audioId));
+        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, Long.valueOf(base + audioId));
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, audioId);
         resolver.insert(uri, values);
     }
@@ -561,11 +701,64 @@ public class MediaHelper {
         return list;
     }
 
-    public static void deletePlaylist(Context context, long playListid) {
+    public static Song getById(ArrayList<Song> songs, long id) {
 
-        ContentResolver resolver = context.getContentResolver();
-        String where = MediaStore.Audio.Playlists._ID + "=?";
-        String[] whereVal = {String.valueOf(playListid)};
-        resolver.delete(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, where, whereVal);
+        for(Song song: songs) {
+            if(song.get_id() == id) {
+                return song;
+            }
+        }
+
+        return null;
+    }
+
+    public static Filter getFavorites(DBManager dbManager, ArrayList<Song> songsTotal) {
+
+        int totalDuration = 0;
+        ArrayList<Song> results = new ArrayList<>();
+        ArrayList<Song> songsTemp = dbManager.getFavorites();
+
+        for(Song s : songsTemp) {
+
+            Song songFind = getById(songsTotal, s.get_id());
+            if(songFind != null) {
+                songFind.set_favoriteId(s.get_favoriteId());
+                results.add(songFind);
+                totalDuration += songFind.get_duration();
+            }
+        }
+
+        return new Filter(totalDuration, results);
+    }
+
+    public static Filter getHistories(DBManager dbManager, ArrayList<Song> songsTotal) {
+
+        int totalDuration = 0;
+        ArrayList<Song> songs = new ArrayList<>();
+        ArrayList<Song> songsTemp = dbManager.getHistory();
+
+        for(Song s : songsTemp) {
+
+            Song songFind = getById(songsTotal, s.get_id());
+            if(songFind != null) {
+                songFind.set_historyId(s.get_historyId());
+                totalDuration += songFind.get_duration();
+                songs.add(songFind);
+            }
+        }
+
+        return new Filter(totalDuration, songs);
+    }
+
+    public static Filter getAddRecent(Activity activity) {
+
+        Cursor cursor = makeLastAddedCursor(activity);
+        return parseSong(activity, cursor, 0, 0);
+    }
+
+    public static int getCountAddRecent(Activity activity) {
+
+        Cursor cursor = makeLastAddedCursor(activity);
+        return cursor.getCount();
     }
 }

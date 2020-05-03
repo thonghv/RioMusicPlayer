@@ -55,11 +55,12 @@
                     />
 
                 <LinearLayout
-                    android:id="@+id/downPlaySong"
+                    android:id="@+id/layoutDownPlaySong"
                     android:layout_alignParentLeft="true"
                     android:layout_width="40dp"
                     android:layout_height="40dp">
                     <ImageButton
+                        android:id="@+id/imgDownPlaySong"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -161,20 +162,20 @@
                         android:textColor="@color/white"/>
 
                     <ImageButton
-                        android:id="@+id/shareControl"
+                        android:id="@+id/favoriteControl"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:scaleType="centerCrop"
+                        android:layout_centerVertical="true"
                         android:layout_alignParentLeft="true"
-                        android:src="@drawable/ic_share_white"/>
+                        android:background="@drawable/ic_favorite_white"/>
 
                     <ImageButton
                         android:id="@+id/equalizerControl"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_marginLeft="30dp"
-                        android:layout_toRightOf="@id/shareControl"
-                        android:src="@drawable/ic_equalizer_white"/>
+                        android:layout_toRightOf="@id/favoriteControl"
+                        android:background="@drawable/ic_equalizer_white"/>
 
                     <ImageButton
                         android:id="@+id/addControl"
@@ -183,14 +184,14 @@
                         android:layout_marginRight="30dp"
                         android:layout_marginTop="3dp"
                         android:layout_toLeftOf="@id/queueControl"
-                        android:src="@drawable/ic_add_white" />
+                        android:background="@drawable/ic_add_white" />
 
                     <ImageButton
                         android:id="@+id/queueControl"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_alignParentRight="true"
-                        android:src="@drawable/ic_queue_music_white"/>
+                        android:background="@drawable/ic_queue_music_white"/>
 
                 </RelativeLayout>
 
@@ -236,10 +237,10 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:layout_marginTop="5dp"
                     android:id="@+id/controlPanel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:layout_centerVertical="true"
                     android:layout_below="@id/seekBarLayout">
 
@@ -296,6 +297,13 @@
                         android:layout_marginLeft="19dp"
                         android:minWidth="0dp"
                         android:minHeight="0dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_below="@id/controlPanel">
                 </RelativeLayout>
 
             </RelativeLayout>

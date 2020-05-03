@@ -1,39 +1,46 @@
 package com.pine.pmedia.activities;
 
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongCatRecyclerAdapter;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
+import com.pine.pmedia.models.Filter;
 import com.pine.pmedia.models.Song;
+import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
 
-public class FilterActivity extends AppCompatActivity {
+public class FilterActivity extends BaseActivity implements IActivity {
 
+    private MusicService mService;
+    private ArrayList<Song> songs;
+    private int totalDuration;
+    private DBManager dbManager;
     private RecyclerView recyclerSongsView;
     private TextView titleCatControl;
     private TextView noteCatControl;
     private int playListId;
+    private int catType;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -58,6 +65,9 @@ public class FilterActivity extends AppCompatActivity {
             }
         });
 
+        // Init db manager
+        initDBManager();
+
         // Init control layout
         initControl();
 
@@ -68,6 +78,19 @@ public class FilterActivity extends AppCompatActivity {
         onLoadSongs();
     }
 
+    @Override
+    protected void onHandler() {
+
+        mService = super.getMService();
+    }
+
+    @Override
+    public void initDBManager() {
+
+        dbManager = new DBManager(this);
+        dbManager.open();
+    }
+
     private void initControl() {
         recyclerSongsView = findViewById(R.id.recycleViewSongsCat);
         titleCatControl = findViewById(R.id.titleCatControl);
@@ -76,26 +99,60 @@ public class FilterActivity extends AppCompatActivity {
 
     private void onLoadDataBundle() {
 
-        setTitle(null);
+        synchronized(this) {
+            setTitle(null);
 
-        Bundle data = getIntent().getExtras();
+            Bundle data = getIntent().getExtras();
 
-        String titleCat = data.getString(Constants.KEY_TITLE_CAT);
-        String noteCat = data.getString(Constants.KEY_NOTE_CAT);
-        playListId = data.getInt(Constants.KEY_ID);
+            this.catType = data.getInt(Constants.KEY_CAT_TYPE);
 
-        titleCatControl.setText(titleCat);
-        noteCatControl.setText(noteCat);
+            String titleCat = data.getString(Constants.KEY_TITLE_CAT);
+            String noteCat = data.getString(Constants.KEY_NOTE_CAT);
+            playListId = data.getInt(Constants.KEY_ID);
 
+            titleCatControl.setText(titleCat);
+            noteCatControl.setText(noteCat);
+        }
+    }
+
+    public void onUpdateNoteFilter(long number, int totalDuration) {
+
+        String note = number + Constants.SPACE + Constants.SONGS
+                + Constants.MINUS + CommonHelper.toFormatTime(totalDuration);
+        noteCatControl.setText(note);
     }
 
     private void onLoadSongs() {
+
         recyclerSongsView.setItemAnimator(new DefaultItemAnimator());
         recyclerSongsView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<Song> songs = MediaHelper.getSongsByPlayListId(this, playListId);
-        SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs, Constants.VIEW_FILTER);
+        Filter filter = getFilter();
+        ArrayList<?> songs = filter != null ? filter.getSongs() : new ArrayList<>();
+
+        this.songs = (ArrayList<Song>) songs;
+        this.totalDuration = filter.getTotalDuration();
+        this.onUpdateNoteFilter(this.songs.size(), this.totalDuration);
+
+        SongCatRecyclerAdapter songCatRecyclerAdapter =
+                new SongCatRecyclerAdapter(this, songs, catType);
         recyclerSongsView.setAdapter(songCatRecyclerAdapter);
+    }
+
+    private Filter getFilter() {
+
+        switch (catType) {
+            case Constants.VIEW_SUGGEST:
+                return MediaHelper.getSongsByPlayListId(this, playListId);
+            case Constants.VIEW_FAVORITE:
+                return MediaHelper.getFavorites(dbManager, App.getInstance().getMediaPlayList());
+            case Constants.VIEW_LAST_PLAYED:
+                return  MediaHelper.getHistories(dbManager, App.getInstance().getMediaPlayList());
+            case Constants.VIEW_RECENT_ADDED:
+                return MediaHelper.getAddRecent(this);
+        }
+
+        return null;
     }
 
     @Override
@@ -121,5 +178,10 @@ public class FilterActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void initBroadcast() {
+
     }
 }

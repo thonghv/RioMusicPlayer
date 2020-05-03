@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,7 +31,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
+import com.pine.pmedia.activities.MainActivity;
+import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.receivers.ControlActionsListener;
 
@@ -45,6 +49,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private Song mCurrSong;
     private Activity mActivity;
     private int mPosition = 0;
+    private ArrayList<Song> playlistTotal = new ArrayList<>();
     private ArrayList<Song> playingQueue = new ArrayList<>();
     public AudioManager audioManager;
     private MediaSessionCompat mMediaSession;
@@ -80,6 +85,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void setPlayingQueue(ArrayList<Song> playingQueue) {
         this.playingQueue = playingQueue;
+    }
+
+    public ArrayList<Song> getPlaylistTotal() {
+        return playlistTotal;
+    }
+
+    public void setPlaylistTotal(ArrayList<Song> playlistTotal) {
+        this.playlistTotal = playlistTotal;
     }
 
     public boolean isLoop() {
@@ -241,16 +254,29 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         startForeground(1, builder.build());
     }
 
+    private PendingIntent buildPendingIntent(Context context, final String action, final ComponentName serviceName) {
+        Intent intent = new Intent(action);
+        intent.setComponent(serviceName);
+        return PendingIntent.getService(context, 0, intent, 0);
+    }
+
     private void setupNotification() {
 
         String title = mCurrSong.get_title();
         String artist = mCurrSong.get_artist();
         int playPauseIcon = getIsPlaying() ? R.drawable.ic_pause_vector : R.drawable.ic_play_vector;
 
+        Intent action = new Intent(this, PlaySongActivity.class);
+        action.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        final PendingIntent clickIntent = PendingIntent.getActivity(this, 0, action, 0);
+        final PendingIntent deleteIntent = buildPendingIntent(this, Constants.QUIT, null);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_headset_small)
                 .setContentTitle(title)
                 .setContentText(artist)
+                .setContentIntent(clickIntent)
+                .setDeleteIntent(deleteIntent)
                 .setLargeIcon(mCurrSongCover)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -526,7 +552,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private Song getSong(int index) {
 
         if(index >= this.playingQueue.size()) {
-            return null;
+            this.mPosition = 0;
+            index = 0;
         }
 
         return this.playingQueue.get(index);

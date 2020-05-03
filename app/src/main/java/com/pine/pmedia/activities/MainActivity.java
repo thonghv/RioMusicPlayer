@@ -1,16 +1,17 @@
 package com.pine.pmedia.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
@@ -37,6 +39,8 @@ import com.pine.pmedia.fragments.SongsFragment;
 import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.MediaHelper;
+import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
@@ -48,6 +52,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     //=====================
     // Variable Common
     //=====================
+    private App app;
     public static DrawerLayout drawerLayout = null;
     private ArrayList<String> navigationDrawerIconList = new ArrayList<>();
     private int[] imageForDrawer = new int[]{
@@ -55,6 +60,7 @@ public class MainActivity extends BaseActivity implements IActivity{
             R.drawable.navigation_settings, R.drawable.navigation_aboutus };
 
     private MusicService mService;
+    private SmartTabLayout smartTabLayout;
     private RelativeLayout bottomPlayMainScreen;
     private TextView songTitleView;
     private TextView songArtistView;
@@ -67,6 +73,8 @@ public class MainActivity extends BaseActivity implements IActivity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        app = App.getInstance();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,8 +107,11 @@ public class MainActivity extends BaseActivity implements IActivity{
         viewPager.setAdapter(tabsPagerAdapter);
         viewPager.setOffscreenPageLimit(viewPager.getAdapter().getCount());
 
-        SmartTabLayout smartTabLayout = findViewById(R.id.smartTabLayout);
+        smartTabLayout = findViewById(R.id.smartTabLayout);
         smartTabLayout.setViewPager(viewPager);
+
+        // Init handle action
+        initHandleActions();
 
         // Init view control handle
         initViewControls();
@@ -115,7 +126,30 @@ public class MainActivity extends BaseActivity implements IActivity{
 //        appBarLayout.setBackgroundResource(R.drawable.bk_03);
     }
 
+    private void initHandleActions() {
+
+        smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == Constants.SUGGEST_INDEX) {
+                    reloadData();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                System.out.println("");
+            }
+        });
+    }
+
     private void initBottomBarPlay() {
+
         bottomPlayMainScreen = findViewById(R.id.hiddenBarMainScreen);
         bottomPlayMainScreen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,21 +169,59 @@ public class MainActivity extends BaseActivity implements IActivity{
         bottomPlayMainScreen.setBackgroundDrawable(gd);
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(intent.getAction().equals(Constants.ACTION_SONG_COMPLETE)) {
+
+            }
+
+            if(intent.getAction().equals(Constants.RELOAD_ADAPTER_PLAYLIST)) {
+                SuggestFragment.getInstance().onReloadPlayList();
+            }
+
+            Intent stopIntent = new Intent(MainActivity.this, MusicService.class);
+            stopService(stopIntent);
+        }
+    };
+
     @Override
     protected void onHandler() {
 
         mService = getMService();
+        mService.setmActivity(this);
 
         onHandlerActionsPlay();
+
+        // On init playlist total data
+        long startTime1 = System.currentTimeMillis();
+        onInitPLayListTotal();
+        long endTime1 = System.currentTimeMillis();
+        System.out.println("B1 " + ((endTime1 - startTime1)));
+    }
+
+
+    private void onInitPLayListTotal() {
+
+        if(mService.getPlaylistTotal().isEmpty()) {
+            new initMediaPlayList().onPostExecute(this);
+        }
     }
 
     @Override
     public void initBroadcast() {
 
         mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(Constants.RELOAD_ADAPTER_PLAYLIST);
         mIntentFilter.addAction(Constants.ACTION_SONG_COMPLETE);
         Intent serviceIntent = new Intent(this, MusicService.class);
         startService(serviceIntent);
+    }
+
+    @Override
+    public void initDBManager() {
+
     }
 
     @Override
@@ -184,7 +256,9 @@ public class MainActivity extends BaseActivity implements IActivity{
 
     @Override
     public void onResume() {
+
         super.onResume();
+        reloadData();
         registerReceiver(mReceiver, mIntentFilter);
     }
 
@@ -280,23 +354,41 @@ public class MainActivity extends BaseActivity implements IActivity{
     }
 
     private void onSongComplete() {
+
         onUpdateBaseUI();
         playPauseImageButton.setBackgroundResource(R.drawable.play_bottom);
         mService.setNeedPause(true);
     }
 
+    private void reloadData() {
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            if (intent.getAction().equals(Constants.ACTION_SONG_COMPLETE)) {
-                onSongComplete();
-            }
-
-            Intent stopIntent = new Intent(MainActivity.this,
-                    MusicService.class);
-            stopService(stopIntent);
+        if(app.isReloadPlayList) {
+            SuggestFragment.getInstance().onReloadPlayList();
+            app.isReloadPlayList = false;
         }
-    };
+
+        if (app.isReloadFavorite) {
+            SuggestFragment.getInstance().onLoadFavorite();
+            app.isReloadFavorite = false;
+        }
+
+        if (app.isReloadLastPlayed) {
+            SuggestFragment.getInstance().onLoadCountHistory();
+            app.isReloadLastPlayed = false;
+        }
+    }
+
+    private class initMediaPlayList extends AsyncTask<String, Void, Activity> {
+        @Override
+        protected Activity doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+
+            ArrayList<Song> mediaSongs = MediaHelper.getSongs(activity, 0, 0);
+            App.getInstance().setMediaPlayList(mediaSongs);
+        }
+    }
 }

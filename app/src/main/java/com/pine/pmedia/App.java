@@ -4,11 +4,25 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
 
+import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class App extends Application {
 
     private static App _instance;
+
+    private ArrayList<Song> mediaPlayList = new ArrayList<>();
+
+
+    //=================
+    // Suggest Screen
+    //=================
+    public boolean isReloadPlayList;
+    public boolean isReloadFavorite;
+    public boolean isReloadLastPlayed;
 
     public static App getInstance() {
 
@@ -17,6 +31,14 @@ public class App extends Application {
         }
 
         return _instance;
+    }
+
+    public ArrayList<Song> getMediaPlayList() {
+        return mediaPlayList;
+    }
+
+    public void setMediaPlayList(ArrayList<Song> mediaPlayList) {
+        this.mediaPlayList = mediaPlayList;
     }
 
     @Override

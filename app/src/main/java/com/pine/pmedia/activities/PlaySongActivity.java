@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -15,17 +16,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongPagerAdapter;
+import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.extensions.ZoomOutPageTransformer;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 
 import java.util.ArrayList;
@@ -39,7 +46,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     private MusicService mService;
 
     private TextView indexSongControl;
-    private ImageButton shareControl;
+    private ImageButton favoriteControl;
     private ImageButton equalizerControl;
     private ImageButton addControl;
     private ImageButton queueControl;
@@ -56,9 +63,11 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     private ImageButton loopImageButton;
     private ImageButton shuffleImageButton;
     private LinearLayout downImageButton;
+    private ImageButton imgDownPlaySong;
     private ImageView avatarSong;
     private Timer timerOnReadyPlay;
     private Handler handler;
+    private DBManager dbManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +77,9 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         getSupportActionBar().hide();
 
         handler = new Handler();
+
+        // Init db manager
+        initDBManager();
 
         initViews();
 
@@ -88,10 +100,11 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         nextImageButton = findViewById(R.id.nextButton);
         loopImageButton = findViewById(R.id.loopButton);
         shuffleImageButton = findViewById(R.id.shuffleButton);
-        downImageButton = findViewById(R.id.downPlaySong);
+        downImageButton = findViewById(R.id.layoutDownPlaySong);
+        imgDownPlaySong = findViewById(R.id.imgDownPlaySong);
 
         indexSongControl = findViewById(R.id.indexSongControl);
-        shareControl = findViewById(R.id.shareControl);
+        favoriteControl = findViewById(R.id.favoriteControl);
         addControl = findViewById(R.id.addControl);
         queueControl = findViewById(R.id.queueControl);
         equalizerControl = findViewById(R.id.equalizerControl);
@@ -112,6 +125,13 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     private void onHandlerDownPlayScreen() {
 
         downImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        imgDownPlaySong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -166,6 +186,12 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
 
         // Update image and background color
         onUpdateArtworkUI();
+
+        // Init cal view for user
+        onInitCalView();
+
+        // Insert history last play list
+        onAddHistory();
     }
 
     private void onStartTimer(){
@@ -216,6 +242,13 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         startService(serviceIntent);
     }
 
+    @Override
+    public void initDBManager() {
+
+        dbManager = new DBManager(this);
+        dbManager.open();
+    }
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -256,6 +289,15 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         adapter.setData(pageList);
 
         pager.setAdapter(adapter);
+    }
+
+
+    private void onInitCalView() {
+        if(dbManager.isExitsFavorite(mService.getMCurrSong().get_id())) {
+            favoriteControl.setBackgroundResource(R.drawable.favorite_on);
+        } else {
+            favoriteControl.setBackgroundResource(R.drawable.favorite_off);
+        }
     }
 
     private void onUpdateBaseUI() {
@@ -339,17 +381,18 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
             }
         });
 
-        shareControl.setOnClickListener(new View.OnClickListener() {
+        favoriteControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                onFavorite();
+                onInitCalView();
             }
         });
 
         addControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                onShowMediaPlayListDialog();
             }
         });
 
@@ -375,6 +418,11 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         onUpdateBaseUI();
 
         onUpdateArtworkUI();
+
+        onInitCalView();
+
+        // Insert history last play list
+        onAddHistory();
     }
 
     private void onPrevious() {
@@ -384,5 +432,58 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         onUpdateBaseUI();
 
         onUpdateArtworkUI();
+
+        onInitCalView();
+
+        // Insert history last play list
+        onAddHistory();
+    }
+
+    private void onFavorite() {
+
+        Song currentSong = mService.getMCurrSong();
+        if(dbManager.isExitsFavorite(currentSong.get_id())) {
+            Toast.makeText(this, R.string.songIsExitsFavorite, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        dbManager.insertFavorite(currentSong.get_id(), currentSong.get_title());
+        Toast.makeText(this, R.string.addSongFavoriteSuccess, Toast.LENGTH_SHORT).show();
+        App.getInstance().isReloadFavorite = true;
+    }
+
+    private void onShowMediaPlayListDialog() {
+
+        FragmentManager fm = this.getSupportFragmentManager();
+        MediaPlayListDialog mediaPlayListDialog =
+                new MediaPlayListDialog(this, mService.getMCurrSong().get_id());
+        mediaPlayListDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
+    }
+
+    private void onAddHistory() {
+
+        new RunBackgroundAddHistory().execute();
+    }
+
+    public class RunBackgroundAddHistory extends AsyncTask<String, Void, String> {
+
+        protected String doInBackground(String... params){
+            dbManager.insertHistory(mService.getMCurrSong().get_id(),
+                    mService.getMCurrSong().get_title());
+            App.getInstance().isReloadLastPlayed = true;
+            return "";
+        }
+
+        protected void onPostExecute(String response) {
+        }
+    }
+
+    public void sendBroadcast(String action, String data) {
+
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.putExtra(Constants.KEY_DATA, data);
+        broadcastIntent.setAction(action);
+
+        sendBroadcast(broadcastIntent);
     }
 }

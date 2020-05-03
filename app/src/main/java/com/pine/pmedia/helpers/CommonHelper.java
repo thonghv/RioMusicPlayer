@@ -1,6 +1,5 @@
 package com.pine.pmedia.helpers;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -36,8 +35,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
-import com.pine.pmedia.control.PlayListDialog;
-import com.pine.pmedia.fragments.SuggestFragment;
+import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.models.Song;
 
 import org.json.JSONArray;
@@ -46,13 +44,18 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class CommonHelper {
+
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static ArrayList<Song> parseSongs(String jString) {
         ArrayList<Song> result = new ArrayList<>();
@@ -104,7 +107,7 @@ public class CommonHelper {
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
     }
 
-    public static String toUrlPlayTrack(int id) {
+    public static String toUrlPlayTrack(long id) {
 
         return Constants.API + Constants.KEY_TRACKS
                 + "/" + id
@@ -302,13 +305,23 @@ public class CommonHelper {
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
 
-    public static void showPlayListDialog(Context context, Fragment fragment, String playListName) {
+    public static void showPlayListDialog(Context context, Fragment fragment,
+                                          int actionType, String playListName, long playListId) {
 
         FragmentActivity fragmentActivity = (FragmentActivity) context;
         FragmentManager fm = fragmentActivity.getSupportFragmentManager();
-        PlayListDialog editNameDialogFragment = new PlayListDialog(playListName);
-        editNameDialogFragment.setTargetFragment(fragment, 300);
-        editNameDialogFragment.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
+        AddPlayListDialog addPlayListDia = new AddPlayListDialog(actionType, playListName, playListId);
+
+        if(fragment != null) {
+            addPlayListDia.setTargetFragment(fragment, 300);
+        }
+
+        addPlayListDia.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
     }
 
+    public static String dateToFormat(Date date) {
+
+        DateFormat dateFormat = new SimpleDateFormat(CommonHelper.DATE_TIME_FORMAT);
+        return dateFormat.format(date);
+    }
 }

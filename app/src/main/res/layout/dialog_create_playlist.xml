@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:background="@color/p_background_01"
         android:layout_width="300dp"
         android:layout_height="130dp"
         android:orientation="vertical">
@@ -16,6 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18dp"
@@ -27,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:ems="10"
+                android:textColor="@color/p_gray"
                 android:inputType="textPersonName"
                 android:background="@drawable/text_box_underline_selector"/>
         </LinearLayout>
@@ -44,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp">
                 <TextView
+                    android:textColor="@color/white"
                     android:id="@+id/dialogOKText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -61,6 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"

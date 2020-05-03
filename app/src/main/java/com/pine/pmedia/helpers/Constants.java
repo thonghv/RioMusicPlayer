@@ -33,6 +33,13 @@ public class Constants {
     // Broadcast action
     //=================
     public static final String ACTION_SONG_COMPLETE      = "action_song_complete";
+    public static final String RELOAD_ADAPTER_PLAYLIST   = "reload_adapter_playlist";
+
+    //=================
+    // Tab Main Index
+    //=================
+    public static final int SUGGEST_INDEX               = 0;
+    public static final int SONGS_INDEX                 = 1;
 
 
     public static final int LIMIT_RECENT                = 50;
@@ -47,7 +54,11 @@ public class Constants {
     public static final int VIEW_ARTIST                 = 2;
     public static final int VIEW_GENRE                  = 3;
     public static final int VIEW_SUGGEST                = 4;
-    public static final int VIEW_FILTER                 = 5;
+//    public static final int VIEW_FILTER                 = 5;
+    public static final int VIEW_PLAYLIST_DIALOG        = 6;
+    public static final int VIEW_FAVORITE               = 7;
+    public static final int VIEW_LAST_PLAYED            = 8;
+    public static final int VIEW_RECENT_ADDED           = 9;
 
     //=================
     // API KEY
@@ -78,6 +89,7 @@ public class Constants {
     public static final String SHOW_CONTENT_BOTTOM      = "showContentBottom";
     public static final String KEY_TITLE_CAT            = "titleCat";
     public static final String KEY_NOTE_CAT             = "noteCat";
+    public static final String KEY_CAT_TYPE             = "catType";
 
     //=================
     // API SEARCH
@@ -141,4 +153,7 @@ public class Constants {
     // COLORS
     //=================
     public static final String PALETTE_ALBUM_COLOR_DEFAUT           = "#403f4d";
+
+    public static final int CREATE_DIALOG                    = 1;
+    public static final int UPDATE_DIALOG                    = 2;
 }

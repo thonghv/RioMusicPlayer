@@ -17,6 +17,7 @@
             android:paddingRight="5dp">
 
             <LinearLayout
+                android:id="@+id/layoutFavoriteSong"
                 android:layout_width="wrap_content"
                 android:layout_height="125dp"
                 android:paddingLeft="7dp"
@@ -44,6 +45,7 @@
                             android:layout_height="12dp"
                             android:src="@drawable/icons_musical_white" />
                         <TextView
+                            android:id="@+id/numberOfFavorites"
                             android:layout_marginTop="2dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -78,6 +80,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layoutLastPlayed"
                 android:layout_width="wrap_content"
                 android:layout_height="125dp"
                 android:paddingLeft="7dp"
@@ -105,6 +108,7 @@
                             android:layout_height="12dp"
                             android:src="@drawable/icons_musical_white" />
                         <TextView
+                            android:id="@+id/numberOfLastPlayed"
                             android:layout_marginTop="2dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -139,6 +143,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layoutRecentAdded"
                 android:layout_width="wrap_content"
                 android:layout_height="125dp"
                 android:paddingLeft="7dp"
@@ -166,6 +171,7 @@
                             android:layout_height="12dp"
                             android:src="@drawable/icons_musical_white" />
                         <TextView
+                            android:id="@+id/numberOfAddRecent"
                             android:layout_marginTop="2dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -220,7 +226,7 @@
                 android:id="@+id/addPlayListSmall"
                 android:layout_width="25dp"
                 android:layout_height="30dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="12dp"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/ic_add_white"/>
         </RelativeLayout>

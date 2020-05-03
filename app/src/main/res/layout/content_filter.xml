@@ -18,7 +18,7 @@
             android:paddingRight="12dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="85dp">
             <TextView
                 android:id="@+id/titleCatControl"
                 android:layout_width="match_parent"

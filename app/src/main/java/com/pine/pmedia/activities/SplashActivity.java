@@ -17,15 +17,15 @@ import com.pine.pmedia.R;
 public class SplashActivity extends AppCompatActivity {
 
     private final String [] permissions = new String[] {
-            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MODIFY_AUDIO_SETTINGS,
-            Manifest.permission.READ_PHONE_STATE, Manifest.permission.RECORD_AUDIO };
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        if(this.hasPermission(this, permissions)) {
+        if(!this.hasPermission(this, permissions)) {
             ActivityCompat.requestPermissions(this, permissions, 131);
         } else {
             new Handler().postDelayed(new Runnable() {
@@ -34,7 +34,7 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();
                 }
-            }, 1000);
+            }, 500);
         }
     }
 
@@ -45,16 +45,14 @@ public class SplashActivity extends AppCompatActivity {
         if(requestCode == 131) {
             if(grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    grantResults[1] == PackageManager.PERMISSION_GRANTED &&
-                    grantResults[2] == PackageManager.PERMISSION_GRANTED &&
-                    grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         finish();
                     }
-                }, 1000);
+                }, 500);
             } else {
                 Toast.makeText(this, "Please grant all permission to continue", Toast.LENGTH_SHORT).show();
                 finish();

@@ -2,31 +2,32 @@ package com.pine.pmedia.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.pine.pmedia.R;
+import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.adapters.SongCatRecyclerAdapter;
-import com.pine.pmedia.control.PlayListDialog;
+import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
 
-public class SuggestFragment extends BaseFragment implements PlayListDialog.PlayListDialogListener {
+public class SuggestFragment extends BaseFragment implements AddPlayListDialog.PlayListDialogListener {
 
     private static SuggestFragment instance = null;
     private SongCatRecyclerAdapter songCatRecyclerAdapter;
@@ -35,7 +36,22 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
     private ImageButton addPlayListSmall;
     private ImageButton addPlayListLarge;
 
+    private TextView numberOfFavoritesControl;
+    private TextView numberOfLastPlayedControl;
+    private TextView numberOfAddRecentControl;
+
+    private LinearLayout layoutFavoriteSong;
+    private LinearLayout layoutLastPlayed;
+    private LinearLayout layoutRecentAdded;
+
+    private DBManager dbManager;
+
     private ArrayList playListData = new ArrayList();
+
+
+    private int numberOfFavorites = 0;
+    private int numberOfLastPlayed = 0;
+    private int numberOfAddRecnet = 0;
 
     public static SuggestFragment getInstance() {
 
@@ -69,6 +85,14 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         addPlayListSmall = view.findViewById(R.id.addPlayListSmall);
         addPlayListLarge = view.findViewById(R.id.addPlayListLarge);
 
+        numberOfFavoritesControl = view.findViewById(R.id.numberOfFavorites);
+        numberOfLastPlayedControl = view.findViewById(R.id.numberOfLastPlayed);
+        numberOfAddRecentControl = view.findViewById(R.id.numberOfAddRecent);
+
+        layoutFavoriteSong = view.findViewById(R.id.layoutFavoriteSong);
+        layoutLastPlayed = view.findViewById(R.id.layoutLastPlayed);
+        layoutRecentAdded = view.findViewById(R.id.layoutRecentAdded);
+
         // Clear background of recycle view
         recyclePlayList.setHasFixedSize(true);
         recyclePlayList.setItemViewCacheSize(20);
@@ -76,6 +100,9 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
 
         // Handle action on screen
         onHandleActions();
+
+        dbManager = new DBManager(getmActivity());
+        dbManager.open();
 
         return view;
     }
@@ -85,14 +112,68 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         addPlayListLarge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               CommonHelper.showPlayListDialog(getContext(), SuggestFragment.this, null);
+               CommonHelper.showPlayListDialog(getContext(), SuggestFragment.this,
+                       Constants.CREATE_DIALOG, "", -1);
             }
         });
 
         addPlayListSmall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.showPlayListDialog(getContext(), SuggestFragment.this, null);
+                CommonHelper.showPlayListDialog(getContext(), SuggestFragment.this,
+                        Constants.CREATE_DIALOG, "", -1);
+            }
+        });
+
+        layoutFavoriteSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), FilterActivity.class);
+
+                Bundle param = new Bundle();
+                param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_FAVORITE);
+                param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.favorite));
+                String note = numberOfFavorites + Constants.SPACE + Constants.SONGS
+                        + Constants.MINUS + CommonHelper.toFormatTime(0);
+                param.putString(Constants.KEY_NOTE_CAT, note);
+
+                intent.putExtras(param);
+                getmActivity().startActivity(intent);
+            }
+        });
+
+        layoutLastPlayed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(v.getContext(), FilterActivity.class);
+
+                Bundle param = new Bundle();
+                param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_LAST_PLAYED);
+                param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.lastPlayed));
+                String note = numberOfLastPlayed + Constants.SPACE + Constants.SONGS
+                        + Constants.MINUS + CommonHelper.toFormatTime(0);
+                param.putString(Constants.KEY_NOTE_CAT, note);
+
+                intent.putExtras(param);
+                getmActivity().startActivity(intent);
+            }
+        });
+
+        layoutRecentAdded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), FilterActivity.class);
+
+                Bundle param = new Bundle();
+                param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_RECENT_ADDED);
+                param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.recentAdded));
+                String note = numberOfAddRecnet + Constants.SPACE + Constants.SONGS
+                        + Constants.MINUS + CommonHelper.toFormatTime(0);
+                param.putString(Constants.KEY_NOTE_CAT, note);
+
+                intent.putExtras(param);
+                getmActivity().startActivity(intent);
             }
         });
     }
@@ -103,6 +184,10 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         super.setmActivity((Activity) context);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     @Override
     public void onActivityCreated(Bundle bundle) {
@@ -120,6 +205,36 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
             songCatRecyclerAdapter = new SongCatRecyclerAdapter(super.getmActivity(), playListData, Constants.VIEW_SUGGEST);
             recyclePlayList.setAdapter(songCatRecyclerAdapter);
         }
+
+        // Favorite songs
+        onLoadFavorite();
+
+        // Last played
+        onLoadCountHistory();
+
+        // Recent add
+        onLoadCountAddRecent();
+    }
+
+    public void onLoadFavorite() {
+
+        // Count favorite song.
+        this.numberOfFavorites = dbManager.getCountFavorite();
+        numberOfFavoritesControl.setText(String.valueOf(numberOfFavorites));
+    }
+
+    public void onLoadCountHistory() {
+
+        // Count history song.
+        this.numberOfLastPlayed = dbManager.getCountHistory();
+        numberOfLastPlayedControl.setText(String.valueOf(numberOfLastPlayed));
+    }
+
+    public void onLoadCountAddRecent() {
+
+        // Count add recent song.
+        this.numberOfAddRecnet = MediaHelper.getCountAddRecent(getmActivity());
+        numberOfAddRecentControl.setText(String.valueOf(numberOfAddRecnet));
     }
 
     private void onLoadPlayList() {
@@ -128,7 +243,7 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
         }
     }
 
-    private void onReloadPlayList() {
+    public void onReloadPlayList() {
 
         onLoadPlayList();
         songCatRecyclerAdapter.updateData(playListData);
@@ -144,7 +259,7 @@ public class SuggestFragment extends BaseFragment implements PlayListDialog.Play
 
         FragmentActivity fragmentActivity = (FragmentActivity) context;
         FragmentManager fm = fragmentActivity.getSupportFragmentManager();
-        PlayListDialog editNameDialogFragment = new PlayListDialog();
+        AddPlayListDialog editNameDialogFragment = new AddPlayListDialog();
         editNameDialogFragment.setTargetFragment(SuggestFragment.this, 300);
         editNameDialogFragment.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
     }*/
