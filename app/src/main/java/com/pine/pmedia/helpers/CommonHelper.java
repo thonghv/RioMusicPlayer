@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -34,9 +35,11 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.models.Song;
+import com.pine.pmedia.sqlite.DBManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -323,5 +326,17 @@ public class CommonHelper {
 
         DateFormat dateFormat = new SimpleDateFormat(CommonHelper.DATE_TIME_FORMAT);
         return dateFormat.format(date);
+    }
+
+    public static void onFavorite(Context context, DBManager dbManager, long id, String title) {
+
+        if(dbManager.isExitsFavorite(id)) {
+            Toast.makeText(context , R.string.songIsExitsFavorite, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        dbManager.insertFavorite(id, title);
+        Toast.makeText(context, R.string.addSongFavoriteSuccess, Toast.LENGTH_SHORT).show();
+        App.getInstance().isReloadFavorite = true;
     }
 }

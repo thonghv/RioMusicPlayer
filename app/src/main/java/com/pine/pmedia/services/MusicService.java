@@ -60,6 +60,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public boolean isMusicReady = false;
     public boolean isNeedPause;
 
+    private boolean mWasPlayingAtFocusLost = false;
+    private int mPrevAudioFocusState = 0;
+
     //=======================
     // GET OR SET
     //=======================
@@ -363,18 +366,76 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void onAudioFocusChange(int focusChange) {
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
-                System.out.println("D");
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS:
-                System.out.println("D");
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                System.out.println("D");
+                audioFocusGained();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                System.out.println("D");
+                duckAudio();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                audioFocusLost();
                 break;
         }
+
+        mPrevAudioFocusState = focusChange;
+    }
+
+    private void audioFocusLost() {
+        if (getIsPlaying()) {
+            mWasPlayingAtFocusLost = true;
+            pauseSong();
+        } else {
+            mWasPlayingAtFocusLost = false;
+        }
+    }
+
+    private void audioFocusGained() {
+        if (mWasPlayingAtFocusLost) {
+            if (mPrevAudioFocusState == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                unduckAudio();
+            } else {
+                resumeSong();
+            }
+        }
+
+        mWasPlayingAtFocusLost = false;
+    }
+
+    private void pauseSong() {
+
+        if (mPlayer == null) {
+            initMusicPlayer();
+        }
+
+        isPlaying = false;
+        mPlayer.pause();
+    }
+
+    private void resumeSong() {
+
+        if (mPlayer == null) {
+            initMusicPlayer();
+        }
+
+        if (playingQueue.isEmpty()) {
+            return;
+        }
+
+        isPlaying = true;
+        if (mCurrSong == null) {
+            handleNext();
+        } else {
+            mPlayer.start();
+        }
+    }
+
+    private void duckAudio() {
+        mPlayer.setVolume(0.3f, 0.3f);
+        mWasPlayingAtFocusLost = getIsPlaying();
+    }
+
+    private void unduckAudio() {
+        mPlayer.setVolume(1f, 1f);
     }
 
     @Override

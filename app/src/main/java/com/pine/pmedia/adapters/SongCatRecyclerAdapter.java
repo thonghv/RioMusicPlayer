@@ -259,6 +259,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 view = li.inflate(R.layout.bottom_dialog_favorite,null);
                 onHandleActionBDialogFavorite(view);
                 break;
+            case Constants.VIEW_RECENT_ADDED:
             case Constants.VIEW_LAST_PLAYED:
                 view = li.inflate(R.layout.bottom_dialog_history,null);
                 onHandleActionBDialogHistory(view);
@@ -373,6 +374,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        LinearLayout addFavoriteControl = v.findViewById(R.id.addFavoriteControl);
+        addFavoriteControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommonHelper.onFavorite(mContext, dbManager, targetIdTemp, targetNameTemp);
             }
         });
 
