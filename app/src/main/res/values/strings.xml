@@ -32,23 +32,30 @@
     <string name="next">Next</string>
     <string name="title_activity_album">activity_album</string>
 
-    <string name="myPlaylist">My Playlist</string>
+    <string name="nameSong">Music</string>
+    <string name="nameArtist">Artist</string>
+    <string name="nameAlbum">Album</string>
+    <string name="nameDuration">Duration</string>
+    <string name="nameSize">Size</string>
+    <string name="namePath">Path</string>
+
+    <string name="myPlaylist">My Playlists</string>
     <string name="favorite">Favorite</string>
     <string name="lastPlayed">Last Played</string>
     <string name="recentAdded">Recent Added</string>
-    <string name="playListNew">Playlist News</string>
+    <string name="newPlaylist">New Playlist</string>
     <string name="myPlayList">My PlayList</string>
     <string name="addPlayList">Add New PlayList</string>
     <string name="cancel">CANCEL</string>
-    <string name="changeName">Change Name</string>
-    <string name="setRingTone">Setting RingTone</string>
+    <string name="changeName">Rename</string>
+    <string name="setAsRingtone">Set as Ringtone</string>
     <string name="share">Share</string>
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
     <string name="playNext">Play Next</string>
-    <string name="addInPlayNext">Add in play next</string>
+    <string name="addToPlaylist">Add to Playlist</string>
     <string name="addInFavorite">Add in favorite</string>
-    <string name="viewDetail">View Detail</string>
+    <string name="songDetails">Song Details</string>
     <string name="titleDeletePlayList">Delete PlayList</string>
     <string name="titleDeleteTrack">Delete Track</string>
     <string name="playListNameIsExist">Play list name is exist</string>
@@ -59,8 +66,10 @@
     <string name="updatePlayListSuccess">Update playlist success.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="messageDeletePlayList">Are you sure, you wanted to delete ?</string>
-    <string name="messageDeleteFromList">Are you sure, you wanted to delete form list ?</string>
+    <string name="messageDeletePlayList">Are you sure, you want to delete ?</string>
+    <string name="messageDeleteFromList">Are you sure, you want to delete form list ?</string>
+    <string name="addInPlayNextSuccess">Add play next success</string>
+    <string name="errorPleaseAgain">Error...! Please again.</string>
 
     <string name="title_activity_artist">ArtistActivity</string>
     <string name="title_activity_genre">GenreActivity</string>

@@ -209,7 +209,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="35dp"
             android:layout_marginTop="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -220,7 +220,7 @@
                 android:textColor="@color/white"
                 android:text="@string/myPlaylist"
                 android:textStyle="bold"
-                android:textSize="17.5dp">
+                android:textSize="17dp">
             </TextView>
             <ImageButton
                 android:id="@+id/addPlayListSmall"
@@ -266,7 +266,7 @@
                     android:textStyle="bold"
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/white"
-                    android:text="@string/playListNew" />
+                    android:text="@string/newPlaylist" />
             </LinearLayout>
 
             <LinearLayout

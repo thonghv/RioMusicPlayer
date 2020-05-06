@@ -116,7 +116,7 @@ public class AlbumActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<Song> songs = MediaHelper.getSongs(this, albumId,0);
+        ArrayList<Song> songs = MediaHelper.getSongs(this, albumId,0L);
         SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs, Constants.VIEW_ALBUM);
         recyclerView.setAdapter(songCatRecyclerAdapter);
     }

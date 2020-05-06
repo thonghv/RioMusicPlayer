@@ -83,7 +83,7 @@ public class SongsFragment extends BaseFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(super.getmActivity()));
 
-        ArrayList<Song> songsLibrary = MediaHelper.getSongs(getmActivity(), 0 , 0);
+        ArrayList<Song> songsLibrary = MediaHelper.getSongs(getmActivity(), 0L, 0L);
 
         ArrayList<Song> songs = new ArrayList<>();
         songs.add(new Song());

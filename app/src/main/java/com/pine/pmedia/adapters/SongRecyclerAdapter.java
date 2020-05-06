@@ -177,7 +177,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
                 Bundle bundle = new Bundle();
                 bundle.putInt(Constants.KEY_POSITION, position);
-                mService.onProcess(Constants.PLAYPAUSE, bundle);
+                mService.onProcess(Constants.PLAY_PAUSE, bundle);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

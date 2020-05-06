@@ -42,6 +42,7 @@ import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
 
@@ -53,6 +54,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     // Variable Common
     //=====================
     private App app;
+    private DBManager dbManager;
     public static DrawerLayout drawerLayout = null;
     private ArrayList<String> navigationDrawerIconList = new ArrayList<>();
     private int[] imageForDrawer = new int[]{
@@ -121,6 +123,9 @@ public class MainActivity extends BaseActivity implements IActivity{
 
         // Handle bottom play menu screen.
         initBottomBarPlay();
+
+        // Init db manager
+        initDBManager();
 
 //        AppBarLayout appBarLayout = findViewById(R.id.appBarLayout);
 //        appBarLayout.setBackgroundResource(R.drawable.bk_03);
@@ -195,18 +200,25 @@ public class MainActivity extends BaseActivity implements IActivity{
         onHandlerActionsPlay();
 
         // On init playlist total data
-        long startTime1 = System.currentTimeMillis();
         onInitPLayListTotal();
-        long endTime1 = System.currentTimeMillis();
-        System.out.println("B1 " + ((endTime1 - startTime1)));
-    }
 
+        long startTime1 = System.currentTimeMillis();
+        // ON init recent song list
+        onInitRecentSong();
+        long endTime1 = System.currentTimeMillis();
+        System.out.println("AB " + ((endTime1 - startTime1)));
+    }
 
     private void onInitPLayListTotal() {
 
         if(mService.getPlaylistTotal().isEmpty()) {
             new initMediaPlayList().onPostExecute(this);
         }
+    }
+
+    private void onInitRecentSong() {
+
+        new initRecentPlayList(this, dbManager).onPostExecute("");
     }
 
     @Override
@@ -221,7 +233,8 @@ public class MainActivity extends BaseActivity implements IActivity{
 
     @Override
     public void initDBManager() {
-
+        dbManager = new DBManager(this);
+        dbManager.open();
     }
 
     @Override
@@ -329,7 +342,7 @@ public class MainActivity extends BaseActivity implements IActivity{
         playPauseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.onProcess(Constants.PLAYPAUSE, null);
+                mService.onProcess(Constants.PLAY_PAUSE, null);
                 onUpdateUISong();
             }
         });
@@ -387,8 +400,31 @@ public class MainActivity extends BaseActivity implements IActivity{
         @Override
         protected void onPostExecute(Activity activity) {
 
-            ArrayList<Song> mediaSongs = MediaHelper.getSongs(activity, 0, 0);
+            ArrayList<Song> mediaSongs = MediaHelper.getSongs(activity, 0L, 0L);
             App.getInstance().setMediaPlayList(mediaSongs);
         }
     }
+
+    private class initRecentPlayList extends AsyncTask<String, Void, String> {
+
+        private Activity activity;
+        private DBManager dbManager;
+
+        public initRecentPlayList(Activity activity, DBManager dbManager) {
+            this.activity = activity;
+            this.dbManager = dbManager;
+        }
+
+        protected String doInBackground(String... params){
+            ArrayList<Song> songs = MediaHelper.getLastAddRecent(activity);
+            for(Song s : songs) {
+                dbManager.insertRecent(s.get_id(), s.get_title());
+            }
+            return "";
+        }
+
+        protected void onPostExecute(String response) {
+        }
+    }
+
 }

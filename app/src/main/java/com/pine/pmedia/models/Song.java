@@ -23,12 +23,13 @@ public class Song implements Parcelable {
     private int _duration;
     private int _likeCount;
 
-    private int _albumId;
-    private int _artistId;
+    private long _albumId;
+    private long _artistId;
     private Bitmap _bitmap;
 
     private long _favoriteId;
     private long _historyId;
+    private long _recentId;
 
     private int _numberOfTrack;
 
@@ -43,11 +44,14 @@ public class Song implements Parcelable {
         _path = in.readString();
         _duration = in.readInt();
         _likeCount = in.readInt();
-        _albumId = in.readInt();
-        _artistId = in.readInt();
+        _albumId = in.readLong();
+        _artistId = in.readLong();
         _size = in.readInt();
         _bitmap = in.readParcelable(Bitmap.class.getClassLoader());
         _numberOfTrack = in.readInt();
+        _favoriteId = in.readLong();
+        _historyId = in.readLong();
+        _recentId = in.readLong();
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -76,10 +80,13 @@ public class Song implements Parcelable {
         dest.writeString(_path);
         dest.writeInt(_duration);
         dest.writeInt(_likeCount);
-        dest.writeInt(_albumId);
-        dest.writeInt(_artistId);
+        dest.writeLong(_albumId);
+        dest.writeLong(_artistId);
         dest.writeInt(_size);
         dest.writeParcelable(_bitmap, flags);
         dest.writeInt(_numberOfTrack);
+        dest.writeLong(_favoriteId);
+        dest.writeLong(_historyId);
+        dest.writeLong(_recentId);
     }
 }

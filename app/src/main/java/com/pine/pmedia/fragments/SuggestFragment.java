@@ -233,7 +233,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
     public void onLoadCountAddRecent() {
 
         // Count add recent song.
-        this.numberOfAddRecnet = MediaHelper.getCountAddRecent(getmActivity());
+        this.numberOfAddRecnet = dbManager.getCountRecent();
         numberOfAddRecentControl.setText(String.valueOf(numberOfAddRecnet));
     }
 

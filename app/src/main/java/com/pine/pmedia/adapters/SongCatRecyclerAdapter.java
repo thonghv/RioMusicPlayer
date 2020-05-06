@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -28,6 +30,8 @@ import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
 import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.activities.PlaySongActivity;
+import com.pine.pmedia.control.AddPlayListDialog;
+import com.pine.pmedia.control.DetailSongDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
@@ -236,7 +240,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
             Bundle bundle = new Bundle();
             bundle.putInt(Constants.KEY_POSITION, position);
-            mService.onProcess(Constants.PLAYPAUSE, bundle);
+            mService.onProcess(Constants.PLAY_PAUSE, bundle);
         }
     }
 
@@ -314,6 +318,10 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         }
     }
 
+    /**
+     * Handler action for bottom sheet dialog list favorite song
+     * @param v
+     */
     private void onHandleActionBDialogFavorite(View v) {
 
         LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
@@ -328,7 +336,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         addPlayNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
             }
         });
 
@@ -359,6 +367,10 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         });
     }
 
+    /**
+     * Handler action for bottom sheet dialog list last play song
+     * @param v
+     */
     private void onHandleActionBDialogHistory(View v) {
 
         LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
@@ -373,7 +385,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         addPlayNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
             }
         });
 
@@ -382,6 +394,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 CommonHelper.onFavorite(mContext, dbManager, targetIdTemp, targetNameTemp);
+            }
+        });
+
+        LinearLayout viewDetailControl = v.findViewById(R.id.viewDetailControl);
+        viewDetailControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onShowDetailSong();
             }
         });
 
@@ -412,6 +432,10 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         });
     }
 
+    /**
+     * Handler action for bottom sheet dialog playlist
+     * @param v
+     */
     private void onHandleActionBDialogPLayList(View v) {
 
         LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
@@ -452,6 +476,22 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         });
     }
 
+    private void onShowDetailSong(){
+
+        Song songFind = MediaHelper.getSongById(songs, targetIdTemp);
+        if(songFind == null) {
+            Toast.makeText(mContext, R.string.errorPleaseAgain, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        DetailSongDialog detailSongDialog = new DetailSongDialog(songFind.get_title(), songFind.get_artist(),
+                songFind.get_album(), CommonHelper.toFormatTime(songFind.get_duration()),
+                CommonHelper.toFomartSize(songFind.get_size()), songFind.get_path());
+        FragmentActivity fragmentActivity = (FragmentActivity) mContext;
+        FragmentManager fm = fragmentActivity.getSupportFragmentManager();
+        detailSongDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
+    }
+
     private void onOpenDialogConfirm(final int actionType, int title, int message){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
         alertDialogBuilder.setTitle(title);
@@ -466,6 +506,12 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_FAVORITE:
                         dbManager.deleteFavorite(targetIdTemp);
                         App.getInstance().isReloadFavorite = true;
+                        break;
+                    case Constants.VIEW_LAST_PLAYED:
+                        dbManager.deleteHistory(targetIdTemp);
+                        break;
+                    case Constants.VIEW_RECENT_ADDED:
+                        dbManager.insertHistoryDelete(targetIdTemp);
                         break;
                 }
 

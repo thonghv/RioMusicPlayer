@@ -31,12 +31,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
-import com.pine.pmedia.activities.MainActivity;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.Constants;
-import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
-import com.pine.pmedia.receivers.ControlActionsListener;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -159,7 +156,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 String action = intent.getAction();
                 Bundle bundle = intent.getExtras();
                 switch (action) {
-                    case Constants.PLAYPAUSE:
+                    case Constants.PLAY_PAUSE:
                         break;
                     case Constants.STOP:
                     case Constants.QUIT:
@@ -168,27 +165,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 }
             }
         }
-
-        /*Bundle bundle = intent.getExtras();
-
-        String path = bundle.getString(Constants.KEY_PATH);
-        this.mIntentUri = Uri.parse(path);
-
-        createNotificationChannel();
-        Intent notificationIntent = new Intent(this, PlaySongActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Foreground Service")
-                .setContentText("Hello Today")
-                .setSmallIcon(R.drawable.favorite_on)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        startForeground(1, notification);S
-*/
-//        return super.onStartCommand(intent, flags, startId);
 
         initNotification();
 
@@ -200,7 +176,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
         this.isNeedPause = false;
         switch (action) {
-            case Constants.PLAYPAUSE:
+            case Constants.PLAY_PAUSE:
                 handlePlayPause(bundle);
                 break;
             case Constants.PAUSE:
@@ -287,7 +263,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                         .setShowActionsInCompactView(0, 1, 2)
                         .setMediaSession(mMediaSession.getSessionToken()))
                 .addAction(R.drawable.ic_previous_vector, getString(R.string.previous), getIntent(Constants.PREVIOUS))
-                .addAction(playPauseIcon, getString(R.string.playPause), getIntent(Constants.PLAYPAUSE))
+                .addAction(playPauseIcon, getString(R.string.playPause), getIntent(Constants.PLAY_PAUSE))
                 .addAction(R.drawable.ic_next_vector, getString(R.string.next), getIntent(Constants.NEXT));
 
         startForeground(1, builder.build());
@@ -307,9 +283,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     private PendingIntent getIntent(String action) {
-        Intent intent = new Intent(this, ControlActionsListener.class);
+        Intent intent = new Intent(this, MusicService.class);
         intent.setAction(action);
-        return PendingIntent.getBroadcast(this, 0, intent, 0);
+        return PendingIntent.getService(this, 0, intent, 0);
     }
 
     public boolean getIsPlaying() {
@@ -486,6 +462,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 mPlayer.start();
             }
         }
+
+        setupNotification();
     }
 
     private void handlePause(Bundle bundle) {
@@ -528,6 +506,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         } else {
             onPlayNextNormal();
         }
+
+        setupNotification();
     }
 
     private void handlePrevious() {
@@ -541,6 +521,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
 
         playAudio();
+
+        setupNotification();
     }
 
     private void onPlayNextRandom() {

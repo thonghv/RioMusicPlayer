@@ -149,7 +149,7 @@ public class FilterActivity extends BaseActivity implements IActivity {
             case Constants.VIEW_LAST_PLAYED:
                 return  MediaHelper.getHistories(dbManager, App.getInstance().getMediaPlayList());
             case Constants.VIEW_RECENT_ADDED:
-                return MediaHelper.getAddRecent(this);
+                return MediaHelper.getRecent(dbManager, App.getInstance().getMediaPlayList());
         }
 
         return null;

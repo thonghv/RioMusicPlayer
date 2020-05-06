@@ -122,7 +122,7 @@ public class Constants {
     public static final String SETUP                    = "SETUP";
     public static final String FINISH                   = "FINISH";
     public static final String PREVIOUS                 = "PREVIOUS";
-    public static final String PLAYPAUSE                = "PLAYPAUSE";
+    public static final String PLAY_PAUSE               = "PLAY_PAUSE";
     public static final String PAUSE                    = "PAUSE";
     public static final String LOOP                     = "LOOP";
     public static final String SHUFFLE                  = "SHUFFLE";

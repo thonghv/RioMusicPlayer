@@ -132,7 +132,7 @@ public class ArtistActivity extends AppCompatActivity {
         recyclerSongsView.setItemAnimator(new DefaultItemAnimator());
         recyclerSongsView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<Song> songs = MediaHelper.getSongs(this, 0, artistId);
+        ArrayList<Song> songs = MediaHelper.getSongs(this, 0L, artistId);
         SongCatRecyclerAdapter songCatRecyclerAdapter = new SongCatRecyclerAdapter(this, songs, Constants.VIEW_ARTIST);
         recyclerSongsView.setAdapter(songCatRecyclerAdapter);
     }

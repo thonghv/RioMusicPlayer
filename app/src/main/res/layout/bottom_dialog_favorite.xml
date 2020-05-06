@@ -95,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/addInPlayNext"
+                android:text="@string/addToPlaylist"
                 android:textColor="#737373"
                 android:textSize="14sp" />
 
@@ -112,7 +112,7 @@
             android:background="@color/md_black_1000" />
 
         <LinearLayout
-            android:id="@+id/detailControl"
+            android:id="@+id/viewDetailControl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -134,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/viewDetail"
+                android:text="@string/songDetails"
                 android:textColor="#737373"
                 android:textSize="14sp" />
 
@@ -174,7 +174,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/setRingTone"
+                android:text="@string/setAsRingtone"
                 android:textColor="#737373"
                 android:textSize="14sp" />
 

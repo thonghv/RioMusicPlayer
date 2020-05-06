@@ -3,6 +3,8 @@ package com.pine.pmedia.helpers;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -14,6 +16,9 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -39,6 +44,7 @@ import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.models.Song;
+import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
 import org.json.JSONArray;
@@ -47,7 +53,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -108,6 +116,28 @@ public class CommonHelper {
                         TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
                 TimeUnit.MILLISECONDS.toSeconds(time) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
+    }
+
+    public static String toFomartSize(int size) {
+
+        String hrSize;
+
+        DecimalFormat dec = new DecimalFormat("0.00");
+        double m = size/1024.0;
+        double g = size/1048576.0;
+        double t = size/1073741824.0;
+
+        if (t > 1) {
+            hrSize = dec.format(t).concat("TB");
+        } else if (g > 1) {
+            hrSize = dec.format(g).concat("GB");
+        } else if (m > 1) {
+            hrSize = dec.format(m).concat("MB");
+        } else {
+            hrSize = dec.format(size).concat("KB");
+        }
+
+        return hrSize;
     }
 
     public static String toUrlPlayTrack(long id) {
@@ -328,6 +358,13 @@ public class CommonHelper {
         return dateFormat.format(date);
     }
 
+    /**
+     * Add song into favorite list
+     * @param context
+     * @param dbManager
+     * @param id
+     * @param title
+     */
     public static void onFavorite(Context context, DBManager dbManager, long id, String title) {
 
         if(dbManager.isExitsFavorite(id)) {
@@ -338,5 +375,54 @@ public class CommonHelper {
         dbManager.insertFavorite(id, title);
         Toast.makeText(context, R.string.addSongFavoriteSuccess, Toast.LENGTH_SHORT).show();
         App.getInstance().isReloadFavorite = true;
+    }
+
+    /**
+     * Add song in play next
+     * @param context
+     * @param mService
+     * @param songs
+     * @param id
+     */
+    public static void addPlayNext(Context context, MusicService mService, ArrayList<Song> songs, long id) {
+
+        Toast.makeText(context, R.string.addInPlayNextSuccess, Toast.LENGTH_SHORT).show();
+
+        Song songFind = MediaHelper.getSongById(songs, id);
+        if(songFind != null) {
+            mService.getPlayingQueue().add(songFind);
+        }
+    }
+
+    /**
+     * Set ring tone
+     * @param context
+     * @param pathString
+     */
+    public static void setRingTone(Context context, String pathString){
+
+        // Create File object for the specified ring tone path
+        File f=new File(pathString);
+
+        // Insert the ring tone to the content provider
+        ContentValues value=new ContentValues();
+        value.put(MediaStore.MediaColumns.DATA, f.getAbsolutePath());
+        value.put(MediaStore.MediaColumns.TITLE, f.getName());
+        value.put(MediaStore.MediaColumns.SIZE, f.length());
+        value.put(MediaStore.MediaColumns.MIME_TYPE, "audio/*");
+        value.put(MediaStore.Audio.Media.ARTIST, "artist");
+        value.put(MediaStore.Audio.Media.DURATION, 500);
+        value.put(MediaStore.Audio.Media.IS_ALARM, false);
+        value.put(MediaStore.Audio.Media.IS_MUSIC, false);
+        value.put(MediaStore.Audio.Media.IS_NOTIFICATION, false);
+        value.put(MediaStore.Audio.Media.IS_RINGTONE, true);
+        ContentResolver cr = context.getContentResolver();
+
+        //Insert it into the database
+        Uri url= MediaStore.Audio.Media.getContentUriForPath(f.getAbsolutePath());
+        Uri addedUri = cr.insert(url, value);
+
+        // Set default ring tone
+        RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, addedUri);
     }
 }

@@ -376,7 +376,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         playPauseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mService.onProcess(Constants.PLAYPAUSE, null);
+                mService.onProcess(Constants.PLAY_PAUSE, null);
                 onUpdateUI();
             }
         });
