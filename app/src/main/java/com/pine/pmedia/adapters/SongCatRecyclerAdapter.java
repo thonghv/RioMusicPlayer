@@ -54,6 +54,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     private Intent playIntent;
     private int viewType;
     private BottomSheetDialog dialog;
+    private long songId;
     private long targetIdTemp;
     private String targetNameTemp;
     private long songCurrentIdTemp;
@@ -201,17 +202,18 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_GENRE:
 
                         break;
-
-                    case Constants.VIEW_RECENT_ADDED:
                     case Constants.VIEW_SUGGEST:
                     case Constants.VIEW_PLAYLIST_DIALOG:
-                        onShowBottomSheet(song.get_id(), song.get_title());
+                        onShowBottomSheet(song.get_id(), -1L, song.get_title());
                         break;
                     case Constants.VIEW_LAST_PLAYED:
-                        onShowBottomSheet(song.get_historyId(), song.get_title());
+                        onShowBottomSheet(song.get_historyId(), song.get_id(), song.get_title());
                         break;
                     case Constants.VIEW_FAVORITE:
-                        onShowBottomSheet(song.get_favoriteId(), song.get_title());
+                        onShowBottomSheet(song.get_favoriteId(), song.get_id(), song.get_title());
+                        break;
+                    case Constants.VIEW_RECENT_ADDED:
+                        onShowBottomSheet(song.get_recentId(), song.get_id(), song.get_title());
                         break;
                 }
             }
@@ -246,10 +248,11 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     //
     //=======================
     // START BOTTOM SHEET
-    private void onShowBottomSheet(long targetIdTemp, String targetNameTemp) {
+    private void onShowBottomSheet(long targetIdTemp, long songId, String targetNameTemp) {
 
         this.targetIdTemp = targetIdTemp;
         this.targetNameTemp = targetNameTemp;
+        this.songId = songId;
 
         LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = null;
@@ -299,8 +302,13 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         View r06 = v.findViewById(R.id.r_06);
         View r07 = v.findViewById(R.id.r_07);
 
-        r01.setBackgroundColor(colorR);
-        r02.setBackgroundColor(colorR);
+        if(r01 != null) {
+            r01.setBackgroundColor(colorR);
+        }
+        if(r02 != null) {
+            r02.setBackgroundColor(colorR);
+        }
+
         r03.setBackgroundColor(colorR);
         r04.setBackgroundColor(colorR);
 
@@ -327,7 +335,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
+                CommonHelper.addPlayNext(mContext, mService, songs, songId);
             }
         });
 
@@ -335,7 +343,17 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         addToPlayListControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.hide();
+                CommonHelper.onShowMediaPlayListDialog(mContext, songId);
+            }
+        });
 
+        LinearLayout viewDetailControl = v.findViewById(R.id.viewDetailControl);
+        viewDetailControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.hide();
+                onShowDetailSong();
             }
         });
 
@@ -376,16 +394,16 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
+                CommonHelper.addPlayNext(mContext, mService, songs, songId);
             }
         });
 
-        final FragmentManager fm = mContext.getSupportFragmentManager();
         LinearLayout addPlayNextControl = v.findViewById(R.id.addToPlayListControl);
         addPlayNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.onShowMediaPlayListDialog(mContext, );
+                dialog.hide();
+                CommonHelper.onShowMediaPlayListDialog(mContext, songId);
             }
         });
 
@@ -393,7 +411,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         addFavoriteControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.onFavorite(mContext, dbManager, targetIdTemp, targetNameTemp);
+                CommonHelper.onFavorite(mContext, dbManager, songId, targetNameTemp);
             }
         });
 
@@ -401,6 +419,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         viewDetailControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.hide();
                 onShowDetailSong();
             }
         });
@@ -438,22 +457,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
      */
     private void onHandleActionBDialogPLayList(View v) {
 
-        LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
-        playNextControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        LinearLayout addPlayNextControl = v.findViewById(R.id.addToPlayListControl);
-        addPlayNextControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         LinearLayout updateControl = v.findViewById(R.id.updateControl);
         updateControl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -478,7 +481,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
     private void onShowDetailSong(){
 
-        Song songFind = MediaHelper.getSongById(songs, targetIdTemp);
+        Song songFind = MediaHelper.getSongById(songs, songId);
         if(songFind == null) {
             Toast.makeText(mContext, R.string.errorPleaseAgain, Toast.LENGTH_SHORT).show();
             return;
@@ -486,7 +489,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
         DetailSongDialog detailSongDialog = new DetailSongDialog(songFind.get_title(), songFind.get_artist(),
                 songFind.get_album(), CommonHelper.toFormatTime(songFind.get_duration()),
-                CommonHelper.toFomartSize(songFind.get_size()), songFind.get_path());
+                CommonHelper.toFormatSize(songFind.get_size()), songFind.get_path());
         FragmentActivity fragmentActivity = (FragmentActivity) mContext;
         FragmentManager fm = fragmentActivity.getSupportFragmentManager();
         detailSongDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);

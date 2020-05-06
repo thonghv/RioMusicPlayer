@@ -24,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "PCODE.DB";
 
     // database version
-    static final int DB_VERSION = 2;
+    static final int DB_VERSION = 1;
 
     // Creating table query
     private static final String CREATE_FAVORITE_SONG = "create table " + FAVORITE_SONG + "("

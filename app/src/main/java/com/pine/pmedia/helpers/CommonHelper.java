@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -102,14 +103,6 @@ public class CommonHelper {
         return result;
     }
 
-    public static String toApi(String search, int limit, int offset) {
-
-        return Constants.API + Constants.SEARCH + search
-                + Constants.LIMIT + limit
-                + Constants.OFFSET + offset
-                + Constants.A_CLIENT_ID + Constants.TOKEN;
-    }
-
     public static String toFormatTime(int time) {
 
         return String.format(Constants.TIME_FOMAT_M_S,
@@ -119,7 +112,7 @@ public class CommonHelper {
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
     }
 
-    public static String toFomartSize(int size) {
+    public static String toFormatSize(int size) {
 
         String hrSize;
 
@@ -129,13 +122,13 @@ public class CommonHelper {
         double t = size/1073741824.0;
 
         if (t > 1) {
-            hrSize = dec.format(t).concat("TB");
+            hrSize = dec.format(t).concat("GB");
         } else if (g > 1) {
-            hrSize = dec.format(g).concat("GB");
+            hrSize = dec.format(g).concat("MB");
         } else if (m > 1) {
-            hrSize = dec.format(m).concat("MB");
+            hrSize = dec.format(m).concat("KB");
         } else {
-            hrSize = dec.format(size).concat("KB");
+            hrSize = dec.format(size).concat("B");
         }
 
         return hrSize;
@@ -399,13 +392,14 @@ public class CommonHelper {
     /**
      * Show play list
      * @param context
-     * @param fragmentManager
+     * @param songId
      */
-    public static void onShowMediaPlayListDialog(Context context,FragmentManager fragmentManager, long songId) {
+    public static void onShowMediaPlayListDialog(Context context, long songId) {
 
+        final FragmentManager fm = ((AppCompatActivity) context).getSupportFragmentManager();
         MediaPlayListDialog mediaPlayListDialog =
                 new MediaPlayListDialog(context, songId);
-        mediaPlayListDialog.show(fragmentManager, Constants.PLAY_LIST_DIALOG_NAME);
+        mediaPlayListDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
     }
 
     /**

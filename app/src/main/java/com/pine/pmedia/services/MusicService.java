@@ -157,16 +157,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
         if (intent != null) {
             if (intent.getAction() != null) {
-                String action = intent.getAction();
-                Bundle bundle = intent.getExtras();
-                switch (action) {
-                    case Constants.PLAY_PAUSE:
-                        break;
-                    case Constants.STOP:
-                    case Constants.QUIT:
-                        handleQuit();
-                        break;
-                }
+                onProcess(intent.getAction(), null);
             }
         }
 
@@ -247,7 +238,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
         String title = mCurrSong.get_title();
         String artist = mCurrSong.get_artist();
-        int playPauseIcon = getIsPlaying() ? R.drawable.ic_pause_vector : R.drawable.ic_play_vector;
+        int playPauseIcon = isPlaying() ? R.drawable.ic_pause_vector : R.drawable.ic_play_vector;
 
         Intent action = new Intent(this, PlaySongActivity.class);
         action.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

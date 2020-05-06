@@ -203,7 +203,7 @@ public class MainActivity extends BaseActivity implements IActivity{
         onInitPLayListTotal();
 
         long startTime1 = System.currentTimeMillis();
-        // ON init recent song list
+        // On init recent song list
         onInitRecentSong();
         long endTime1 = System.currentTimeMillis();
         System.out.println("AB " + ((endTime1 - startTime1)));
@@ -218,7 +218,7 @@ public class MainActivity extends BaseActivity implements IActivity{
 
     private void onInitRecentSong() {
 
-        new initRecentPlayList(this, dbManager).onPostExecute("");
+        new initRecentPlayList(this, dbManager).execute();
     }
 
     @Override
@@ -389,6 +389,11 @@ public class MainActivity extends BaseActivity implements IActivity{
             SuggestFragment.getInstance().onLoadCountHistory();
             app.isReloadLastPlayed = false;
         }
+
+        if (app.isReloadRecentAdd) {
+            SuggestFragment.getInstance().onLoadCountRecentAdd();
+            app.isReloadRecentAdd = false;
+        }
     }
 
     private class initMediaPlayList extends AsyncTask<String, Void, Activity> {
@@ -416,6 +421,7 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
 
         protected String doInBackground(String... params){
+            dbManager.deleteAllRecentSong();
             ArrayList<Song> songs = MediaHelper.getLastAddRecent(activity);
             for(Song s : songs) {
                 dbManager.insertRecent(s.get_id(), s.get_title());
@@ -424,6 +430,8 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
 
         protected void onPostExecute(String response) {
+            App.getInstance().isReloadRecentAdd = true;
+            reloadData();
         }
     }
 

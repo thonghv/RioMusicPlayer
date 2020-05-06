@@ -65,7 +65,7 @@
                     android:singleLine="true"
                     android:text="Hello"
                     android:textAppearance="?android:textAppearance"
-                    android:textColor="@color/gray"
+                    android:textColor="@color/p_gray"
                     android:textSize="12dp"
                     android:textStyle="normal" />
             </RelativeLayout>

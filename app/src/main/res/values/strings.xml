@@ -44,12 +44,13 @@
     <string name="lastPlayed">Last Played</string>
     <string name="recentAdded">Recent Added</string>
     <string name="newPlaylist">New Playlist</string>
-    <string name="myPlayList">My PlayList</string>
-    <string name="addPlayList">Add New PlayList</string>
+    <string name="myPlayList">My Playlists</string>
+    <string name="addPlayList">New Playlist</string>
     <string name="cancel">CANCEL</string>
     <string name="changeName">Rename</string>
     <string name="setAsRingtone">Set as Ringtone</string>
     <string name="share">Share</string>
+    <string name="nameYourPlaylist">Name your playlist</string>
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
     <string name="playNext">Play Next</string>

@@ -219,14 +219,13 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:text="@string/myPlaylist"
-                android:textStyle="bold"
-                android:textSize="17dp">
+                android:textSize="15dp">
             </TextView>
             <ImageButton
                 android:id="@+id/addPlayListSmall"
-                android:layout_width="25dp"
-                android:layout_height="30dp"
-                android:layout_marginRight="12dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="14dp"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/ic_add_white"/>
         </RelativeLayout>

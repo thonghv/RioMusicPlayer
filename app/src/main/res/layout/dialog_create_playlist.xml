@@ -29,6 +29,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:ems="10"
+                android:textSize="14.5dp"
+                android:hint="@string/nameYourPlaylist"
+                android:textColorHint="@color/p_gray"
                 android:textColor="@color/p_gray"
                 android:inputType="textPersonName"
                 android:background="@drawable/text_box_underline_selector"/>
@@ -51,7 +54,7 @@
                     android:id="@+id/dialogOKText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="15dp"
                     android:textStyle="bold"
                     android:text="OK">
                 </TextView>
@@ -68,7 +71,7 @@
                     android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
+                    android:textSize="15dp"
                     android:textStyle="bold"
                     android:text="@string/cancel">
 

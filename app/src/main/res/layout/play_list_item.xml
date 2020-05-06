@@ -43,7 +43,6 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/trackImageLayout"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
                     android:layout_marginTop="5dp"
                     android:maxLines="1"
                     android:textSize="15dp"
@@ -66,7 +65,7 @@
                     android:singleLine="true"
                     android:text="Hello"
                     android:textAppearance="?android:textAppearance"
-                    android:textColor="@color/gray"
+                    android:textColor="@color/p_gray"
                     android:textSize="12dp"
                     android:textStyle="normal" />
             </RelativeLayout>

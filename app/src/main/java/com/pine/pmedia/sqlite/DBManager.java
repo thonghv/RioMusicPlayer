@@ -85,8 +85,8 @@ public class DBManager {
         database.delete(DatabaseHelper.RECENT_SONG, DatabaseHelper._ID + "=" + _id, null);
     }
 
-    public void delete() {
-        database.delete(DatabaseHelper.FAVORITE_SONG, null, null);
+    public void deleteAllRecentSong() {
+        database.delete(DatabaseHelper.RECENT_SONG, null, null);
     }
 
     public void insertFavorite(long id, String name) {

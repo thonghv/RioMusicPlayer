@@ -23,6 +23,7 @@ public class App extends Application {
     public boolean isReloadPlayList;
     public boolean isReloadFavorite;
     public boolean isReloadLastPlayed;
+    public boolean isReloadRecentAdd;
 
     public static App getInstance() {
 

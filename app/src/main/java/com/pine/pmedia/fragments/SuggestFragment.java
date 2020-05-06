@@ -213,7 +213,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
         onLoadCountHistory();
 
         // Recent add
-        onLoadCountAddRecent();
+        onLoadCountRecentAdd();
     }
 
     public void onLoadFavorite() {
@@ -230,7 +230,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
         numberOfLastPlayedControl.setText(String.valueOf(numberOfLastPlayed));
     }
 
-    public void onLoadCountAddRecent() {
+    public void onLoadCountRecentAdd() {
 
         // Count add recent song.
         this.numberOfAddRecnet = dbManager.getCountRecent();

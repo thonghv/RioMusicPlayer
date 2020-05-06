@@ -68,6 +68,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     private Timer timerOnReadyPlay;
     private Handler handler;
     private DBManager dbManager;
+    final Context context = this;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -389,12 +390,10 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
             }
         });
 
-        final FragmentManager fm = this.getSupportFragmentManager();
-        final Context context = this;
         addControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.onShowMediaPlayListDialog(context, fm, mService.getMCurrSong().get_id());
+                CommonHelper.onShowMediaPlayListDialog(context, mService.getMCurrSong().get_id());
             }
         });
 
