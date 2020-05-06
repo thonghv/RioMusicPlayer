@@ -30,7 +30,6 @@ import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
 import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.activities.PlaySongActivity;
-import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.control.DetailSongDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.fragments.SuggestFragment;
@@ -328,15 +327,15 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
             }
         });
 
-        LinearLayout addPlayNextControl = v.findViewById(R.id.addPlayNextControl);
-        addPlayNextControl.setOnClickListener(new View.OnClickListener() {
+        LinearLayout addToPlayListControl = v.findViewById(R.id.addToPlayListControl);
+        addToPlayListControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
+
             }
         });
 
@@ -377,15 +376,16 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
             }
         });
 
-        LinearLayout addPlayNextControl = v.findViewById(R.id.addPlayNextControl);
+        final FragmentManager fm = mContext.getSupportFragmentManager();
+        LinearLayout addPlayNextControl = v.findViewById(R.id.addToPlayListControl);
         addPlayNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, targetIdTemp);
+                CommonHelper.onShowMediaPlayListDialog(mContext, );
             }
         });
 
@@ -446,7 +446,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             }
         });
 
-        LinearLayout addPlayNextControl = v.findViewById(R.id.addPlayNextControl);
+        LinearLayout addPlayNextControl = v.findViewById(R.id.addToPlayListControl);
         addPlayNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -504,14 +504,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                         MediaHelper.deletePlaylist(mContext, targetIdTemp);
                         break;
                     case Constants.VIEW_FAVORITE:
-                        dbManager.deleteFavorite(targetIdTemp);
+                        dbManager.deleteFavoriteById(targetIdTemp);
                         App.getInstance().isReloadFavorite = true;
                         break;
                     case Constants.VIEW_LAST_PLAYED:
-                        dbManager.deleteHistory(targetIdTemp);
+                        dbManager.deleteHistoryById(targetIdTemp);
                         break;
                     case Constants.VIEW_RECENT_ADDED:
-                        dbManager.insertHistoryDelete(targetIdTemp);
+                        dbManager.deleteRecentById(targetIdTemp);
                         break;
                 }
 

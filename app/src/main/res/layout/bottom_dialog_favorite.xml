@@ -73,7 +73,7 @@
             android:background="@color/md_black_1000" />
 
         <LinearLayout
-            android:id="@+id/addPlayNextControl"
+            android:id="@+id/addToPlayListControl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"

@@ -389,10 +389,12 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
             }
         });
 
+        final FragmentManager fm = this.getSupportFragmentManager();
+        final Context context = this;
         addControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onShowMediaPlayListDialog();
+                CommonHelper.onShowMediaPlayListDialog(context, fm, mService.getMCurrSong().get_id());
             }
         });
 
@@ -452,13 +454,13 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         App.getInstance().isReloadFavorite = true;
     }
 
-    private void onShowMediaPlayListDialog() {
+    /*private void onShowMediaPlayListDialog() {
 
         FragmentManager fm = this.getSupportFragmentManager();
         MediaPlayListDialog mediaPlayListDialog =
                 new MediaPlayListDialog(this, mService.getMCurrSong().get_id());
         mediaPlayListDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
-    }
+    }*/
 
     private void onAddHistory() {
 

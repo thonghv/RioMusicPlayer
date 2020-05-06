@@ -73,12 +73,16 @@ public class DBManager {
         return i;
     }
 
-    public void deleteFavorite(long _id) {
+    public void deleteFavoriteById(long _id) {
         database.delete(DatabaseHelper.FAVORITE_SONG, DatabaseHelper._ID + "=" + _id, null);
     }
 
-    public void deleteHistory(long _id) {
+    public void deleteHistoryById(long _id) {
         database.delete(DatabaseHelper.HISTORY_SONG, DatabaseHelper._ID + "=" + _id, null);
+    }
+
+    public void deleteRecentById(long _id) {
+        database.delete(DatabaseHelper.RECENT_SONG, DatabaseHelper._ID + "=" + _id, null);
     }
 
     public void delete() {
@@ -98,7 +102,7 @@ public class DBManager {
         // Check is exits song in history list
         Song songFind = getSongFromHistory(id);
         if(songFind != null) {
-            deleteHistory(songFind.get_historyId());
+            deleteHistoryById(songFind.get_historyId());
         }
 
         ContentValues contentValue = new ContentValues();

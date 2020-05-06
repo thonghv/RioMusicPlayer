@@ -43,6 +43,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.control.AddPlayListDialog;
+import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
@@ -390,8 +391,21 @@ public class CommonHelper {
 
         Song songFind = MediaHelper.getSongById(songs, id);
         if(songFind != null) {
-            mService.getPlayingQueue().add(songFind);
+            int nextIndex = mService.getCurrentPosition() + 1;
+            mService.getPlayingQueue().add(nextIndex, songFind);
         }
+    }
+
+    /**
+     * Show play list
+     * @param context
+     * @param fragmentManager
+     */
+    public static void onShowMediaPlayListDialog(Context context,FragmentManager fragmentManager, long songId) {
+
+        MediaPlayListDialog mediaPlayListDialog =
+                new MediaPlayListDialog(context, songId);
+        mediaPlayListDialog.show(fragmentManager, Constants.PLAY_LIST_DIALOG_NAME);
     }
 
     /**

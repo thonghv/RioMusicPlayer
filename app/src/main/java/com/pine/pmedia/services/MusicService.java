@@ -121,6 +121,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         this.isNeedPause = value;
     }
 
+    public int getCurrentPosition() {
+        return mPosition;
+    }
+
     //=======================
     // FUNCTION
     //=======================
