@@ -1,6 +1,7 @@
 package com.pine.pmedia.activities;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,11 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -30,7 +31,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -58,9 +61,8 @@ import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
-import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class MainActivity extends BaseActivity implements IActivity{
@@ -360,7 +362,6 @@ public class MainActivity extends BaseActivity implements IActivity{
                 playPauseControl.setBackgroundResource(R.drawable.play_bottom);
                 musicVisualizerControl.setVisibility(View.GONE);
             }
-
         }
     }
 
@@ -485,7 +486,7 @@ public class MainActivity extends BaseActivity implements IActivity{
         shuffleNowPlaying.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shuffQueueSong();
+                shuffleQueueSong();
             }
         });
 
@@ -515,13 +516,71 @@ public class MainActivity extends BaseActivity implements IActivity{
 
         queueSongsDialog = new BottomSheetDialog(this);
         queueSongsDialog.setContentView(view);
+
+        try {
+            Field behaviorField = queueSongsDialog.getClass().getDeclaredField("behavior");
+            behaviorField.setAccessible(true);
+            final BottomSheetBehavior behavior = (BottomSheetBehavior) behaviorField.get(queueSongsDialog);
+            behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                }
+            });
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         queueSongsDialog.show();
     }
 
-    private void shuffQueueSong() {
+    private void shuffleQueueSong() {
 
         Collections.shuffle(queueSong);
         queueSongRecyclerAdapter.updateData(queueSong);
         queueSongRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    public static class MyBottomSheetFragment extends BottomSheetDialogFragment {
+
+        @Override
+        public void setupDialog(Dialog dialog, int style) {
+
+
+            BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
+            bottomSheetDialog.setContentView(R.layout.bottom_dialog_queue);
+
+            try {
+                Field behaviorField = bottomSheetDialog.getClass().getDeclaredField("behavior");
+                behaviorField.setAccessible(true);
+                final BottomSheetBehavior behavior = (BottomSheetBehavior) behaviorField.get(bottomSheetDialog);
+                behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                        if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        }
+                    }
+
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    }
+                });
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
