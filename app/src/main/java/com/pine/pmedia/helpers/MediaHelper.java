@@ -779,6 +779,25 @@ public class MediaHelper {
         return new Filter(totalDuration, songs);
     }
 
+    public static Filter getQueue(DBManager dbManager, ArrayList<Song> songsTotal) {
+
+        int totalDuration = 0;
+        ArrayList<Song> songs = new ArrayList<>();
+        ArrayList<Song> songsTemp = dbManager.getQueueSong();
+
+        for(Song s : songsTemp) {
+
+            Song songFind = getById(songsTotal, s.get_id());
+            if(songFind != null) {
+                songFind.set_historyId(s.get_historyId());
+                totalDuration += songFind.get_duration();
+                songs.add(songFind);
+            }
+        }
+
+        return new Filter(totalDuration, songs);
+    }
+
     public static ArrayList<Song> getLastAddRecent(Activity activity) {
 
         ArrayList<Song> results = new ArrayList<>();

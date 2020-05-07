@@ -66,6 +66,17 @@ public class DBManager {
         return cursor;
     }
 
+    public Cursor fetchQueueSong() {
+        String[] columns = new String[] { DatabaseHelper._ID,
+                DatabaseHelper._NAME, DatabaseHelper._SONG_ID, DatabaseHelper._CREATED_DATE};
+        Cursor cursor = database.query(DatabaseHelper.QUEUE_SONG, columns, null,
+                null, null, null, DatabaseHelper._CREATED_DATE + " DESC");
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+        return cursor;
+    }
+
     public int update(long _id, String name, String desc) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseHelper._NAME, name);
@@ -87,6 +98,10 @@ public class DBManager {
 
     public void deleteAllRecentSong() {
         database.delete(DatabaseHelper.RECENT_SONG, null, null);
+    }
+
+    public void deleteAllQueueSong() {
+        database.delete(DatabaseHelper.QUEUE_SONG, null, null);
     }
 
     public void insertFavorite(long id, String name) {
@@ -118,6 +133,16 @@ public class DBManager {
         contentValue.put(DatabaseHelper._SONG_ID, id);
         contentValue.put(DatabaseHelper._CREATED_DATE, CommonHelper.dateToFormat(new Date()));
         database.insert(DatabaseHelper.RECENT_SONG, null, contentValue);
+    }
+
+    public void insertQueue(long id, String name, int isPlay, int durationCurrent) {
+        ContentValues contentValue = new ContentValues();
+        contentValue.put(DatabaseHelper._NAME, name);
+        contentValue.put(DatabaseHelper._SONG_ID, id);
+        contentValue.put(DatabaseHelper._IS_PLAY, isPlay);
+        contentValue.put(DatabaseHelper._DURATION_CURRENT, durationCurrent);
+        contentValue.put(DatabaseHelper._CREATED_DATE, CommonHelper.dateToFormat(new Date()));
+        database.insert(DatabaseHelper.QUEUE_SONG, null, contentValue);
     }
 
     public int getCountFavorite() {
@@ -187,6 +212,25 @@ public class DBManager {
             Song temp = new Song();
             temp.set_id(songId);
             temp.set_historyId(historyId);
+
+            results.add(temp);
+            cursor.moveToNext();
+        }
+
+        return results;
+    }
+
+    public ArrayList<Song> getQueueSong() {
+
+        ArrayList<Song> results = new ArrayList<>();
+        Cursor cursor = fetchQueueSong();
+        while (!cursor.isAfterLast()) {
+            int songId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper._SONG_ID));
+            long queueId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper._ID));
+
+            Song temp = new Song();
+            temp.set_id(songId);
+            temp.set_queueId(queueId);
 
             results.add(temp);
             cursor.moveToNext();

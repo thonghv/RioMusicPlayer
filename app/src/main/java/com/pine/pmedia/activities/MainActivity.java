@@ -9,10 +9,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,11 +30,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.NavigationDrawerAdapter;
+import com.pine.pmedia.adapters.SongCatRecyclerAdapter;
 import com.pine.pmedia.adapters.TabsPagerAdapter;
+import com.pine.pmedia.control.MusicVisualizer;
 import com.pine.pmedia.fragments.AlbumsFragment;
 import com.pine.pmedia.fragments.ArtistFragment;
 import com.pine.pmedia.fragments.GenresFragment;
@@ -40,11 +53,15 @@ import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
+import com.pine.pmedia.models.Filter;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class MainActivity extends BaseActivity implements IActivity{
 
@@ -64,12 +81,15 @@ public class MainActivity extends BaseActivity implements IActivity{
     private MusicService mService;
     private SmartTabLayout smartTabLayout;
     private RelativeLayout bottomPlayMainScreen;
-    private TextView songTitleView;
-    private TextView songArtistView;
-    private ImageButton playPauseImageButton;
-    private ImageButton nextImageButton;
-    private ImageButton previousImageButton;
+    private ImageView songAvatarBottomPlayControl;
+    private TextView songTitleBottomPlayControl;
+    private TextView songArtistBottomPlayControl;
+    private ImageButton playPauseControl;
+    private ImageButton queueSongListControl;
     private Toolbar toolbar;
+    private MusicVisualizer musicVisualizerControl;
+    private BottomSheetDialog queueSongsDialog;
+    private RecyclerView recyclerQueueSong;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -264,7 +284,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     public void onStart() {
         super.onStart();
 
-        onUpdateUISong();
+        onUpdateBottomPlayUI();
     }
 
     @Override
@@ -283,12 +303,14 @@ public class MainActivity extends BaseActivity implements IActivity{
 
     private void initViewControls() {
 
-        songTitleView = this.findViewById(R.id.songTitleMainScreen);
-        songArtistView = this.findViewById(R.id.songArtistMainScreen);
+        songAvatarBottomPlayControl = this.findViewById(R.id.songAvatarBottomPlay);
+        songTitleBottomPlayControl = this.findViewById(R.id.songTitleBottomPlay);
+        songArtistBottomPlayControl = this.findViewById(R.id.songArtistBottomPlay);
 
-        playPauseImageButton = this.findViewById(R.id.playPauseButtonBottom);
-        nextImageButton = this.findViewById(R.id.nextButtonBottom);
-        previousImageButton = this.findViewById(R.id.previousButtonBottom);
+        playPauseControl = this.findViewById(R.id.playPauseButtonBottom);
+        queueSongListControl = this.findViewById(R.id.queueSongList);
+
+        musicVisualizerControl = this.findViewById(R.id.queueVisualizer);
     }
 
     private TabsPagerAdapter initTab() {
@@ -302,74 +324,81 @@ public class MainActivity extends BaseActivity implements IActivity{
 
         return tabsPagerAdapter;
     }
-    private void onUpdateBaseUI() {
 
-        this.songTitleView.setText(mService.getMCurrSong().get_title());
-        this.songArtistView.setText(mService.getMCurrSong().get_artist());
-    }
-
-    private void onUpdateUISong() {
+    public void onUpdateBottomPlayUI() {
 
         if(mService != null && mService.isMusicReady) {
 
-            onUpdateBaseUI();
+            songTitleBottomPlayControl.setText(mService.getMCurrSong().get_title());
+            songArtistBottomPlayControl.setText(mService.getMCurrSong().get_artist());
+
+            // Load song avatar
+            ImageSize targetSize = new ImageSize(124, 124);
+            ImageLoader.getInstance().displayImage(mService.getMCurrSong().get_image(), new ImageViewAware(songAvatarBottomPlayControl),
+                    new DisplayImageOptions.Builder()
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true)
+                            .resetViewBeforeLoading(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build()
+                    , targetSize,
+                    new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                        }
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            System.out.println("Error ...");
+                        }
+                    },null);
 
             if(mService.isPlaying()) {
-                playPauseImageButton.setBackgroundResource(R.drawable.pause_bottom);
+                playPauseControl.setBackgroundResource(R.drawable.pause_bottom);
+                musicVisualizerControl.setVisibility(View.VISIBLE);
             } else {
-                playPauseImageButton.setBackgroundResource(R.drawable.play_bottom);
+                playPauseControl.setBackgroundResource(R.drawable.play_bottom);
+                musicVisualizerControl.setVisibility(View.GONE);
+            }
+
+        }
+    }
+
+    private void updateControlUI() {
+
+        if(mService != null && mService.isMusicReady) {
+            if(mService.isPlaying()) {
+                playPauseControl.setBackgroundResource(R.drawable.pause_bottom);
+                musicVisualizerControl.setVisibility(View.VISIBLE);
+            } else {
+                playPauseControl.setBackgroundResource(R.drawable.play_bottom);
+                musicVisualizerControl.setVisibility(View.GONE);
             }
         }
     }
 
     private void onHandlerActionsPlay() {
 
-        nextImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onNext();
-            }
-        });
-
-        previousImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPrevious();
-            }
-        });
-
-
-        playPauseImageButton.setOnClickListener(new View.OnClickListener() {
+        playPauseControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mService.onProcess(Constants.PLAY_PAUSE, null);
-                onUpdateUISong();
+                updateControlUI();
             }
         });
-    }
 
-    private void onNext() {
-
-        mService.onProcess(Constants.NEXT, null);
-
-        onUpdateBaseUI();
-
-        playPauseImageButton.setBackgroundResource(R.drawable.pause_bottom);
-    }
-
-    private void onPrevious() {
-
-        mService.onProcess(Constants.PREVIOUS, null);
-
-        onUpdateBaseUI();
-
-        playPauseImageButton.setBackgroundResource(R.drawable.pause_bottom);
+        queueSongListControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onShowQueueSong();
+            }
+        });
     }
 
     private void onSongComplete() {
 
-        onUpdateBaseUI();
-        playPauseImageButton.setBackgroundResource(R.drawable.play_bottom);
+        onUpdateBottomPlayUI();
+        playPauseControl.setBackgroundResource(R.drawable.play_bottom);
         mService.setNeedPause(true);
     }
 
@@ -435,4 +464,64 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
     }
 
+    /**
+     * Show bottom sheet queue song
+     */
+    private SongCatRecyclerAdapter queueSongRecyclerAdapter;
+    private ArrayList<Song> queueSong = null;
+    private void onShowQueueSong() {
+
+        LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = li.inflate(R.layout.bottom_dialog_queue, null);
+
+        ImageButton shuffleNowPlaying = view.findViewById(R.id.shuffleNowPlaying);
+        ImageButton addSongNowPlaying = view.findViewById(R.id.addSongNowPlaying);
+        ImageButton deleteNowPlaying = view.findViewById(R.id.deleteNowPlaying);
+
+        recyclerQueueSong = view.findViewById(R.id.recycleViewSongsCat);
+        recyclerQueueSong.setItemAnimator(new DefaultItemAnimator());
+        recyclerQueueSong.setLayoutManager(new LinearLayoutManager(this));
+
+        shuffleNowPlaying.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shuffQueueSong();
+            }
+        });
+
+        addSongNowPlaying.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        deleteNowPlaying.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        Filter filter = MediaHelper.getQueue(dbManager, App.getInstance().getMediaPlayList());
+        queueSong = filter.getSongs();
+
+        TextView headerSheetDialogControl = view.findViewById(R.id.headerSheetDialog);
+        headerSheetDialogControl.setText(getResources().getString(R.string.nowPlaying)
+                + Constants.SPACE + "(" + queueSong.size() + ")");
+
+        queueSongRecyclerAdapter = new SongCatRecyclerAdapter(this, queueSong, Constants.VIEW_QUEUE);
+        recyclerQueueSong.setAdapter(queueSongRecyclerAdapter);
+
+        queueSongsDialog = new BottomSheetDialog(this);
+        queueSongsDialog.setContentView(view);
+        queueSongsDialog.show();
+    }
+
+    private void shuffQueueSong() {
+
+        Collections.shuffle(queueSong);
+        queueSongRecyclerAdapter.updateData(queueSong);
+        queueSongRecyclerAdapter.notifyDataSetChanged();
+    }
 }

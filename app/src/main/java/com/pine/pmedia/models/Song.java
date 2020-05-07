@@ -30,6 +30,7 @@ public class Song implements Parcelable {
     private long _favoriteId;
     private long _historyId;
     private long _recentId;
+    private long _queueId;
 
     private int _numberOfTrack;
 

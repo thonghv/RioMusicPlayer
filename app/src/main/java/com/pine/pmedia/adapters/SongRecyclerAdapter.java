@@ -27,26 +27,34 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
+import com.pine.pmedia.activities.FilterActivity;
+import com.pine.pmedia.activities.MainActivity;
 import com.pine.pmedia.activities.PlaySongActivity;
+import com.pine.pmedia.extensions.ExecuteProcessStartPlay;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
 
 public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapter.SongRowHolder>  {
 
+    private MusicService mService;
+    private DBManager dbManager;
+
     private ArrayList<Song> songs;
     private Context mContext;
-
     private Intent playIntent;
-    private MusicService mService;
     private ImageLoader imageLoader;
 
     public SongRecyclerAdapter(ArrayList<Song> songs, Context mContext) {
         this.songs = songs;
         this.mContext = mContext;
+
+        this.dbManager = new DBManager(mContext);
+        this.dbManager.open();
     }
 
     protected ServiceConnection serviceConnection = new ServiceConnection() {
@@ -117,13 +125,14 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                     @Override
                     public void onClick(View v) {
 
-                        new onProcessStartPlay(position).execute();
-                        Bundle bundle = new Bundle();
+                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position).execute();
 
+                        /*new onProcessStartPlay(position).execute();
+                        Bundle bundle = new Bundle();
                         Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
                         intent.putExtras(bundle);
 
-                        mContext.startActivity(intent);
+                        mContext.startActivity(intent);*/
                     }
                 });
 

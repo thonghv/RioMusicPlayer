@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/p_background_02"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/p_background_04"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/headerSheetDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="3dp"
+                android:text="@string/nowPlaying"
+                android:textColor="#737373"
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/shuffleNowPlaying"
+                android:layout_width="22dp"
+                android:layout_height="19dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="25dp"
+                android:layout_toLeftOf="@+id/addSongNowPlaying"
+                android:alpha="0.3"
+                android:background="@drawable/shuffle_white" />
+
+            <ImageButton
+                android:id="@+id/addSongNowPlaying"
+                android:layout_width="22dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="25dp"
+                android:layout_toLeftOf="@+id/deleteNowPlaying"
+                android:alpha="0.3"
+                android:background="@drawable/ic_add_file_white" />
+
+            <ImageButton
+                android:id="@+id/deleteNowPlaying"
+                android:layout_width="21dp"
+                android:layout_height="22dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:alpha="0.4"
+                android:background="@drawable/ic_recycle_white" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="400dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleViewSongsCat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"></androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

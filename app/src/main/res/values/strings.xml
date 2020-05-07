@@ -38,7 +38,7 @@
     <string name="nameDuration">Duration</string>
     <string name="nameSize">Size</string>
     <string name="namePath">Path</string>
-
+    <string name="nowPlaying">Now Playing</string>
     <string name="myPlaylist">My Playlists</string>
     <string name="favorite">Favorite</string>
     <string name="lastPlayed">Last Played</string>

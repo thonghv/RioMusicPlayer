@@ -59,6 +59,7 @@ public class Constants {
     public static final int VIEW_FAVORITE               = 7;
     public static final int VIEW_LAST_PLAYED            = 8;
     public static final int VIEW_RECENT_ADDED           = 9;
+    public static final int VIEW_QUEUE                  = 10;
 
     //=================
     // API KEY
