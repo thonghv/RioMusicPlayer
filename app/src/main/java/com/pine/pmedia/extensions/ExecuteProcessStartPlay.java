@@ -1,6 +1,5 @@
 package com.pine.pmedia.extensions;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;

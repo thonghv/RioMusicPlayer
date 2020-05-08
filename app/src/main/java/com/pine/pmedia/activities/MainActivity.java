@@ -170,7 +170,6 @@ public class MainActivity extends BaseActivity implements IActivity{
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                System.out.println("");
             }
         });
     }
@@ -224,17 +223,14 @@ public class MainActivity extends BaseActivity implements IActivity{
         // On init playlist total data
         onInitPLayListTotal();
 
-        long startTime1 = System.currentTimeMillis();
         // On init recent song list
         onInitRecentSong();
-        long endTime1 = System.currentTimeMillis();
-        System.out.println("AB " + ((endTime1 - startTime1)));
     }
 
     private void onInitPLayListTotal() {
 
         if(mService.getPlaylistTotal().isEmpty()) {
-            new initMediaPlayList().onPostExecute(this);
+            new initMediaPlayList(this).execute();
         }
     }
 
@@ -391,7 +387,8 @@ public class MainActivity extends BaseActivity implements IActivity{
         queueSongListControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onShowQueueSong();
+                // onShowQueueSong();
+                onShowScreenQueueSong();
             }
         });
     }
@@ -426,20 +423,35 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
     }
 
+    /**
+     * Init all data track from resource media
+     */
     private class initMediaPlayList extends AsyncTask<String, Void, Activity> {
+
+        private Activity activity;
+
+        public initMediaPlayList(Activity activity) {
+            this.activity = activity;
+        }
+
         @Override
         protected Activity doInBackground(String... strings) {
+
+            ArrayList<Song> mediaSongs = MediaHelper.getSongs(activity, 0L, 0L);
+            App.getInstance().setMediaPlayList(mediaSongs);
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Activity activity) {
 
-            ArrayList<Song> mediaSongs = MediaHelper.getSongs(activity, 0L, 0L);
-            App.getInstance().setMediaPlayList(mediaSongs);
         }
     }
 
+    /**
+     * Init all data track recent added from resource media
+     */
     private class initRecentPlayList extends AsyncTask<String, Void, String> {
 
         private Activity activity;
@@ -463,6 +475,22 @@ public class MainActivity extends BaseActivity implements IActivity{
             App.getInstance().isReloadRecentAdd = true;
             reloadData();
         }
+    }
+
+    /**
+     * Show queue song screen
+     */
+    private void onShowScreenQueueSong() {
+
+        Bundle param = new Bundle();
+        param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_QUEUE);
+        param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.nowPlaying));
+        param.putString(Constants.KEY_NOTE_CAT, "");
+
+        Intent intent = new Intent(this, FilterActivity.class);
+        intent.putExtras(param);
+        startActivity(intent);
+        overridePendingTransition(R.animator.push_down_in, R.animator.push_down_out);
     }
 
     /**

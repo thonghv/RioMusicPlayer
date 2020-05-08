@@ -32,6 +32,7 @@ import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.control.DetailSongDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
+import com.pine.pmedia.control.MusicVisualizer;
 import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
@@ -59,7 +60,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     private String targetNameTemp;
     private long songCurrentIdTemp;
     private MediaPlayListDialog mediaPlayListDialog;
-
     private TextView headerSheetDialog;
 
     public SongCatRecyclerAdapter(Context context, ArrayList values, int viewType) {
@@ -131,9 +131,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             case Constants.VIEW_PLAYLIST_DIALOG:
                 view = LayoutInflater.from(mContext).inflate(R.layout.play_list_item_min, parent, false);
                 break;
-            case Constants.VIEW_QUEUE:
-                view = LayoutInflater.from(mContext).inflate(R.layout.song_queue_item, parent, false);
-                break;
         }
 
         return new ViewHolder(view, viewType);
@@ -195,10 +192,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 }
             }
         });
-
-        if(viewType == Constants.VIEW_QUEUE) {
-            return;
-        }
 
         // On click show bottom sheet more
         viewHolder.moreRowControl.setOnClickListener(new View.OnClickListener() {
@@ -589,6 +582,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
         public LinearLayout removeItemControl;
         public RelativeLayout swapItemControl;
+        public MusicVisualizer musicVisualizerControl;
 
         public int viewType;
 
@@ -618,17 +612,11 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     contentHolder = itemView.findViewById(R.id.songLayout);
                     moreRowControl = itemView.findViewById(R.id.moreRowControl);
                     break;
-                case Constants.VIEW_QUEUE:
-                    trackTitle = itemView.findViewById(R.id.trackTitle);
-                    trackArtist = itemView.findViewById(R.id.trackArtist);
-                    contentHolder = itemView.findViewById(R.id.songLayout);
-                    removeItemControl = itemView.findViewById(R.id.removeItem);
-                    swapItemControl = itemView.findViewById(R.id.swapItem);
-                    break;
             }
         }
 
         public void setData(Song song) {
+
             switch (viewType) {
                 case Constants.VIEW_ALBUM:
                 case Constants.VIEW_ARTIST:
@@ -648,11 +636,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 case Constants.VIEW_PLAYLIST_DIALOG:
                     trackTitle.setText(song.get_title());
                     trackArtist.setText(song.get_numberOfTrack() + Constants.SPACE + Constants.SONGS);
-                    break;
-
-                case Constants.VIEW_QUEUE:
-                    trackTitle.setText(song.get_title());
-                    trackArtist.setText(song.get_artist());
                     break;
             }
         }

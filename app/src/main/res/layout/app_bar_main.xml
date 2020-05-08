@@ -71,7 +71,6 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="47dp"
-                android:id="@+id/hiddenBarMainScreen"
                 android:layout_alignParentBottom="true"
                 android:background="@color/p_background_01">
 
@@ -102,59 +101,76 @@
 
 
                 <RelativeLayout
-                    android:id="@+id/songAvatarLayout"
-                    android:layout_width="40dp"
-                    android:layout_height="match_parent">
+                    android:id="@+id/hiddenBarMainScreen"
+                    android:layout_toLeftOf="@id/playPauseButtonBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_marginRight="30dp"
+                    android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:id="@+id/songAvatarBottomPlay"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:minHeight="0dp"
-                        android:maxHeight="0dp"
-                        android:alpha="0.6"
-                        android:background="@drawable/bk_01"/>
+                    <RelativeLayout
+                        android:id="@+id/songAvatarLayout"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent">
 
-                    <com.pine.pmedia.control.MusicVisualizer
-                        android:id="@+id/queueVisualizer"
-                        android:layout_width="30dp"
-                        android:layout_height="24dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="9dp"
-                        android:visibility="gone"/>
+                        <ImageView
+                            android:id="@+id/songAvatarBottomPlay"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:minHeight="0dp"
+                            android:maxHeight="0dp"
+                            android:alpha="0.6"
+                            android:background="@drawable/ic_music_note_white"/>
+
+                        <com.pine.pmedia.control.MusicVisualizer
+                            android:id="@+id/queueVisualizer"
+                            android:layout_width="30dp"
+                            android:layout_height="24dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginTop="9dp"
+                            android:visibility="gone"/>
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_toRightOf="@id/songAvatarLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/songTitleBottomPlay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/songAvatarLayout"
+                            android:text="Ngày mai em đi Ngày mai em đi Ngày mai em đi "
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="7dp"
+                            android:textSize="13dp"
+                            android:layout_marginRight="20dp"
+                            android:textColor="@color/white" />
+                        <TextView
+                            android:id="@+id/songArtistBottomPlay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/songTitleBottomPlay"
+                            android:text="Lê Hiếu"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textSize="10dp"
+                            android:maxWidth="160dp"
+                            android:singleLine="true"
+                            android:layout_marginRight="20dp"
+                            android:layout_alignLeft="@id/songTitleBottomPlay"
+                            android:textAppearance="?android:textAppearance"
+                            android:textColor="@color/gray" />
+                    </LinearLayout>
 
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/songTitleBottomPlay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/songAvatarLayout"
-                    android:text="Ngày mai em đi Ngày mai em đi"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="7dp"
-                    android:textSize="13dp"
-                    android:layout_marginRight="120dp"
-                    android:textColor="@color/white" />
-                <TextView
-                    android:id="@+id/songArtistBottomPlay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/songTitleBottomPlay"
-                    android:text="Lê Hiếu"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textSize="10dp"
-                    android:maxWidth="160dp"
-                    android:singleLine="true"
-                    android:layout_alignLeft="@id/songTitleBottomPlay"
-                    android:textAppearance="?android:textAppearance"
-                    android:textColor="@color/gray" />
             </RelativeLayout>
 
         </RelativeLayout>

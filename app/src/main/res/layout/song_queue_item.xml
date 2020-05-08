@@ -60,6 +60,23 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/visualizerItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_weight="7">
+
+                <com.pine.pmedia.control.MusicVisualizer
+                    android:id="@+id/queueVisualizer"
+                    android:layout_width="30dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="9dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/removeItem"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
