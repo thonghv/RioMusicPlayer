@@ -103,9 +103,19 @@ public class CommonHelper {
         return result;
     }
 
-    public static String toFormatTime(int time) {
+    public static String toFormatTimeMS(int time) {
 
         return String.format(Constants.TIME_FOMAT_M_S,
+                TimeUnit.MILLISECONDS.toMinutes(time) -
+                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
+                TimeUnit.MILLISECONDS.toSeconds(time) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
+    }
+
+    public static String toFormatTimeHMS(int time) {
+
+        return String.format(Constants.TIME_FOMAT_H_M_S,
+                TimeUnit.MILLISECONDS.toHours(time),
                 TimeUnit.MILLISECONDS.toMinutes(time) -
                         TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
                 TimeUnit.MILLISECONDS.toSeconds(time) -
@@ -432,5 +442,9 @@ public class CommonHelper {
 
         // Set default ring tone
         RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, addedUri);
+    }
+
+    public static void updateSongPLaying(DBManager dbManager, long songId) {
+        dbManager.updateSettingByKey(Constants.SETTING_SONG_PLAYING, String.valueOf(songId));
     }
 }

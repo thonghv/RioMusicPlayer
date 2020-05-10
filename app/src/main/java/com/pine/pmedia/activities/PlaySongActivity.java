@@ -19,14 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongPagerAdapter;
-import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.extensions.ZoomOutPageTransformer;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
@@ -336,11 +334,11 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
 
         int finalTime = getMService().getMPlayer().getDuration();
 
-        endTimeText.setText(CommonHelper.toFormatTime(finalTime));
+        endTimeText.setText(CommonHelper.toFormatTimeMS(finalTime));
         this.seekBar.setMax(finalTime);
 
         int startTime = getMService().getMPlayer().getCurrentPosition();
-        startTimeText.setText(CommonHelper.toFormatTime(startTime));
+        startTimeText.setText(CommonHelper.toFormatTimeMS(startTime));
         seekBar.setProgress(startTime);
     }
 

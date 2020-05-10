@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,8 +87,10 @@ public class MainActivity extends BaseActivity implements IActivity{
     private ImageView songAvatarBottomPlayControl;
     private TextView songTitleBottomPlayControl;
     private TextView songArtistBottomPlayControl;
-    private ImageButton playPauseControl;
-    private ImageButton queueSongListControl;
+    private LinearLayout playPauseControl;
+    private LinearLayout queueSongListControl;
+    private ImageView imgPlayPauseBottomControl;
+    private ImageView imgQueueBottomControl;
     private Toolbar toolbar;
     private MusicVisualizer musicVisualizerControl;
     private BottomSheetDialog queueSongsDialog;
@@ -192,7 +195,7 @@ public class MainActivity extends BaseActivity implements IActivity{
 
         GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TR_BL, new int[] {color1, color2});
         gd.setCornerRadius(0f);
-        bottomPlayMainScreen.setBackgroundDrawable(gd);
+        //bottomPlayMainScreen.setBackgroundDrawable(gd);
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -237,6 +240,18 @@ public class MainActivity extends BaseActivity implements IActivity{
     private void onInitRecentSong() {
 
         new initRecentPlayList(this, dbManager).execute();
+    }
+
+    private void onInitSongPLaying() {
+
+        String settingValue = dbManager.getSettingByKey(Constants.SETTING_SONG_PLAYING);
+        if(settingValue == null) {
+            ArrayList<Song> songs = App.getInstance().getMediaPlayList();
+            if(!songs.isEmpty()) {
+                dbManager.insertSetting(Constants.SETTING_SONG_PLAYING, String.valueOf(songs.get(0).get_id()));
+            }
+
+        }
     }
 
     @Override
@@ -308,6 +323,9 @@ public class MainActivity extends BaseActivity implements IActivity{
         playPauseControl = this.findViewById(R.id.playPauseButtonBottom);
         queueSongListControl = this.findViewById(R.id.queueSongList);
 
+        imgPlayPauseBottomControl = this.findViewById(R.id.imgPlayPauseBottom);
+        imgQueueBottomControl = this.findViewById(R.id.imgQueueSongBottom);
+
         musicVisualizerControl = this.findViewById(R.id.queueVisualizer);
     }
 
@@ -352,10 +370,10 @@ public class MainActivity extends BaseActivity implements IActivity{
                     },null);
 
             if(mService.isPlaying()) {
-                playPauseControl.setBackgroundResource(R.drawable.pause_bottom);
+                imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
                 musicVisualizerControl.setVisibility(View.VISIBLE);
             } else {
-                playPauseControl.setBackgroundResource(R.drawable.play_bottom);
+                imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
                 musicVisualizerControl.setVisibility(View.GONE);
             }
         }
@@ -365,10 +383,10 @@ public class MainActivity extends BaseActivity implements IActivity{
 
         if(mService != null && mService.isMusicReady) {
             if(mService.isPlaying()) {
-                playPauseControl.setBackgroundResource(R.drawable.pause_bottom);
+                imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
                 musicVisualizerControl.setVisibility(View.VISIBLE);
             } else {
-                playPauseControl.setBackgroundResource(R.drawable.play_bottom);
+                imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
                 musicVisualizerControl.setVisibility(View.GONE);
             }
         }
@@ -396,7 +414,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     private void onSongComplete() {
 
         onUpdateBottomPlayUI();
-        playPauseControl.setBackgroundResource(R.drawable.play_bottom);
+        imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
         mService.setNeedPause(true);
     }
 
@@ -446,6 +464,11 @@ public class MainActivity extends BaseActivity implements IActivity{
         @Override
         protected void onPostExecute(Activity activity) {
 
+            // On save song playing previous if null
+            onInitSongPLaying();
+
+            // On load previous song
+            onLoadPreviousData();
         }
     }
 
@@ -487,10 +510,10 @@ public class MainActivity extends BaseActivity implements IActivity{
         param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.nowPlaying));
         param.putString(Constants.KEY_NOTE_CAT, "");
 
-        Intent intent = new Intent(this, FilterActivity.class);
+        Intent intent = new Intent(this, QueueActivity.class);
         intent.putExtras(param);
         startActivity(intent);
-        overridePendingTransition(R.animator.push_down_in, R.animator.push_down_out);
+        //overridePendingTransition(R.animator.push_down_out, R.animator.push_down_in);
     }
 
     /**
@@ -609,6 +632,40 @@ public class MainActivity extends BaseActivity implements IActivity{
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void onLoadPreviousData(){
+
+        Song songFind  = MediaHelper.findPreviousSong(dbManager, App.getInstance().getMediaPlayList());
+        if(songFind != null) {
+
+            songTitleBottomPlayControl.setText(songFind.get_title());
+            songArtistBottomPlayControl.setText(songFind.get_artist());
+
+            // Load song avatar
+            ImageSize targetSize = new ImageSize(124, 124);
+            ImageLoader.getInstance().displayImage(songFind.get_image(), new ImageViewAware(songAvatarBottomPlayControl),
+                    new DisplayImageOptions.Builder()
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true)
+                            .resetViewBeforeLoading(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build()
+                    , targetSize,
+                    new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                        }
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            System.out.println("Error ...");
+                        }
+                    },null);
+
+            imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
+            musicVisualizerControl.setVisibility(View.GONE);
         }
     }
 }

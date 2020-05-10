@@ -118,7 +118,7 @@ public class FilterActivity extends BaseActivity implements IActivity {
     public void onUpdateNoteFilter(long number, int totalDuration) {
 
         String note = number + Constants.SPACE + Constants.SONGS
-                + Constants.MINUS + CommonHelper.toFormatTime(totalDuration);
+                + Constants.MINUS + CommonHelper.toFormatTimeMS(totalDuration);
         noteCatControl.setText(note);
     }
 

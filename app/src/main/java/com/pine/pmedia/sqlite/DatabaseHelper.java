@@ -11,6 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String HISTORY_SONG = "HISTORY_SONG";
     public static final String RECENT_SONG = "RECENT_SONG";
     public static final String QUEUE_SONG = "QUEUE_SONG";
+    public static final String SETTING = "P_SETTING";
 
     // Table columns
     public static final String _ID = "_id";
@@ -19,12 +20,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String _CREATED_DATE = "_createdDate";
     public static final String _IS_PLAY = "_isPlay";
     public static final String _DURATION_CURRENT = "_durationCurrent";
+    public static final String _KEY = "_key";
+    public static final String _VALUE = "_value";
 
     // Database Information
     static final String DB_NAME = "PCODE.DB";
 
     // database version
-    static final int DB_VERSION = 1;
+    static final int DB_VERSION = 3;
 
     // Creating table query
     private static final String CREATE_FAVORITE_SONG = "create table " + FAVORITE_SONG + "("
@@ -53,6 +56,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + _DURATION_CURRENT + " INTEGER, "
             + _CREATED_DATE + " TEXT);";
 
+    private static final String CREATE_SETTING = "create table " + SETTING + "("
+            + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + _KEY + " TEXT NOT NULL, "
+            + _VALUE + " TEXT);";
+
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -63,6 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_HISTORY_SONG);
         db.execSQL(CREATE_RECENT_SONG);
         db.execSQL(CREATE_QUEUE_SONG);
+        db.execSQL(CREATE_SETTING);
     }
 
     @Override
@@ -71,6 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + HISTORY_SONG);
         db.execSQL("DROP TABLE IF EXISTS " + RECENT_SONG);
         db.execSQL("DROP TABLE IF EXISTS " + QUEUE_SONG);
+        db.execSQL("DROP TABLE IF EXISTS " + SETTING);
         onCreate(db);
     }
 }

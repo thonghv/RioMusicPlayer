@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingRight="10dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="75dp">
@@ -49,7 +49,7 @@
                     android:layout_width="22dp"
                     android:layout_height="19dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginRight="20dp"
                     android:layout_toLeftOf="@+id/addSongNowPlaying"
                     android:alpha="0.3"
                     android:background="@drawable/shuffle_white"
@@ -60,7 +60,7 @@
                     android:layout_width="22dp"
                     android:layout_height="20dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginRight="20dp"
                     android:layout_toLeftOf="@+id/deleteNowPlaying"
                     android:alpha="0.3"
                     android:background="@drawable/ic_add_file_white"
@@ -71,11 +71,10 @@
                     android:layout_width="21dp"
                     android:layout_height="22dp"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="5dp"
                     android:layout_marginTop="10dp"
                     android:alpha="0.4"
                     android:background="@drawable/ic_recycle_white"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
 
             </RelativeLayout>
 
@@ -83,12 +82,12 @@
 
         <View
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="3dp"
             android:layout_alignParentTop="true"
-            android:background="@color/md_grey_900" />
+            android:background="@color/md_grey_800" />
 
         <LinearLayout
             android:layout_width="match_parent"

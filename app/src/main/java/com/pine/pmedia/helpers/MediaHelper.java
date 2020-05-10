@@ -798,6 +798,16 @@ public class MediaHelper {
         return new Filter(totalDuration, songs);
     }
 
+    public static int getTotalDuration(ArrayList<Song> songs) {
+
+        int totalDuration = 0;
+        for(Song s : songs) {
+            totalDuration += s.get_duration();
+        }
+
+        return totalDuration;
+    }
+
     public static ArrayList<Song> getLastAddRecent(Activity activity) {
 
         ArrayList<Song> results = new ArrayList<>();
@@ -816,5 +826,17 @@ public class MediaHelper {
         }
 
         return results;
+    }
+
+    public static Song findPreviousSong(DBManager dbManager, ArrayList<Song> songsTotal) {
+
+        String value = dbManager.getSettingByKey(Constants.SETTING_SONG_PLAYING);
+        if(value != null) {
+            return getById(songsTotal, Long.valueOf(value));
+        } else if(!songsTotal.isEmpty()) {
+            return songsTotal.get(0);
+        }
+
+        return null;
     }
 }

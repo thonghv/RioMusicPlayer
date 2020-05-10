@@ -32,7 +32,6 @@ import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.control.DetailSongDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
-import com.pine.pmedia.control.MusicVisualizer;
 import com.pine.pmedia.fragments.SuggestFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
@@ -85,7 +84,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     };
 
     private void inItService() {
-        if(mService != null) {
+        if(mService == null) {
             playIntent = new Intent(mContext, MusicService.class);
             mContext.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         }
@@ -165,7 +164,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
                         param.putString(Constants.KEY_TITLE_CAT, song.get_title());
                         String note = song.get_numberOfTrack() + Constants.SPACE + Constants.SONGS
-                                + Constants.MINUS + CommonHelper.toFormatTime(0);
+                                + Constants.MINUS + CommonHelper.toFormatTimeMS(0);
                         param.putString(Constants.KEY_NOTE_CAT, note);
                         param.putLong(Constants.KEY_ID, song.get_id());
                         intent.putExtras(param);
@@ -489,7 +488,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         }
 
         DetailSongDialog detailSongDialog = new DetailSongDialog(songFind.get_title(), songFind.get_artist(),
-                songFind.get_album(), CommonHelper.toFormatTime(songFind.get_duration()),
+                songFind.get_album(), CommonHelper.toFormatTimeMS(songFind.get_duration()),
                 CommonHelper.toFormatSize(songFind.get_size()), songFind.get_path());
         FragmentActivity fragmentActivity = (FragmentActivity) mContext;
         FragmentManager fm = fragmentActivity.getSupportFragmentManager();
@@ -580,10 +579,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         public LinearLayout contentHolder;
         public RelativeLayout moreRowControl;
 
-        public LinearLayout removeItemControl;
-        public RelativeLayout swapItemControl;
-        public MusicVisualizer musicVisualizerControl;
-
         public int viewType;
 
         public ViewHolder(View v, int viewType) {
@@ -626,7 +621,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 case Constants.VIEW_RECENT_ADDED:
 
                     trackTitle.setText(song.get_title());
-                    trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
+                    trackDuration.setText(CommonHelper.toFormatTimeMS(song.get_duration()));
                     trackArtist.setText(song.get_artist());
 
                     Drawable drawable = mContext.getResources().getDrawable(R.drawable.ic_music_note_white);

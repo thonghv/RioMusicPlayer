@@ -134,7 +134,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
                 param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_FAVORITE);
                 param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.favorite));
                 String note = numberOfFavorites + Constants.SPACE + Constants.SONGS
-                        + Constants.MINUS + CommonHelper.toFormatTime(0);
+                        + Constants.MINUS + CommonHelper.toFormatTimeMS(0);
                 param.putString(Constants.KEY_NOTE_CAT, note);
 
                 intent.putExtras(param);
@@ -152,7 +152,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
                 param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_LAST_PLAYED);
                 param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.lastPlayed));
                 String note = numberOfLastPlayed + Constants.SPACE + Constants.SONGS
-                        + Constants.MINUS + CommonHelper.toFormatTime(0);
+                        + Constants.MINUS + CommonHelper.toFormatTimeMS(0);
                 param.putString(Constants.KEY_NOTE_CAT, note);
 
                 intent.putExtras(param);
@@ -169,7 +169,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
                 param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_RECENT_ADDED);
                 param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.recentAdded));
                 String note = numberOfAddRecnet + Constants.SPACE + Constants.SONGS
-                        + Constants.MINUS + CommonHelper.toFormatTime(0);
+                        + Constants.MINUS + CommonHelper.toFormatTimeMS(0);
                 param.putString(Constants.KEY_NOTE_CAT, note);
 
                 intent.putExtras(param);

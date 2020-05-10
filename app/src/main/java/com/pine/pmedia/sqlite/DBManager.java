@@ -70,10 +70,28 @@ public class DBManager {
         String[] columns = new String[] { DatabaseHelper._ID,
                 DatabaseHelper._NAME, DatabaseHelper._SONG_ID, DatabaseHelper._CREATED_DATE};
         Cursor cursor = database.query(DatabaseHelper.QUEUE_SONG, columns, null,
-                null, null, null, DatabaseHelper._CREATED_DATE + " DESC");
+                null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
         }
+        return cursor;
+    }
+
+
+    public Cursor fetchPreviousSong() {
+
+        String[] columns = new String[] { DatabaseHelper._ID,
+                DatabaseHelper._NAME, DatabaseHelper._SONG_ID, DatabaseHelper._CREATED_DATE};
+        Cursor cursor = database.query(DatabaseHelper.QUEUE_SONG, columns, DatabaseHelper._IS_PLAY + "=?",
+                new String[] { "1" }, null, null, DatabaseHelper._CREATED_DATE + " DESC");
+        return cursor;
+    }
+
+    public Cursor fetchSetting(String key) {
+
+        String[] columns = new String[] { DatabaseHelper._ID, DatabaseHelper._KEY, DatabaseHelper._VALUE};
+        Cursor cursor = database.query(DatabaseHelper.SETTING, columns, DatabaseHelper._KEY + "=?",
+                new String[] { key }, null, null, null);
         return cursor;
     }
 
@@ -274,6 +292,48 @@ public class DBManager {
                 return result;
             }
             cursor.moveToNext();
+        }
+
+        return null;
+    }
+
+    public long findPreviousSong() {
+
+        Cursor cursor = fetchPreviousSong();
+        if (cursor.moveToFirst()){
+            do{
+                long songId = cursor.getLong(cursor.getColumnIndex(DatabaseHelper._SONG_ID));
+                return songId;
+            }while(cursor.moveToNext());
+        }
+
+        return -1;
+    }
+
+    public void insertSetting(String key, String value) {
+
+        ContentValues contentValue = new ContentValues();
+        contentValue.put(DatabaseHelper._KEY, key);
+        contentValue.put(DatabaseHelper._VALUE, value);
+        database.insert(DatabaseHelper.SETTING, null, contentValue);
+    }
+
+    public void updateSettingByKey(String key, String value) {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper._VALUE, value);
+        database.update(DatabaseHelper.SETTING, contentValues, DatabaseHelper._KEY + " = '" + key + "'", null);
+    }
+
+
+    public String getSettingByKey(String key) {
+
+        Cursor cursor = fetchSetting(key);
+        if (cursor.moveToFirst()){
+            do{
+                String value = cursor.getString(cursor.getColumnIndex(DatabaseHelper._VALUE));
+                return value;
+            }while(cursor.moveToNext());
         }
 
         return null;

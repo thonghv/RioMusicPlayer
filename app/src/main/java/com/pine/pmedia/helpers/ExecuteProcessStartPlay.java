@@ -1,4 +1,4 @@
-package com.pine.pmedia.extensions;
+package com.pine.pmedia.helpers;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -43,14 +43,16 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
         dbManager.deleteAllQueueSong();
         int index = 0;
         for(Song s: songs) {
-            if(index == 0) {
-                index ++;
-                continue;
-            }
-            int isPlay = index == position ? 1 : 0;
-            dbManager.insertQueue(s.get_id(), s.get_title(), isPlay, 0);
+//            if(index == 0) {
+//                index ++;
+//                continue;
+//            }
+
+            dbManager.insertQueue(s.get_id(), s.get_title(), 0, 0);
             index ++;
         }
+
+        CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id());
 
         return null;
     }

@@ -27,10 +27,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
-import com.pine.pmedia.activities.FilterActivity;
-import com.pine.pmedia.activities.MainActivity;
-import com.pine.pmedia.activities.PlaySongActivity;
-import com.pine.pmedia.extensions.ExecuteProcessStartPlay;
+import com.pine.pmedia.helpers.ExecuteProcessStartPlay;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.helpers.Constants;
@@ -76,9 +73,9 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0) {
-            return Constants.ITEM_TYPE_CONTROL;
-        }
+//        if(position == 0) {
+//            return Constants.ITEM_TYPE_CONTROL;
+//        }
 
         return Constants.ITEM_TYPE_SONG;
     }
@@ -114,25 +111,17 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
 
                 final Song song = songs.get(position);
                 holder.trackTitle.setText(song.get_title());
-                holder.trackDuration.setText(CommonHelper.toFormatTime(song.get_duration()));
+                holder.trackDuration.setText(CommonHelper.toFormatTimeMS(song.get_duration()));
                 holder.trackArtist.setText(song.get_artist());
 
                 this.onLoadImageCover(song.get_image(), holder);
 
-                holder.trackTitle.setTypeface(customFace);
+                //holder.trackTitle.setTypeface(customFace);
 
                 holder.contentHolder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
                         new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position).execute();
-
-                        /*new onProcessStartPlay(position).execute();
-                        Bundle bundle = new Bundle();
-                        Intent intent = new Intent(v.getContext(), PlaySongActivity.class);
-                        intent.putExtras(bundle);
-
-                        mContext.startActivity(intent);*/
                     }
                 });
 

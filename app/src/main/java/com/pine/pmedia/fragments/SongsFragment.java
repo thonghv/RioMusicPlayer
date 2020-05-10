@@ -86,7 +86,7 @@ public class SongsFragment extends BaseFragment {
         ArrayList<Song> songsLibrary = MediaHelper.getSongs(getmActivity(), 0L, 0L);
 
         ArrayList<Song> songs = new ArrayList<>();
-        songs.add(new Song());
+        //songs.add(new Song());
         songs.addAll(songsLibrary);
 
         songRecyclerAdapter = new SongRecyclerAdapter(songs, super.getmActivity());

@@ -1,9 +1,11 @@
 package com.pine.pmedia.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,18 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
     private TextView noteCatControl;
     private ItemTouchHelper mItemTouchHelper;
 
+    private ImageButton shuffleNowPlayingControl;
+    private ImageButton addSongNowPlayingControl;
+    private ImageButton deleteNowPlayingControl;
+
+    public void setSongs(ArrayList<Song> songs) {
+        this.songs = songs;
+    }
+
+    public void removeSong(int position) {
+        this.songs.remove(position);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,15 +86,22 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
 
         // Init control layout
         initControl();
-
-        // Load songs by album
-        onLoadDataUI();
     }
 
     @Override
     protected void onHandler() {
 
         mService = super.getMService();
+
+        // Load songs by album
+        onLoadDataUI();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+
+        onUpdateQueueSongDB();
     }
 
     public void initDBManager() {
@@ -90,9 +111,18 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
     }
 
     private void initControl() {
+
         recyclerSongsView = findViewById(R.id.recycleViewSongsCat);
         titleCatControl = findViewById(R.id.titleCatControl);
         noteCatControl = findViewById(R.id.noteCatControl);
+
+        shuffleNowPlayingControl = findViewById(R.id.shuffleNowPlaying);
+        addSongNowPlayingControl = findViewById(R.id.addSongNowPlaying);
+        deleteNowPlayingControl = findViewById(R.id.deleteNowPlaying);
+
+        shuffleNowPlayingControl.setVisibility(View.VISIBLE);
+        addSongNowPlayingControl.setVisibility(View.VISIBLE);
+        deleteNowPlayingControl.setVisibility(View.VISIBLE);
     }
 
     private void onLoadDataUI() {
@@ -106,18 +136,37 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
         this.songs = (ArrayList<Song>) songs;
         this.totalDuration = filter.getTotalDuration();
 
-        String note = this.songs.size() + Constants.SPACE + Constants.SONGS
-                + Constants.MINUS + CommonHelper.toFormatTime(totalDuration);
+        onUpdateHeaderData(filter.getTotalDuration());
         titleCatControl.setText(R.string.nowPlaying);
-        noteCatControl.setText(note);
+
+        long songPlayingId;
+        boolean isPlaying = false;
+        if(mService.getMCurrSong() == null) {
+            Song songPlaying = MediaHelper.findPreviousSong(dbManager, App.getInstance().getMediaPlayList());
+            songPlayingId = songPlaying.get_id();
+        } else {
+            isPlaying = mService.getIsPlaying();
+            songPlayingId = mService.getMCurrSong().get_id();
+        }
 
         SongQueueRecyclerAdapter songQueueRecyclerAdapter =
-                new SongQueueRecyclerAdapter(this, songs, this);
+                new SongQueueRecyclerAdapter(this, mService, songs, this, songPlayingId, isPlaying);
         recyclerSongsView.setAdapter(songQueueRecyclerAdapter);
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(songQueueRecyclerAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerSongsView);
+    }
+
+    public void onUpdateHeaderData(int totalDuration) {
+
+        if(totalDuration < 0) {
+            totalDuration = MediaHelper.getTotalDuration(songs);
+        }
+
+        String note = songs.size() + Constants.SPACE + Constants.SONGS
+                + Constants.MINUS + CommonHelper.toFormatTimeHMS(totalDuration);
+        noteCatControl.setText(note);
     }
 
     @Override
@@ -148,5 +197,36 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
+    }
+
+    // Update queue songs list
+    public void onUpdateQueueSongDB() {
+
+        new ExecuteUpdateQueueSong(this.songs).execute();
+    }
+
+    /**
+     * Update queue song list
+     */
+    private class ExecuteUpdateQueueSong extends AsyncTask<String, Void, String> {
+
+        private ArrayList<Song> songs;
+
+        public ExecuteUpdateQueueSong(ArrayList<Song> songs) {
+            this.songs = songs;
+        }
+
+        protected String doInBackground(String... params){
+            dbManager.deleteAllQueueSong();
+            for(Song s: songs) {
+                dbManager.insertQueue(s.get_id(), s.get_title(), 0, 0);
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String response) {
+
+        }
     }
 }

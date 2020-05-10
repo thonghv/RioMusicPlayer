@@ -91,7 +91,7 @@ public class GenreActivity extends AppCompatActivity {
         setTitle(null);
         cateNameControl.setText(cateName);
         cateNoteControl.setText(numberOfSong + Constants.SPACE + Constants.SONGS);
-        albumSongCountControl.setText(CommonHelper.toFormatTime(totalDuration));
+        albumSongCountControl.setText(CommonHelper.toFormatTimeMS(totalDuration));
 
         ImageLoader.getInstance().displayImage(artUrl, new ImageViewAware(albumCoverImage),
                 new DisplayImageOptions.Builder()

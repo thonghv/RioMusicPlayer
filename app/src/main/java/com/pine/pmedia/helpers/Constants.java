@@ -92,6 +92,12 @@ public class Constants {
     public static final String KEY_NOTE_CAT             = "noteCat";
     public static final String KEY_CAT_TYPE             = "catType";
 
+
+    //=================
+    // KEY SETTING
+    //=================
+    public static final String SETTING_SONG_PLAYING     = "settingSongPlaying";
+
     //=================
     // API SEARCH
     //=================
