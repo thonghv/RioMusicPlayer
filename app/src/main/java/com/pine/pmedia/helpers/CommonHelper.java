@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -43,6 +45,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
+import com.pine.pmedia.activities.QueueActivity;
 import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.models.Song;
@@ -62,6 +65,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -402,13 +406,13 @@ public class CommonHelper {
     /**
      * Show play list
      * @param context
-     * @param songId
+     * @param songIds
      */
-    public static void onShowMediaPlayListDialog(Context context, long songId) {
+    public static void onShowMediaPlayListDialog(Context context, List<Long> songIds) {
 
         final FragmentManager fm = ((AppCompatActivity) context).getSupportFragmentManager();
         MediaPlayListDialog mediaPlayListDialog =
-                new MediaPlayListDialog(context, songId);
+                new MediaPlayListDialog(context, songIds);
         mediaPlayListDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
     }
 
@@ -420,7 +424,7 @@ public class CommonHelper {
     public static void setRingTone(Context context, String pathString){
 
         // Create File object for the specified ring tone path
-        File f=new File(pathString);
+        File f = new File(pathString);
 
         // Insert the ring tone to the content provider
         ContentValues value=new ContentValues();
@@ -446,5 +450,31 @@ public class CommonHelper {
 
     public static void updateSongPLaying(DBManager dbManager, long songId) {
         dbManager.updateSettingByKey(Constants.SETTING_SONG_PLAYING, String.valueOf(songId));
+    }
+
+    public static void onShare(Context context, String subject, String content) {
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT,subject);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, content);
+        shareIntent.setType("text/plain");
+        context.startActivity(shareIntent);
+    }
+
+    /**
+     * Show queue song screen
+     */
+    public static void onShowScreenQueueSong(Context context) {
+
+        Bundle param = new Bundle();
+        param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_QUEUE);
+        param.putString(Constants.KEY_TITLE_CAT, context.getResources().getString(R.string.nowPlaying));
+        param.putString(Constants.KEY_NOTE_CAT, "");
+
+        Intent intent = new Intent(context, QueueActivity.class);
+        intent.putExtras(param);
+        context.startActivity(intent);
+        //overridePendingTransition(R.animator.push_down_out, R.animator.push_down_in);
     }
 }

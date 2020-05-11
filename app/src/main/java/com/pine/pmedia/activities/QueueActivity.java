@@ -86,6 +86,9 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
 
         // Init control layout
         initControl();
+
+        // Init handle action
+        initHandlerAction();
     }
 
     @Override
@@ -124,6 +127,24 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
         addSongNowPlayingControl.setVisibility(View.VISIBLE);
         deleteNowPlayingControl.setVisibility(View.VISIBLE);
     }
+
+    private void initHandlerAction() {
+
+        shuffleNowPlayingControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        addSongNowPlayingControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
 
     private void onLoadDataUI() {
 

@@ -32,6 +32,7 @@
     <string name="next">Next</string>
     <string name="title_activity_album">activity_album</string>
 
+    <string name="shareMusic">Share Music</string>
     <string name="nameSong">Music</string>
     <string name="nameArtist">Artist</string>
     <string name="nameAlbum">Album</string>

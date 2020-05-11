@@ -406,7 +406,7 @@ public class MainActivity extends BaseActivity implements IActivity{
             @Override
             public void onClick(View v) {
                 // onShowQueueSong();
-                onShowScreenQueueSong();
+                CommonHelper.onShowScreenQueueSong(getBaseContext());
             }
         });
     }
@@ -500,21 +500,6 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
     }
 
-    /**
-     * Show queue song screen
-     */
-    private void onShowScreenQueueSong() {
-
-        Bundle param = new Bundle();
-        param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_QUEUE);
-        param.putString(Constants.KEY_TITLE_CAT, getResources().getString(R.string.nowPlaying));
-        param.putString(Constants.KEY_NOTE_CAT, "");
-
-        Intent intent = new Intent(this, QueueActivity.class);
-        intent.putExtras(param);
-        startActivity(intent);
-        //overridePendingTransition(R.animator.push_down_out, R.animator.push_down_in);
-    }
 
     /**
      * Show bottom sheet queue song

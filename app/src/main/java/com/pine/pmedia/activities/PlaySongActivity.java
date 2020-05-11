@@ -405,7 +405,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         queueControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommonHelper.onShowScreenQueueSong(getBaseContext());
             }
         });
     }

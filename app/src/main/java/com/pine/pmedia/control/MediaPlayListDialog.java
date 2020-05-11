@@ -29,11 +29,12 @@ import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MediaPlayListDialog extends DialogFragment implements IDialogFragment {
 
     private Context mConText;
-    private long songId;
+    private List<Long> songIds;
 
     private ImageButton addPlayListControl;
     private RecyclerView recyclerView;
@@ -45,9 +46,9 @@ public class MediaPlayListDialog extends DialogFragment implements IDialogFragme
     public MediaPlayListDialog() {
     }
 
-    public MediaPlayListDialog(Context mConText, long songId) {
+    public MediaPlayListDialog(Context mConText, List<Long> songIds) {
         this.mConText = mConText;
-        this.songId = songId;
+        this.songIds = songIds;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class MediaPlayListDialog extends DialogFragment implements IDialogFragme
         ArrayList playList = MediaHelper.getAllPLayList(mConText);
 
         SongCatRecyclerAdapter adapter = new SongCatRecyclerAdapter(mConText, playList, Constants.VIEW_PLAYLIST_DIALOG);
-        adapter.setSongCurrentIdTemp(this.songId);
+        adapter.setListSongCurrentIdTemp(songIds);
         adapter.setMediaPlayListDialog(this);
         recyclerView.setAdapter(adapter);
     }

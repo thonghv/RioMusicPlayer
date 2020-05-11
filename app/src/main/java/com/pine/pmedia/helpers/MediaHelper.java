@@ -8,9 +8,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 
+import com.pine.pmedia.App;
 import com.pine.pmedia.models.Album;
 import com.pine.pmedia.models.Artist;
 import com.pine.pmedia.models.Filter;
@@ -22,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MediaHelper {
@@ -587,6 +590,34 @@ public class MediaHelper {
         values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, Long.valueOf(base + audioId));
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, audioId);
         resolver.insert(uri, values);
+    }
+
+    public static void addToPlaylist(Context context, List<Long> audioIds, long playListId) {
+
+        new ExecuteProcessAddToPlaylist(context, audioIds, playListId).execute();
+    }
+
+    public static class ExecuteProcessAddToPlaylist extends AsyncTask<String, Void, String> {
+
+        private Context context;
+        private List<Long> audioIds;
+        private long playListId;
+
+        public ExecuteProcessAddToPlaylist(Context context, List<Long> audioIds, long playListId) {
+            this.context = context;
+            this.audioIds = audioIds;
+            this.playListId = playListId;
+        }
+
+        protected String doInBackground(String... params){
+            for(long audioId : audioIds) {
+                addToPlaylist(context, audioId, playListId);
+            }
+            return "";
+        }
+
+        protected void onPostExecute(String response) {
+        }
     }
 
     public static int countPlaylist(final Context context, final int playlistId) {
