@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +42,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.App;
@@ -48,6 +50,7 @@ import com.pine.pmedia.R;
 import com.pine.pmedia.activities.QueueActivity;
 import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
+import com.pine.pmedia.control.MusicVisualizer;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
@@ -476,5 +479,49 @@ public class CommonHelper {
         intent.putExtras(param);
         context.startActivity(intent);
         //overridePendingTransition(R.animator.push_down_out, R.animator.push_down_in);
+    }
+
+    public static void onUpdateBottomPlayUI(MusicService mService, View v) {
+
+        if(mService != null && mService.isMusicReady) {
+
+            TextView songTitleBottomPlayControl = v.findViewById(R.id.songTitleBottomPlay);
+            TextView songArtistBottomPlayControl = v.findViewById(R.id.songArtistBottomPlay);
+            ImageView songAvatarBottomPlayControl = v.findViewById(R.id.songAvatarBottomPlay);
+            ImageView imgPlayPauseBottomControl = v.findViewById(R.id.imgPlayPauseBottom);
+            MusicVisualizer musicVisualizerControl = v.findViewById(R.id.queueVisualizer);
+
+            songTitleBottomPlayControl.setText(mService.getMCurrSong().get_title());
+            songArtistBottomPlayControl.setText(mService.getMCurrSong().get_artist());
+
+            // Load song avatar
+            ImageSize targetSize = new ImageSize(124, 124);
+            ImageLoader.getInstance().displayImage(mService.getMCurrSong().get_image(), new ImageViewAware(songAvatarBottomPlayControl),
+                    new DisplayImageOptions.Builder()
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true)
+                            .resetViewBeforeLoading(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build()
+                    , targetSize,
+                    new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                        }
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            System.out.println("Error ...");
+                        }
+                    },null);
+
+            if(mService.isPlaying()) {
+                imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
+                musicVisualizerControl.setVisibility(View.VISIBLE);
+            } else {
+                imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
+                musicVisualizerControl.setVisibility(View.GONE);
+            }
+        }
     }
 }

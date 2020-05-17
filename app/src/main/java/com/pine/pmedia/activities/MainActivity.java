@@ -75,6 +75,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     //=====================
     private App app;
     private DBManager dbManager;
+    private Context mContext;
     public static DrawerLayout drawerLayout = null;
     private ArrayList<String> navigationDrawerIconList = new ArrayList<>();
     private int[] imageForDrawer = new int[]{
@@ -102,6 +103,7 @@ public class MainActivity extends BaseActivity implements IActivity{
         setContentView(R.layout.activity_main);
 
         app = App.getInstance();
+        mContext = this;
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -406,7 +408,7 @@ public class MainActivity extends BaseActivity implements IActivity{
             @Override
             public void onClick(View v) {
                 // onShowQueueSong();
-                CommonHelper.onShowScreenQueueSong(getBaseContext());
+                CommonHelper.onShowScreenQueueSong(mContext);
             }
         });
     }

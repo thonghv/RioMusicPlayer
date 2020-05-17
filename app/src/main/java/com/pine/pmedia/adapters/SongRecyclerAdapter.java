@@ -121,7 +121,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                 holder.contentHolder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position).execute();
+                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position, -1).execute();
                     }
                 });
 

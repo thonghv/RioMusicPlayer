@@ -41,6 +41,7 @@ import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecyclerAdapter.ViewHolder> {
@@ -156,18 +157,12 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_ALBUM:
                     case Constants.VIEW_ARTIST:
                     case Constants.VIEW_GENRE:
-//                        intent = new Intent(v.getContext(), AlbumActivity.class);
-//                        param.putLong(Constants.KEY_ID, song.get_id());
-//                        intent.putExtras(param);
-//                        mContext.startActivity(intent);
-                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position).execute();
+                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position, viewType).execute();
                         break;
 
                     case Constants.VIEW_SUGGEST:
                         intent = new Intent(v.getContext(), FilterActivity.class);
-
                         param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_SUGGEST);
-
                         param.putString(Constants.KEY_TITLE_CAT, song.get_title());
                         String note = song.get_numberOfTrack() + Constants.SPACE + Constants.SONGS
                                 + Constants.MINUS + CommonHelper.toFormatTimeMS(0);
@@ -188,14 +183,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_FAVORITE:
                     case Constants.VIEW_LAST_PLAYED:
                     case Constants.VIEW_RECENT_ADDED:
-//                        new SongCatRecyclerAdapter.onProcessStartPlay(position).execute();
-//
-//                        Bundle bundle = new Bundle();
-//                        intent = new Intent(v.getContext(), PlaySongActivity.class);
-//                        intent.putExtras(bundle);
-//                        mContext.startActivity(intent);
-
-                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position).execute();
+                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position, viewType).execute();
                         break;
                 }
             }
@@ -353,7 +341,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.onShowMediaPlayListDialog(mContext, ArraysongId);
+                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
             }
         });
 
@@ -389,8 +377,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                onOpenDialogConfirm(Constants.VIEW_FAVORITE,
-                        R.string.titleDeleteTrack, R.string.messageDeleteFromList);
+                onOpenDialogConfirm(R.string.titleDeleteTrack, R.string.messageDeleteFromList);
             }
         });
     }
@@ -414,7 +401,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.onShowMediaPlayListDialog(mContext, songId);
+                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
             }
         });
 
@@ -458,8 +445,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                onOpenDialogConfirm(Constants.VIEW_FAVORITE,
-                        R.string.titleDeleteTrack, R.string.messageDeleteFromList);
+                onOpenDialogConfirm(R.string.titleDeleteTrack, R.string.messageDeleteFromList);
             }
         });
     }
@@ -486,8 +472,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                onOpenDialogConfirm(Constants.VIEW_SUGGEST,
-                        R.string.titleDeletePlayList, R.string.messageDeletePlayList);
+                onOpenDialogConfirm(R.string.titleDeletePlayList, R.string.messageDeletePlayList);
             }
         });
     }
@@ -508,14 +493,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         detailSongDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
     }
 
-    private void onOpenDialogConfirm(final int actionType, int title, int message){
+    private void onOpenDialogConfirm(int title, int message){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (actionType) {
+                switch (viewType) {
                     case Constants.VIEW_SUGGEST:
                         MediaHelper.deletePlaylist(mContext, targetIdTemp);
                         break;

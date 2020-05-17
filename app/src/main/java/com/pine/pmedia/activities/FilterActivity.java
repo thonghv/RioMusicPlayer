@@ -36,7 +36,7 @@ public class FilterActivity extends BaseActivity implements IActivity {
     private RecyclerView recyclerSongsView;
     private TextView titleCatControl;
     private TextView noteCatControl;
-    private int playListId;
+    private long playListId;
     private int catType;
 
     @Override
@@ -108,7 +108,7 @@ public class FilterActivity extends BaseActivity implements IActivity {
 
             String titleCat = data.getString(Constants.KEY_TITLE_CAT);
             String noteCat = data.getString(Constants.KEY_NOTE_CAT);
-            playListId = data.getInt(Constants.KEY_ID);
+            playListId = data.getLong(Constants.KEY_ID);
 
             titleCatControl.setText(titleCat);
             noteCatControl.setText(noteCat);

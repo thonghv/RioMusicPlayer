@@ -57,15 +57,16 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         switch (viewType) {
             case Constants.VIEW_ALBUM:
                 view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item, parent, false);
+
+                // Clear background of card view
+                CardView cardView = view.findViewById(R.id.cardView);
+                cardView.setBackgroundResource(0);
+
                 break;
             case Constants.VIEW_ARTIST:
                 view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item_min, parent, false);
                 break;
         }
-
-        // Clear background of card view
-        CardView cardView = view.findViewById(R.id.cardView);
-        cardView.setBackgroundResource(0);
 
         return new ViewHolder(view, viewType);
     }

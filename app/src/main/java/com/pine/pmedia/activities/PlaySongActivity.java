@@ -34,12 +34,14 @@ import com.pine.pmedia.sqlite.DBManager;
 import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class PlaySongActivity extends BaseActivity implements IActivity{
 
+    private final Context mContext = this;
     private IntentFilter mIntentFilter;
     private MusicService mService;
 
@@ -66,7 +68,6 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     private Timer timerOnReadyPlay;
     private Handler handler;
     private DBManager dbManager;
-    final Context context = this;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -391,7 +392,8 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         addControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.onShowMediaPlayListDialog(context, mService.getMCurrSong().get_id());
+                Long songId = mService.getMCurrSong().get_id();
+                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
             }
         });
 
@@ -405,7 +407,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         queueControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.onShowScreenQueueSong(getBaseContext());
+                CommonHelper.onShowScreenQueueSong(mContext);
             }
         });
     }

@@ -30,6 +30,8 @@ import java.util.ArrayList;
 public class SuggestFragment extends BaseFragment implements AddPlayListDialog.PlayListDialogListener {
 
     private static SuggestFragment instance = null;
+
+    private MusicService mService;
     private SongCatRecyclerAdapter songCatRecyclerAdapter;
     private RecyclerView recyclePlayList;
     private LinearLayout playListLayout;
@@ -72,7 +74,7 @@ public class SuggestFragment extends BaseFragment implements AddPlayListDialog.P
     @Override
     protected void onHandler() {
 
-        MusicService mService = super.getmService();
+        mService = super.getmService();
         mService.setmActivity(getmActivity());
     }
 

@@ -23,14 +23,17 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongCatRecyclerAdapter;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
+import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
 
-public class AlbumActivity extends AppCompatActivity {
+public class AlbumActivity extends BaseActivity {
 
+    private MusicService mService;
     private RecyclerView recyclerView;
     private ImageView albumCoverImage;
     private TextView albumNameControl;
@@ -40,7 +43,7 @@ public class AlbumActivity extends AppCompatActivity {
     private int albumId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cate_first);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -64,6 +67,12 @@ public class AlbumActivity extends AppCompatActivity {
 
         // Load songs by album
         onLoadSongs();
+    }
+
+    @Override
+    protected void onHandler() {
+
+        mService = super.getMService();
     }
 
     private void initControl() {
@@ -144,5 +153,9 @@ public class AlbumActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onUpdateBottomPlayUI() {
+
     }
 }

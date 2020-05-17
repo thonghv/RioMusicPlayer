@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@drawable/bk_01"
+    android:background="@color/p_background_01"
     tools:context=".activities.AlbumActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -135,7 +135,5 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_cate_common" />
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

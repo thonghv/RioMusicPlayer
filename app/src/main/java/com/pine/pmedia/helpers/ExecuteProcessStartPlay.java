@@ -4,8 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.activities.FilterActivity;
 import com.pine.pmedia.activities.MainActivity;
-import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
@@ -19,14 +20,16 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
     private DBManager dbManager;
     private ArrayList<Song> songs;
     private int position;
+    private int viewType;
 
     public ExecuteProcessStartPlay(Context context, DBManager dbManager, MusicService mService,
-                                   ArrayList<Song> songs, int position) {
+                                   ArrayList<Song> songs, int position, int viewType) {
         this.context = context;
         this.dbManager = dbManager;
         this.mService = mService;
         this.songs = songs;
         this.position = position;
+        this.viewType = viewType;
     }
 
     @Override
@@ -58,6 +61,16 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
     }
 
     protected void onPostExecute(String response) {
+        switch (viewType) {
+            case Constants.VIEW_FAVORITE:
+            case Constants.VIEW_LAST_PLAYED:
+            case Constants.VIEW_RECENT_ADDED:
+                return;
+
+            case Constants.VIEW_ALBUM:
+                ((AlbumActivity) context).onUpdateBottomPlayUI();
+                return;
+        }
         ((MainActivity) context).onUpdateBottomPlayUI();
     }
 }
