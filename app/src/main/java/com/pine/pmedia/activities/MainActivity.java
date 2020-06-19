@@ -1,5 +1,6 @@
 package com.pine.pmedia.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -140,16 +142,16 @@ public class MainActivity extends BaseActivity implements IActivity{
         smartTabLayout.setViewPager(viewPager);
 
         // Init handle action
-        initHandleActions();
+        initActionsForBase();
 
         // Init view control handle
-        initViewControls();
+        initControlsSongPlayBottom();
 
         // Init broadcast actions
         initBroadcast();
 
         // Handle bottom play menu screen.
-        initBottomBarPlay();
+        // initBottomBarPlay();
 
         // Init db manager
         initDBManager();
@@ -158,7 +160,110 @@ public class MainActivity extends BaseActivity implements IActivity{
 //        appBarLayout.setBackgroundResource(R.drawable.bk_03);
     }
 
-    private void initHandleActions() {
+    @Override
+    protected void onHandler() {
+
+        mService = getMService();
+        mService.setmActivity(this);
+
+        initActionsSongPlayBottom();
+
+        // On init playlist total data
+        onInitPLayListTotal();
+
+        // On init recent song list
+        onInitRecentSong();
+    }
+
+    @Override
+    public void initControlsSongPlayBottom() {
+
+        bottomPlayMainScreen = this.findViewById(R.id.hiddenBarMainScreen);
+        songAvatarBottomPlayControl = this.findViewById(R.id.songAvatarBottomPlay);
+        songTitleBottomPlayControl = this.findViewById(R.id.songTitleBottomPlay);
+        songArtistBottomPlayControl = this.findViewById(R.id.songArtistBottomPlay);
+
+        playPauseControl = this.findViewById(R.id.playPauseButtonBottom);
+        queueSongListControl = this.findViewById(R.id.queueSongList);
+
+        imgPlayPauseBottomControl = this.findViewById(R.id.imgPlayPauseBottom);
+        imgQueueBottomControl = this.findViewById(R.id.imgQueueSongBottom);
+        musicVisualizerControl = this.findViewById(R.id.queueVisualizer);
+    }
+
+    @Override
+    public void initActionsSongPlayBottom() {
+        bottomPlayMainScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent nextActivity = new Intent(getApplicationContext(), PlaySongActivity.class);
+                startActivity(nextActivity);
+            }
+        });
+
+        playPauseControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mService.onProcess(Constants.PLAY_PAUSE, null);
+                updateControlUI();
+            }
+        });
+
+        queueSongListControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // onShowQueueSong();
+                CommonHelper.onShowScreenQueueSong(mContext);
+            }
+        });
+    }
+
+    /**
+     * Update UI Song Play Bottom
+     */
+    @SuppressLint("ResourceType")
+    @Override
+    public void onUpdateUISongPlayBottom() {
+
+        if(mService != null && mService.isMusicReady) {
+
+            bottomPlayMainScreen.startAnimation(AnimationUtils.loadAnimation(this, R.animator.flip_in_left));
+
+            songTitleBottomPlayControl.setText(mService.getMCurrSong().get_title());
+            songArtistBottomPlayControl.setText(mService.getMCurrSong().get_artist());
+
+            // Load song avatar
+            ImageSize targetSize = new ImageSize(124, 124);
+            ImageLoader.getInstance().displayImage(mService.getMCurrSong().get_image(), new ImageViewAware(songAvatarBottomPlayControl),
+                    new DisplayImageOptions.Builder()
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true)
+                            .resetViewBeforeLoading(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build()
+                    , targetSize,
+                    new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                        }
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            System.out.println("Error ...");
+                        }
+                    },null);
+
+            if(mService.isPlaying()) {
+                imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
+                musicVisualizerControl.setVisibility(View.VISIBLE);
+            } else {
+                imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
+                musicVisualizerControl.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void initActionsForBase() {
 
         smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -180,15 +285,6 @@ public class MainActivity extends BaseActivity implements IActivity{
     }
 
     private void initBottomBarPlay() {
-
-        bottomPlayMainScreen = findViewById(R.id.hiddenBarMainScreen);
-        bottomPlayMainScreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent nextActivity = new Intent(getApplicationContext(), PlaySongActivity.class);
-                startActivity(nextActivity);
-            }
-        });
 
         Bitmap bitmap = CommonHelper.drawableToBitmap(getResources().getDrawable(R.drawable.bk_01));
         Palette p = Palette.from(bitmap).generate();
@@ -217,21 +313,6 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
     };
 
-    @Override
-    protected void onHandler() {
-
-        mService = getMService();
-        mService.setmActivity(this);
-
-        onHandlerActionsPlay();
-
-        // On init playlist total data
-        onInitPLayListTotal();
-
-        // On init recent song list
-        onInitRecentSong();
-    }
-
     private void onInitPLayListTotal() {
 
         if(mService.getPlaylistTotal().isEmpty()) {
@@ -252,7 +333,6 @@ public class MainActivity extends BaseActivity implements IActivity{
             if(!songs.isEmpty()) {
                 dbManager.insertSetting(Constants.SETTING_SONG_PLAYING, String.valueOf(songs.get(0).get_id()));
             }
-
         }
     }
 
@@ -299,7 +379,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     public void onStart() {
         super.onStart();
 
-        onUpdateBottomPlayUI();
+        onUpdateUISongPlayBottom();
     }
 
     @Override
@@ -316,21 +396,6 @@ public class MainActivity extends BaseActivity implements IActivity{
         super.onPause();
     }
 
-    private void initViewControls() {
-
-        songAvatarBottomPlayControl = this.findViewById(R.id.songAvatarBottomPlay);
-        songTitleBottomPlayControl = this.findViewById(R.id.songTitleBottomPlay);
-        songArtistBottomPlayControl = this.findViewById(R.id.songArtistBottomPlay);
-
-        playPauseControl = this.findViewById(R.id.playPauseButtonBottom);
-        queueSongListControl = this.findViewById(R.id.queueSongList);
-
-        imgPlayPauseBottomControl = this.findViewById(R.id.imgPlayPauseBottom);
-        imgQueueBottomControl = this.findViewById(R.id.imgQueueSongBottom);
-
-        musicVisualizerControl = this.findViewById(R.id.queueVisualizer);
-    }
-
     private TabsPagerAdapter initTab() {
 
         TabsPagerAdapter tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
@@ -341,44 +406,6 @@ public class MainActivity extends BaseActivity implements IActivity{
         tabsPagerAdapter.addFragment(GenresFragment.getInstance(), this.getResources().getString(R.string.genres));
 
         return tabsPagerAdapter;
-    }
-
-    public void onUpdateBottomPlayUI() {
-
-        if(mService != null && mService.isMusicReady) {
-
-            songTitleBottomPlayControl.setText(mService.getMCurrSong().get_title());
-            songArtistBottomPlayControl.setText(mService.getMCurrSong().get_artist());
-
-            // Load song avatar
-            ImageSize targetSize = new ImageSize(124, 124);
-            ImageLoader.getInstance().displayImage(mService.getMCurrSong().get_image(), new ImageViewAware(songAvatarBottomPlayControl),
-                    new DisplayImageOptions.Builder()
-                            .imageScaleType(ImageScaleType.EXACTLY)
-                            .cacheInMemory(true)
-                            .resetViewBeforeLoading(true)
-                            .bitmapConfig(Bitmap.Config.RGB_565)
-                            .build()
-                    , targetSize,
-                    new SimpleImageLoadingListener() {
-                        @Override
-                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-                        }
-                        @Override
-                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                            System.out.println("Error ...");
-                        }
-                    },null);
-
-            if(mService.isPlaying()) {
-                imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
-                musicVisualizerControl.setVisibility(View.VISIBLE);
-            } else {
-                imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
-                musicVisualizerControl.setVisibility(View.GONE);
-            }
-        }
     }
 
     private void updateControlUI() {
@@ -394,28 +421,9 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
     }
 
-    private void onHandlerActionsPlay() {
-
-        playPauseControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mService.onProcess(Constants.PLAY_PAUSE, null);
-                updateControlUI();
-            }
-        });
-
-        queueSongListControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // onShowQueueSong();
-                CommonHelper.onShowScreenQueueSong(mContext);
-            }
-        });
-    }
-
     private void onSongComplete() {
 
-        onUpdateBottomPlayUI();
+        onUpdateUISongPlayBottom();
         imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
         mService.setNeedPause(true);
     }

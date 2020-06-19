@@ -249,6 +249,18 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         dbManager.open();
     }
 
+    @Override
+    public void initControlsSongPlayBottom() {
+    }
+
+    @Override
+    public void initActionsSongPlayBottom() {
+    }
+
+    @Override
+    public void onUpdateUISongPlayBottom() {
+    }
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

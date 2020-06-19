@@ -30,9 +30,11 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.PlaySongActivity;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import java.util.Random;
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
+    private App app;
     private final String NOTIFICATION_CHANNEL = "music_player_channel";
     private MediaPlayer mPlayer;
     private Song mCurrSong;
@@ -137,6 +140,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onCreate() {
         super.onCreate();
+
+        app = App.getInstance();
 
         mMediaSession = new MediaSessionCompat(this, "MusicService");
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -443,8 +448,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private void handlePlayPause(Bundle bundle) {
 
         if(mPlayer == null) {
-            int position = bundle.getInt(Constants.KEY_POSITION);
-            mPosition = position;
+            if(bundle == null) {
+                initPlayQueueWhenEmpty();
+                mPosition = 0;
+            } else {
+                int position = bundle.getInt(Constants.KEY_POSITION);
+                mPosition = position;
+            }
+
             playAudio();
 
         } else {
@@ -459,6 +470,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
 
         setupNotification();
+    }
+
+    private void initPlayQueueWhenEmpty() {
+
+        this.setPlayingQueue(app.getMediaPlayList());
     }
 
     private void handlePause(Bundle bundle) {
@@ -576,6 +592,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             mPlayer.reset();
 
             Song songPlay = this.getSong(mPosition);
+            if(songPlay == null) {
+                return;
+            }
+
             this.mCurrSong = songPlay;
 
             try {
@@ -588,6 +608,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     private Song getSong(int index) {
+
+        if(this.playingQueue.isEmpty()) {
+            return null;
+        }
 
         if(index >= this.playingQueue.size()) {
             this.mPosition = 0;

@@ -63,14 +63,14 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String response) {
         switch (viewType) {
             case Constants.VIEW_FAVORITE:
-            case Constants.VIEW_LAST_PLAYED:
             case Constants.VIEW_RECENT_ADDED:
+            case Constants.VIEW_LAST_PLAYED:
+                ((FilterActivity) context).onUpdateUISongPlayBottom();
                 return;
-
             case Constants.VIEW_ALBUM:
-                ((AlbumActivity) context).onUpdateBottomPlayUI();
+                ((AlbumActivity) context).onUpdateUISongLayBottom();
                 return;
         }
-        ((MainActivity) context).onUpdateBottomPlayUI();
+        ((MainActivity) context).onUpdateUISongPlayBottom();
     }
 }

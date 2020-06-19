@@ -61,6 +61,7 @@
 
         <include layout="@layout/content_main" />
 
+        <!-- START PLAY SONG BOTTOM -->
         <RelativeLayout
             android:id="@+id/contentBottomLayout"
             app:layout_collapseMode="parallax"
@@ -192,6 +193,6 @@
             </RelativeLayout>
 
         </RelativeLayout>
-
+        <!-- END PLAY SONG BOTTOM -->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
