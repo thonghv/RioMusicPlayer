@@ -1,5 +1,6 @@
 package com.pine.pmedia.helpers;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -26,9 +27,12 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -451,8 +455,9 @@ public class CommonHelper {
         RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, addedUri);
     }
 
-    public static void updateSongPLaying(DBManager dbManager, long songId) {
+    public static void updateSongPLaying(DBManager dbManager, long songId, int position) {
         dbManager.updateSettingByKey(Constants.SETTING_SONG_PLAYING, String.valueOf(songId));
+        dbManager.updateSettingByKey(Constants.SETTING_SONG_POSITION, String.valueOf(position));
     }
 
     public static void onShare(Context context, String subject, String content) {
@@ -481,10 +486,23 @@ public class CommonHelper {
         //overridePendingTransition(R.animator.push_down_out, R.animator.push_down_in);
     }
 
-    public static void onUpdateBottomPlayUI(MusicService mService, View v) {
+    @SuppressLint("ResourceType")
+    public static void onUpdateBottomPlayUI(Activity activity, MusicService mService, DBManager dbManager,
+                                            View v, boolean isAnimation) {
 
-        if(mService != null && mService.isMusicReady) {
+        if(mService != null) {
 
+            if(!mService.isMusicReady) {
+                CommonHelper.onLoadPreviousData(dbManager, (ViewGroup) activity.findViewById(R.id.contentBottomLayout));
+                return;
+            }
+
+            if(isAnimation) {
+                RelativeLayout bottomPlayMainScreen = v.findViewById(R.id.hiddenBarMainScreen);
+                bottomPlayMainScreen.startAnimation(AnimationUtils.loadAnimation(activity, R.animator.flip_in_left));
+            }
+
+            // Init control
             TextView songTitleBottomPlayControl = v.findViewById(R.id.songTitleBottomPlay);
             TextView songArtistBottomPlayControl = v.findViewById(R.id.songArtistBottomPlay);
             ImageView songAvatarBottomPlayControl = v.findViewById(R.id.songAvatarBottomPlay);
@@ -522,6 +540,47 @@ public class CommonHelper {
                 imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
                 musicVisualizerControl.setVisibility(View.GONE);
             }
+        }
+    }
+
+    public static void onLoadPreviousData(DBManager dbManager, ViewGroup v){
+
+        Song songFind  = MediaHelper.findPreviousSong(dbManager, App.getInstance().getMediaPlayList());
+        if(songFind != null) {
+
+            // Init control
+            TextView songTitleBottomPlayControl = v.findViewById(R.id.songTitleBottomPlay);
+            TextView songArtistBottomPlayControl = v.findViewById(R.id.songArtistBottomPlay);
+            ImageView songAvatarBottomPlayControl = v.findViewById(R.id.songAvatarBottomPlay);
+            ImageView imgPlayPauseBottomControl = v.findViewById(R.id.imgPlayPauseBottom);
+            MusicVisualizer musicVisualizerControl = v.findViewById(R.id.queueVisualizer);
+
+            songTitleBottomPlayControl.setText(songFind.get_title());
+            songArtistBottomPlayControl.setText(songFind.get_artist());
+
+            // Load song avatar
+            ImageSize targetSize = new ImageSize(124, 124);
+            ImageLoader.getInstance().displayImage(songFind.get_image(), new ImageViewAware(songAvatarBottomPlayControl),
+                    new DisplayImageOptions.Builder()
+                            .imageScaleType(ImageScaleType.EXACTLY)
+                            .cacheInMemory(true)
+                            .resetViewBeforeLoading(true)
+                            .bitmapConfig(Bitmap.Config.RGB_565)
+                            .build()
+                    , targetSize,
+                    new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                        }
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            System.out.println("Error ...");
+                        }
+                    },null);
+
+            imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
+            musicVisualizerControl.setVisibility(View.GONE);
         }
     }
 }

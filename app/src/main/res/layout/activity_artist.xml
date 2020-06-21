@@ -184,6 +184,6 @@
 
     <include layout="@layout/content_activity_artist" />
 
-
+    <include layout="@layout/content_song_play_bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

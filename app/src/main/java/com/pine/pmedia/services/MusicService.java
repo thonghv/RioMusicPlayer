@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -44,11 +45,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
     private App app;
-    private final String NOTIFICATION_CHANNEL = "music_player_channel";
     private MediaPlayer mPlayer;
     private Song mCurrSong;
     private Activity mActivity;
     private int mPosition = 0;
+    private int storePosition = -1;
     private ArrayList<Song> playlistTotal = new ArrayList<>();
     private ArrayList<Song> playingQueue = new ArrayList<>();
     public AudioManager audioManager;
@@ -126,6 +127,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public int getCurrentPosition() {
         return mPosition;
+    }
+
+    public int getStorePosition() {
+        return storePosition;
+    }
+
+    public void setStorePosition(int storePosition) {
+        this.storePosition = storePosition;
     }
 
     //=======================
@@ -450,7 +459,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         if(mPlayer == null) {
             if(bundle == null) {
                 initPlayQueueWhenEmpty();
-                mPosition = 0;
+                mPosition = this.storePosition != -1 ? this.storePosition : 0;
             } else {
                 int position = bundle.getInt(Constants.KEY_POSITION);
                 mPosition = position;
@@ -474,7 +483,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     private void initPlayQueueWhenEmpty() {
 
-        this.setPlayingQueue(app.getMediaPlayList());
+        ArrayList<Song> queueStore = app.getQueueStore();
+        if(queueStore.isEmpty()) {
+            this.setPlayingQueue(queueStore);
+        } else {
+            this.setPlayingQueue(app.getMediaPlayList());
+        }
     }
 
     private void handlePause(Bundle bundle) {
@@ -603,6 +617,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                 mPlayer.prepareAsync();
             } catch (Exception e) {
                 isPlaying = false;
+                System.out.println("playAudio() Error ... " + e);
             }
         }
     }

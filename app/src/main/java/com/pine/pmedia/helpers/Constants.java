@@ -97,6 +97,7 @@ public class Constants {
     // KEY SETTING
     //=================
     public static final String SETTING_SONG_PLAYING     = "settingSongPlaying";
+    public static final String SETTING_SONG_POSITION    = "settingSongPosition";
 
     //=================
     // API SEARCH

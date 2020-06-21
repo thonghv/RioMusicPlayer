@@ -159,7 +159,7 @@ public class SongQueueRecyclerAdapter extends RecyclerView.Adapter<SongQueueRecy
             bundle.putInt(Constants.KEY_POSITION, position);
             mService.onProcess(Constants.PLAY_PAUSE, bundle);
 
-            CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id());
+            CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id(), position);
 
             return "";
         }

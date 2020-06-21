@@ -8,5 +8,5 @@ public interface IActivity {
 
     void initControlsSongPlayBottom();
     void initActionsSongPlayBottom();
-    void onUpdateUISongPlayBottom();
+    void onUpdateUISongPlayBottom(boolean isAnimation);
 }

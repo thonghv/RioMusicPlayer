@@ -258,7 +258,8 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     }
 
     @Override
-    public void onUpdateUISongPlayBottom() {
+    public void onUpdateUISongPlayBottom(boolean isAnimation) {
+
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {

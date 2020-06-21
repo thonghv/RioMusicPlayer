@@ -15,6 +15,7 @@ public class App extends Application {
     private static App _instance;
 
     private ArrayList<Song> mediaPlayList = new ArrayList<>();
+    private ArrayList<Song> queueStore = new ArrayList<>();
 
 
     //=================
@@ -40,6 +41,14 @@ public class App extends Application {
 
     public void setMediaPlayList(ArrayList<Song> mediaPlayList) {
         this.mediaPlayList = mediaPlayList;
+    }
+
+    public ArrayList<Song> getQueueStore() {
+        return queueStore;
+    }
+
+    public void setQueueStore(ArrayList<Song> queueStore) {
+        this.queueStore = queueStore;
     }
 
     @Override

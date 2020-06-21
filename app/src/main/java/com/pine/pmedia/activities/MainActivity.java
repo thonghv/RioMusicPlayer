@@ -205,7 +205,13 @@ public class MainActivity extends BaseActivity implements IActivity{
             @Override
             public void onClick(View v) {
                 mService.onProcess(Constants.PLAY_PAUSE, null);
-                updateControlUI();
+                if(mService.isPlaying()) {
+                    imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
+                    musicVisualizerControl.setVisibility(View.VISIBLE);
+                } else {
+                    imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
+                    musicVisualizerControl.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -223,11 +229,13 @@ public class MainActivity extends BaseActivity implements IActivity{
      */
     @SuppressLint("ResourceType")
     @Override
-    public void onUpdateUISongPlayBottom() {
+    public void onUpdateUISongPlayBottom(boolean isAnimation) {
 
         if(mService != null && mService.isMusicReady) {
 
-            bottomPlayMainScreen.startAnimation(AnimationUtils.loadAnimation(this, R.animator.flip_in_left));
+            if(isAnimation) {
+                bottomPlayMainScreen.startAnimation(AnimationUtils.loadAnimation(this, R.animator.flip_in_left));
+            }
 
             songTitleBottomPlayControl.setText(mService.getMCurrSong().get_title());
             songArtistBottomPlayControl.setText(mService.getMCurrSong().get_artist());
@@ -316,7 +324,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     private void onInitPLayListTotal() {
 
         if(mService.getPlaylistTotal().isEmpty()) {
-            new initMediaPlayList(this).execute();
+            new initMediaPlayList(this, dbManager).execute();
         }
     }
 
@@ -325,14 +333,19 @@ public class MainActivity extends BaseActivity implements IActivity{
         new initRecentPlayList(this, dbManager).execute();
     }
 
-    private void onInitSongPLaying() {
+    private void onInitSettingSongStore() {
 
-        String settingValue = dbManager.getSettingByKey(Constants.SETTING_SONG_PLAYING);
-        if(settingValue == null) {
+        String settingSongPlay = dbManager.getSettingByKey(Constants.SETTING_SONG_PLAYING);
+        if(settingSongPlay == null) {
             ArrayList<Song> songs = App.getInstance().getMediaPlayList();
             if(!songs.isEmpty()) {
                 dbManager.insertSetting(Constants.SETTING_SONG_PLAYING, String.valueOf(songs.get(0).get_id()));
             }
+        }
+
+        String settingSongPosition = dbManager.getSettingByKey(Constants.SETTING_SONG_POSITION);
+        if(settingSongPosition == null) {
+            dbManager.insertSetting(Constants.SETTING_SONG_POSITION, "-1");
         }
     }
 
@@ -379,7 +392,7 @@ public class MainActivity extends BaseActivity implements IActivity{
     public void onStart() {
         super.onStart();
 
-        onUpdateUISongPlayBottom();
+        onUpdateUISongPlayBottom(false);
     }
 
     @Override
@@ -423,7 +436,7 @@ public class MainActivity extends BaseActivity implements IActivity{
 
     private void onSongComplete() {
 
-        onUpdateUISongPlayBottom();
+        onUpdateUISongPlayBottom(false);
         imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
         mService.setNeedPause(true);
     }
@@ -457,9 +470,11 @@ public class MainActivity extends BaseActivity implements IActivity{
     private class initMediaPlayList extends AsyncTask<String, Void, Activity> {
 
         private Activity activity;
+        private DBManager dbManager;
 
-        public initMediaPlayList(Activity activity) {
+        public initMediaPlayList(Activity activity, DBManager dbManager) {
             this.activity = activity;
+            this.dbManager = dbManager;
         }
 
         @Override
@@ -468,6 +483,9 @@ public class MainActivity extends BaseActivity implements IActivity{
             ArrayList<Song> mediaSongs = MediaHelper.getSongs(activity, 0L, 0L);
             App.getInstance().setMediaPlayList(mediaSongs);
 
+            ArrayList<Song> queueStore = MediaHelper.getQueue(dbManager, mediaSongs).getSongs();
+            App.getInstance().setQueueStore(queueStore);
+
             return null;
         }
 
@@ -475,7 +493,7 @@ public class MainActivity extends BaseActivity implements IActivity{
         protected void onPostExecute(Activity activity) {
 
             // On save song playing previous if null
-            onInitSongPLaying();
+            onInitSettingSongStore();
 
             // On load previous song
             onLoadPreviousData();
@@ -634,6 +652,11 @@ public class MainActivity extends BaseActivity implements IActivity{
 
         Song songFind  = MediaHelper.findPreviousSong(dbManager, App.getInstance().getMediaPlayList());
         if(songFind != null) {
+
+            int storePosition = MediaHelper.findPreviousPosition(dbManager);
+            if(storePosition != -1) {
+                mService.setStorePosition(storePosition);
+            }
 
             songTitleBottomPlayControl.setText(songFind.get_title());
             songArtistBottomPlayControl.setText(songFind.get_artist());

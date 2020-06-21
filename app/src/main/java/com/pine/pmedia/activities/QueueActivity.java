@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,15 +73,6 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
             }
         });
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         // Init db manager
         initDBManager();
 
@@ -115,6 +107,9 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
 
     private void initControl() {
 
+        RelativeLayout contentBottomLayoutControl =  findViewById(R.id.contentBottomLayout);
+        contentBottomLayoutControl.setVisibility(View.GONE);
+
         recyclerSongsView = findViewById(R.id.recycleViewSongsCat);
         titleCatControl = findViewById(R.id.titleCatControl);
         noteCatControl = findViewById(R.id.noteCatControl);
@@ -144,7 +139,6 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
             }
         });
     }
-
 
     private void onLoadDataUI() {
 

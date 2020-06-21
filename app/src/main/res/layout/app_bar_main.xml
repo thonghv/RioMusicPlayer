@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/p_background_01"
+    android:fitsSystemWindows="true"
     tools:context=".activities.MainActivity">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -71,7 +72,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="47dp"
+                android:layout_height="52dp"
                 android:layout_alignParentBottom="true"
                 android:background="@color/p_background_05">
 
@@ -88,7 +89,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="47dp"
                     android:orientation="vertical"
-                    android:paddingTop="10dp"
+                    android:paddingTop="11dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="15dp">
                     <ImageView
@@ -106,7 +107,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="47dp"
                     android:orientation="vertical"
-                    android:paddingTop="10dp"
+                    android:paddingTop="11dp"
                     android:paddingLeft="5dp"
                     android:layout_marginEnd="10dp">
                     <ImageView
@@ -127,13 +128,13 @@
 
                     <RelativeLayout
                         android:id="@+id/songAvatarLayout"
-                        android:layout_width="40dp"
+                        android:layout_width="46dp"
                         android:layout_height="match_parent">
 
                         <ImageView
                             android:id="@+id/songAvatarBottomPlay"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="10dp"
@@ -146,8 +147,8 @@
                             android:id="@+id/queueVisualizer"
                             android:layout_width="30dp"
                             android:layout_height="24dp"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginTop="9dp"
+                            android:layout_marginLeft="19dp"
+                            android:layout_marginTop="10dp"
                             android:visibility="gone"/>
 
                     </RelativeLayout>
@@ -166,8 +167,8 @@
                             android:ellipsize="end"
                             android:singleLine="true"
                             android:layout_marginLeft="10dp"
-                            android:layout_marginTop="7dp"
-                            android:textSize="13dp"
+                            android:layout_marginTop="8dp"
+                            android:textSize="13.5dp"
                             android:layout_marginRight="20dp"
                             android:textColor="@color/white" />
                         <TextView
@@ -178,9 +179,10 @@
                             android:text="Lê Hiếu"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:textSize="10dp"
+                            android:textSize="10.5dp"
                             android:maxWidth="160dp"
                             android:singleLine="true"
+                            android:layout_marginTop="2dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="20dp"
                             android:layout_alignLeft="@id/songTitleBottomPlay"

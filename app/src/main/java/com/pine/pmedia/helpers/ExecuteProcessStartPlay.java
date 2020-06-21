@@ -5,7 +5,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.activities.ArtistActivity;
 import com.pine.pmedia.activities.FilterActivity;
+import com.pine.pmedia.activities.GenreActivity;
 import com.pine.pmedia.activities.MainActivity;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
@@ -55,7 +57,7 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
             index ++;
         }
 
-        CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id());
+        CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id(), position);
 
         return null;
     }
@@ -65,12 +67,18 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
             case Constants.VIEW_FAVORITE:
             case Constants.VIEW_RECENT_ADDED:
             case Constants.VIEW_LAST_PLAYED:
-                ((FilterActivity) context).onUpdateUISongPlayBottom();
+                ((FilterActivity) context).onUpdateUISongPlayBottom(true);
                 return;
             case Constants.VIEW_ALBUM:
-                ((AlbumActivity) context).onUpdateUISongLayBottom();
+                ((AlbumActivity) context).onUpdateUISongPlayBottom(true);
+                return;
+            case Constants.VIEW_ARTIST:
+                ((ArtistActivity) context).onUpdateUISongPlayBottom(true);
+                return;
+            case Constants.VIEW_GENRE:
+                ((GenreActivity) context).onUpdateUISongPlayBottom(true);
                 return;
         }
-        ((MainActivity) context).onUpdateUISongPlayBottom();
+        ((MainActivity) context).onUpdateUISongPlayBottom(true);
     }
 }

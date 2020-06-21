@@ -37,6 +37,7 @@ import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,7 @@ public class AlbumActivity extends BaseActivity implements IActivity{
 
     private App app;
     private MusicService mService;
+    private DBManager dbManager;
     private Context mContext;
     private RecyclerView recyclerView;
     private ImageView albumCoverImage;
@@ -102,6 +104,11 @@ public class AlbumActivity extends BaseActivity implements IActivity{
     protected void onHandler() {
 
         mService = super.getMService();
+
+        // Init handle actions song play bottom controls
+        this.initActionsSongPlayBottom();
+
+        this.onUpdateUISongPlayBottom(false);
     }
 
     @Override
@@ -112,6 +119,8 @@ public class AlbumActivity extends BaseActivity implements IActivity{
     @Override
     public void initDBManager() {
 
+        dbManager = new DBManager(this);
+        dbManager.open();
     }
 
     @Override
@@ -143,14 +152,12 @@ public class AlbumActivity extends BaseActivity implements IActivity{
             @Override
             public void onClick(View v) {
                 mService.onProcess(Constants.PLAY_PAUSE, null);
-                if(mService.isMusicReady) {
-                    if(mService.isPlaying()) {
-                        imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
-                        musicVisualizerControl.setVisibility(View.VISIBLE);
-                    } else {
-                        imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
-                        musicVisualizerControl.setVisibility(View.GONE);
-                    }
+                if(mService.isPlaying()) {
+                    imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
+                    musicVisualizerControl.setVisibility(View.VISIBLE);
+                } else {
+                    imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
+                    musicVisualizerControl.setVisibility(View.GONE);
                 }
             }
         });
@@ -167,44 +174,10 @@ public class AlbumActivity extends BaseActivity implements IActivity{
      */
     @SuppressLint("ResourceType")
     @Override
-    public void onUpdateUISongPlayBottom() {
+    public void onUpdateUISongPlayBottom(boolean isAnimation) {
 
-        if(mService != null && mService.isMusicReady) {
-
-            bottomPlayMainScreen.startAnimation(AnimationUtils.loadAnimation(this, R.animator.flip_in_left));
-
-            songTitleBottomPlayControl.setText(mService.getMCurrSong().get_title());
-            songArtistBottomPlayControl.setText(mService.getMCurrSong().get_artist());
-
-            // Load song avatar
-            ImageSize targetSize = new ImageSize(124, 124);
-            ImageLoader.getInstance().displayImage(mService.getMCurrSong().get_image(), new ImageViewAware(songAvatarBottomPlayControl),
-                    new DisplayImageOptions.Builder()
-                            .imageScaleType(ImageScaleType.EXACTLY)
-                            .cacheInMemory(true)
-                            .resetViewBeforeLoading(true)
-                            .bitmapConfig(Bitmap.Config.RGB_565)
-                            .build()
-                    , targetSize,
-                    new SimpleImageLoadingListener() {
-                        @Override
-                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
-                        }
-                        @Override
-                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                            System.out.println("Error ...");
-                        }
-                    },null);
-
-            if(mService.isPlaying()) {
-                imgPlayPauseBottomControl.setImageResource(R.drawable.pause_bottom);
-                musicVisualizerControl.setVisibility(View.VISIBLE);
-            } else {
-                imgPlayPauseBottomControl.setImageResource(R.drawable.play_bottom);
-                musicVisualizerControl.setVisibility(View.GONE);
-            }
-        }
+        CommonHelper.onUpdateBottomPlayUI(this, mService, dbManager,
+                this.findViewById(R.id.contentBottomLayout), isAnimation);
     }
 
     private void initControl() {

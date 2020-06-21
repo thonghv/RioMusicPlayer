@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -434,6 +435,8 @@ public class MediaHelper {
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
             String _track = cursor.getString(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+            String data = cursor.getString(cursor
+                    .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
             int _albumId = cursor.getInt(cursor
                     .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
             int _artistId = cursor.getInt(cursor
@@ -460,6 +463,7 @@ public class MediaHelper {
             Song song = new Song();
             song.set_id(_id);
             song.set_artist(_artist);
+            song.set_path(data);
             song.set_bitmap(bitmap);
             song.set_title(_track);
             song.set_albumId(_albumId);
@@ -869,5 +873,15 @@ public class MediaHelper {
         }
 
         return null;
+    }
+
+    public static int findPreviousPosition(DBManager dbManager) {
+
+        String value = dbManager.getSettingByKey(Constants.SETTING_SONG_POSITION);
+        if(value != null) {
+            return Integer.parseInt(value);
+        }
+
+        return -1;
     }
 }
