@@ -46,7 +46,6 @@ import java.util.List;
 
 public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecyclerAdapter.ViewHolder> {
 
-
     private MusicService mService;
     private DBManager dbManager;
 
@@ -218,7 +217,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     }
 
     /**
-     * Handler lick to play song
+     * Handler click to play song
      */
     private class onProcessStartPlay extends AsyncTask<String, Void, String> {
 
@@ -272,54 +271,11 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
         headerSheetDialog.setText(targetNameTemp);
 
-        onCalColorComponentControl(view);
+        CommonHelper.onCalColorBottomSheetDialog(mContext, view);
 
         bottomSheetdialog = new BottomSheetDialog(mContext);
         bottomSheetdialog.setContentView(view);
         bottomSheetdialog.show();
-    }
-
-    private void onCalColorComponentControl(View v) {
-
-//        LinearLayout sheetDialog = v.findViewById(R.id.bottomDialogPlayListLayout);
-
-//        Bitmap loadedImage = CommonHelper.drawableToBitmap(mContext.getResources().getDrawable(R.color.p_background_01));
-//        Palette p = Palette.from(loadedImage).generate();
-//        int color = p.getDarkVibrantColor(ContextCompat.getColor(mContext, R.color.p_background_01));
-//        sheetDialog.setBackgroundColor(color);
-//
-//        int colorR = CommonHelper.manipulateColor(color, 1.3f);
-        int colorR = mContext.getResources().getColor(R.color.p_background_04);
-
-        View r01 = v.findViewById(R.id.r_01);
-        View r02 = v.findViewById(R.id.r_02);
-        View r03 = v.findViewById(R.id.r_03);
-        View r04 = v.findViewById(R.id.r_04);
-        View r05 = v.findViewById(R.id.r_05);
-        View r06 = v.findViewById(R.id.r_06);
-        View r07 = v.findViewById(R.id.r_07);
-
-        if(r01 != null) {
-            r01.setBackgroundColor(colorR);
-        }
-        if(r02 != null) {
-            r02.setBackgroundColor(colorR);
-        }
-
-        r03.setBackgroundColor(colorR);
-        r04.setBackgroundColor(colorR);
-
-        if(r05 != null) {
-            r05.setBackgroundColor(colorR);
-        }
-
-        if(r06 != null) {
-            r06.setBackgroundColor(colorR);
-        }
-
-        if(r07 != null) {
-            r07.setBackgroundColor(colorR);
-        }
     }
 
     /**

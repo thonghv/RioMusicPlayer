@@ -53,6 +53,7 @@ import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.QueueActivity;
 import com.pine.pmedia.control.AddPlayListDialog;
+import com.pine.pmedia.control.DetailSongDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.control.MusicVisualizer;
 import com.pine.pmedia.models.Song;
@@ -583,4 +584,65 @@ public class CommonHelper {
             musicVisualizerControl.setVisibility(View.GONE);
         }
     }
+
+    public static void onCalColorBottomSheetDialog(Context mContext, View v) {
+
+        //        LinearLayout sheetDialog = v.findViewById(R.id.bottomDialogPlayListLayout);
+
+//        Bitmap loadedImage = CommonHelper.drawableToBitmap(mContext.getResources().getDrawable(R.color.p_background_01));
+//        Palette p = Palette.from(loadedImage).generate();
+//        int color = p.getDarkVibrantColor(ContextCompat.getColor(mContext, R.color.p_background_01));
+//        sheetDialog.setBackgroundColor(color);
+//
+//        int colorR = CommonHelper.manipulateColor(color, 1.3f);
+
+        int colorR = mContext.getResources().getColor(R.color.p_background_04);
+
+        View r01 = v.findViewById(R.id.r_01);
+        View r02 = v.findViewById(R.id.r_02);
+        View r03 = v.findViewById(R.id.r_03);
+        View r04 = v.findViewById(R.id.r_04);
+        View r05 = v.findViewById(R.id.r_05);
+        View r06 = v.findViewById(R.id.r_06);
+        View r07 = v.findViewById(R.id.r_07);
+
+        if(r01 != null) {
+            r01.setBackgroundColor(colorR);
+        }
+        if(r02 != null) {
+            r02.setBackgroundColor(colorR);
+        }
+
+        r03.setBackgroundColor(colorR);
+        r04.setBackgroundColor(colorR);
+
+        if(r05 != null) {
+            r05.setBackgroundColor(colorR);
+        }
+
+        if(r06 != null) {
+            r06.setBackgroundColor(colorR);
+        }
+
+        if(r07 != null) {
+            r07.setBackgroundColor(colorR);
+        }
+    }
+
+    public static void onShowDetailSong(Context mContext, ArrayList<Song> songs, long songId){
+
+        Song songFind = MediaHelper.getSongById(songs, songId);
+        if(songFind == null) {
+            Toast.makeText(mContext, R.string.errorPleaseAgain, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        DetailSongDialog detailSongDialog = new DetailSongDialog(songFind.get_title(), songFind.get_artist(),
+                songFind.get_album(), CommonHelper.toFormatTimeMS(songFind.get_duration()),
+                CommonHelper.toFormatSize(songFind.get_size()), songFind.get_path());
+        FragmentActivity fragmentActivity = (FragmentActivity) mContext;
+        FragmentManager fm = fragmentActivity.getSupportFragmentManager();
+        detailSongDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
+    }
+
 }

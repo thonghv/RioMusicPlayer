@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -25,14 +27,19 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
 import com.pine.pmedia.activities.ArtistActivity;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Artist;
+import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAdapter.MyViewHolder>  {
 
@@ -42,6 +49,13 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     private Intent playIntent;
     private MusicService mService;
     private ImageLoader imageLoader;
+
+    private BottomSheetDialog bottomSheetdialog;
+    private long songId;
+    private long targetIdTemp;
+    private String targetNameTemp;
+    private long songCurrentIdTemp;
+    private TextView headerSheetDialog;
 
     public ArtistRecyclerAdapter(ArrayList<Artist> artistsDetails, Context mContext) {
         this.artistsDetails = artistsDetails;
@@ -112,6 +126,95 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
                 mContext.startActivity(intent);
             }
         });
+
+        // On click show bottom sheet more
+        holder.moreRowControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onShowBottomSheet(artist.getId(), artist.getId(), artist.getName());
+            }
+        });
+    }
+
+    //
+    //=======================
+    // START BOTTOM SHEET
+    private void onShowBottomSheet(long targetIdTemp, long songId, String targetNameTemp) {
+
+        this.targetIdTemp = targetIdTemp;
+        this.targetNameTemp = targetNameTemp;
+        this.songId = songId;
+
+        LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view =  li.inflate(R.layout.bottom_dialog_favorite, null);
+        onHandleActionBDialog(view);
+
+        headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
+        headerSheetDialog.setText(targetNameTemp);
+
+        CommonHelper.onCalColorBottomSheetDialog(mContext, view);
+
+        bottomSheetdialog = new BottomSheetDialog(mContext);
+        bottomSheetdialog.setContentView(view);
+        bottomSheetdialog.show();
+    }
+
+    /**
+     * Handler action for bottom sheet bottom sheet dialog list favorite song
+     * @param v
+     */
+    private void onHandleActionBDialog(View v) {
+
+        LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
+        playNextControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        LinearLayout addToPlayListControl = v.findViewById(R.id.addToPlayListControl);
+        addToPlayListControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
+            }
+        });
+
+        LinearLayout viewDetailControl = v.findViewById(R.id.viewDetailControl);
+        viewDetailControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+            }
+        });
+
+        LinearLayout setRingToneControl = v.findViewById(R.id.setRingToneControl);
+        setRingToneControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
+                CommonHelper.setRingTone(mContext, songFind.get_path());
+            }
+        });
+
+        LinearLayout shareControl = v.findViewById(R.id.shareControl);
+        shareControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
+                CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+            }
+        });
+
+        LinearLayout deleteControl = v.findViewById(R.id.deleteControl);
+        deleteControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+            }
+        });
     }
 
     private void onLoadImageCover(String imageUri, final ArtistRecyclerAdapter.MyViewHolder holder) {
@@ -148,6 +251,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
         public ImageView artistAvatar;
         public TextView artistNumberOfSong;
         public RelativeLayout contentHolder;
+        public RelativeLayout moreRowControl;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -156,6 +260,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             artistAvatar = itemView.findViewById(R.id.artistAvatar);
             artistNumberOfSong = itemView.findViewById(R.id.artistNumberOfSong);
             contentHolder = itemView.findViewById(R.id.artistItemRow);
+            moreRowControl = itemView.findViewById(R.id.moreRowControl);
         }
     }
 }
