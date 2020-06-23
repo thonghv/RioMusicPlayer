@@ -147,6 +147,9 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
 
         Filter filter = MediaHelper.getQueue(dbManager, App.getInstance().getMediaPlayList());
         ArrayList<?> songs = filter != null ? filter.getSongs() : new ArrayList<>();
+        if(songs.isEmpty()) {
+            songs = App.getInstance().getMediaPlayList();
+        }
 
         this.songs = (ArrayList<Song>) songs;
         this.totalDuration = filter.getTotalDuration();

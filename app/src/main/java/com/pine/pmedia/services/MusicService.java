@@ -151,6 +151,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         super.onCreate();
 
         app = App.getInstance();
+        app.setMService(this);
 
         mMediaSession = new MediaSessionCompat(this, "MusicService");
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -484,7 +485,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private void initPlayQueueWhenEmpty() {
 
         ArrayList<Song> queueStore = app.getQueueStore();
-        if(queueStore.isEmpty()) {
+        if(!queueStore.isEmpty()) {
             this.setPlayingQueue(queueStore);
         } else {
             this.setPlayingQueue(app.getMediaPlayList());

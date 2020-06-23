@@ -166,7 +166,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         this.songId = songId;
 
         LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = li.inflate(R.layout.bottom_dialog_playlist, null);
+        View view = li.inflate(R.layout.bottom_dialog_favorite, null);
         onHandleActionBDialog(view);
 
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);

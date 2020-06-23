@@ -112,6 +112,13 @@ public class AlbumActivity extends BaseActivity implements IActivity{
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        onUpdateUISongPlayBottom(false);
+    }
+
+    @Override
     public void initBroadcast() {
 
     }

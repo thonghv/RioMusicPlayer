@@ -251,7 +251,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
         public ImageView artistAvatar;
         public TextView artistNumberOfSong;
         public RelativeLayout contentHolder;
-        public RelativeLayout moreRowControl;
+        public LinearLayout moreRowControl;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
