@@ -34,6 +34,7 @@
                     android:id="@+id/addPlayListLarge"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:alpha="0.4"
                     android:background="@drawable/ic_add_white"/>
                 <TextView
                     android:layout_marginTop="5dp"

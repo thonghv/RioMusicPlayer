@@ -6,7 +6,7 @@
     <LinearLayout
         android:background="@color/p_background_01"
         android:layout_width="300dp"
-        android:layout_height="450dp"
+        android:layout_height="430dp"
         android:orientation="vertical">
 
         <TextView

@@ -21,6 +21,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongQueueRecyclerAdapter;
+import com.pine.pmedia.helpers.ExecuteUpdateQueueSong;
 import com.pine.pmedia.helpers.OnStartDragListener;
 import com.pine.pmedia.helpers.SimpleItemTouchHelperCallback;
 import com.pine.pmedia.helpers.CommonHelper;
@@ -96,7 +97,7 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
     public void finish() {
         super.finish();
 
-        onUpdateQueueSongDB();
+        new ExecuteUpdateQueueSong(dbManager, this.songs).execute();
     }
 
     public void initDBManager() {
@@ -145,13 +146,8 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
         recyclerSongsView.setItemAnimator(new DefaultItemAnimator());
         recyclerSongsView.setLayoutManager(new LinearLayoutManager(this));
 
-        Filter filter = MediaHelper.getQueue(dbManager, App.getInstance().getMediaPlayList());
-        ArrayList<?> songs = filter != null ? filter.getSongs() : new ArrayList<>();
-        if(songs.isEmpty()) {
-            songs = App.getInstance().getMediaPlayList();
-        }
-
-        this.songs = (ArrayList<Song>) songs;
+        Filter filter = CommonHelper.getQueueSong(dbManager);
+        this.songs = filter.getSongs();
         this.totalDuration = filter.getTotalDuration();
 
         onUpdateHeaderData(filter.getTotalDuration());
@@ -217,34 +213,28 @@ public class QueueActivity extends BaseActivity implements OnStartDragListener {
         mItemTouchHelper.startDrag(viewHolder);
     }
 
-    // Update queue songs list
-    public void onUpdateQueueSongDB() {
-
-        new ExecuteUpdateQueueSong(this.songs).execute();
-    }
-
     /**
      * Update queue song list
      */
-    private class ExecuteUpdateQueueSong extends AsyncTask<String, Void, String> {
-
-        private ArrayList<Song> songs;
-
-        public ExecuteUpdateQueueSong(ArrayList<Song> songs) {
-            this.songs = songs;
-        }
-
-        protected String doInBackground(String... params){
-            dbManager.deleteAllQueueSong();
-            for(Song s: songs) {
-                dbManager.insertQueue(s.get_id(), s.get_title(), 0, 0);
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(String response) {
-
-        }
-    }
+//    private class ExecuteUpdateQueueSong extends AsyncTask<String, Void, String> {
+//
+//        private ArrayList<Song> songs;
+//
+//        public ExecuteUpdateQueueSong(ArrayList<Song> songs) {
+//            this.songs = songs;
+//        }
+//
+//        protected String doInBackground(String... params){
+//            dbManager.deleteAllQueueSong();
+//            for(Song s: songs) {
+//                dbManager.insertQueue(s.get_id(), s.get_title(), 0, 0);
+//            }
+//
+//            return null;
+//        }
+//
+//        protected void onPostExecute(String response) {
+//
+//        }
+//    }
 }

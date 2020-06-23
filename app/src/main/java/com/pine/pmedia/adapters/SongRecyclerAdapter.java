@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -18,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -38,6 +40,7 @@ import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -189,7 +192,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, songId);
+                CommonHelper.addPlayNext(dbManager, mContext, songs, songId);
             }
         });
 

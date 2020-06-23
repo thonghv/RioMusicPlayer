@@ -328,6 +328,12 @@ public class MainActivity extends BaseActivity implements IActivity{
         }
     }
 
+    private void onInitQueueSong() {
+
+        ArrayList<Song> playQueue = CommonHelper.getQueueSong(dbManager).getSongs();
+        mService.setPlayingQueue(playQueue);
+    }
+
     private void onInitRecentSong() {
 
         new initRecentPlayList(this, dbManager).execute();
@@ -497,6 +503,9 @@ public class MainActivity extends BaseActivity implements IActivity{
 
             // On load previous song
             onLoadPreviousData();
+
+            // On load queue song
+            onInitQueueSong();
         }
     }
 

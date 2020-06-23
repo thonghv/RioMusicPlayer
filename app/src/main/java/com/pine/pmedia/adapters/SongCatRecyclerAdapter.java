@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,15 +42,15 @@ import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecyclerAdapter.ViewHolder> {
 
-    private MusicService mService;
-    private DBManager dbManager;
 
+    private DBManager dbManager;
     private ArrayList songs;
     private Context mContext;
     private Intent playIntent;
@@ -70,25 +72,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
         this.dbManager = new DBManager(context);
         this.dbManager.open();
-    }
-
-    protected ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            mService = binder.getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
-
-    private void inItService() {
-        if(mService == null) {
-            playIntent = new Intent(mContext, MusicService.class);
-            mContext.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        }
     }
 
     public void updateData(ArrayList data) {
@@ -115,8 +98,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     @NonNull
     @Override
     public SongCatRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        inItService();
 
         View view = null;
         switch (viewType) {
@@ -156,16 +137,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_ALBUM:
                     case Constants.VIEW_ARTIST:
                     case Constants.VIEW_GENRE:
-                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position, viewType).execute();
+                        new ExecuteProcessStartPlay(mContext, dbManager, App.getInstance().getMService(),
+                                songs, position, viewType).execute();
                         break;
 
                     case Constants.VIEW_SUGGEST:
                         intent = new Intent(v.getContext(), FilterActivity.class);
                         param.putInt(Constants.KEY_CAT_TYPE, Constants.VIEW_SUGGEST);
                         param.putString(Constants.KEY_TITLE_CAT, song.get_title());
-                        String note = song.get_numberOfTrack() + Constants.SPACE + Constants.SONGS
-                                + Constants.MINUS + CommonHelper.toFormatTimeMS(0);
-                        param.putString(Constants.KEY_NOTE_CAT, note);
                         param.putLong(Constants.KEY_ID, song.get_id());
                         intent.putExtras(param);
                         mContext.startActivity(intent);
@@ -182,7 +161,8 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_FAVORITE:
                     case Constants.VIEW_LAST_PLAYED:
                     case Constants.VIEW_RECENT_ADDED:
-                        new ExecuteProcessStartPlay(mContext, dbManager, mService, songs, position, viewType).execute();
+                        new ExecuteProcessStartPlay(mContext, dbManager,
+                                App.getInstance().getMService(), songs, position, viewType).execute();
                         break;
                 }
             }
@@ -214,31 +194,6 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 }
             }
         });
-    }
-
-    /**
-     * Handler click to play song
-     */
-    private class onProcessStartPlay extends AsyncTask<String, Void, String> {
-
-        private int position;
-
-        public onProcessStartPlay(int position) {
-            this.position = position;
-        }
-        protected String doInBackground(String... params){
-            return "";
-        }
-
-        protected void onPostExecute(String response) {
-
-            mService.setPlayingQueue(songs);
-            mService.checkAndResetPlay();
-
-            Bundle bundle = new Bundle();
-            bundle.putInt(Constants.KEY_POSITION, position);
-            mService.onProcess(Constants.PLAY_PAUSE, bundle);
-        }
     }
 
     //
@@ -288,7 +243,8 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, songId);
+                bottomSheetdialog.hide();
+                CommonHelper.addPlayNext(dbManager, mContext, songs, songId);
             }
         });
 
@@ -324,7 +280,18 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                //CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                bottomSheetdialog.hide();
+
+                File outPutFile = new File(String.valueOf(mContext.getResources().getDrawable(R.drawable.ic_music_note_white)));
+                Uri uri = FileProvider.getUriForFile(mContext, "com.pine.pmedia", outPutFile);
+
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                shareIntent.setType("image/*");
+                mContext.startActivity(Intent.createChooser(shareIntent, "Share Sound File"));
             }
         });
 
@@ -348,7 +315,8 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonHelper.addPlayNext(mContext, mService, songs, songId);
+                bottomSheetdialog.hide();
+                CommonHelper.addPlayNext(dbManager, mContext, songs, songId);
             }
         });
 
@@ -365,6 +333,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         addFavoriteControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bottomSheetdialog.hide();
                 CommonHelper.onFavorite(mContext, dbManager, songId, targetNameTemp);
             }
         });
@@ -393,6 +362,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
                 CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                bottomSheetdialog.hide();
             }
         });
 

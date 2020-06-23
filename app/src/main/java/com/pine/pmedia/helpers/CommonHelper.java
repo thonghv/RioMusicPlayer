@@ -21,6 +21,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -56,6 +58,7 @@ import com.pine.pmedia.control.AddPlayListDialog;
 import com.pine.pmedia.control.DetailSongDialog;
 import com.pine.pmedia.control.MediaPlayListDialog;
 import com.pine.pmedia.control.MusicVisualizer;
+import com.pine.pmedia.models.Filter;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
@@ -396,18 +399,21 @@ public class CommonHelper {
     /**
      * Add song in play next
      * @param context
-     * @param mService
      * @param songs
      * @param id
      */
-    public static void addPlayNext(Context context, MusicService mService, ArrayList<Song> songs, long id) {
+    public static void addPlayNext(DBManager dbManager, Context context, ArrayList<Song> songs, long id) {
 
         Toast.makeText(context, R.string.addInPlayNextSuccess, Toast.LENGTH_SHORT).show();
 
         Song songFind = MediaHelper.getSongById(songs, id);
         if(songFind != null) {
-            int nextIndex = mService.getCurrentPosition() + 1;
-            mService.getPlayingQueue().add(nextIndex, songFind);
+            int nextIndex = App.getInstance().getMService().getCurrentPosition() + 1;
+            ArrayList<Song> playingQueue = App.getInstance().getMService().getPlayingQueue();
+            if(!CommonHelper.isExistSongFrom(playingQueue, songFind.get_id())) {
+                playingQueue.add(nextIndex, songFind);
+                new ExecuteUpdateQueueSong(dbManager, playingQueue).execute();
+            }
         }
     }
 
@@ -463,12 +469,16 @@ public class CommonHelper {
 
     public static void onShare(Context context, String subject, String content) {
 
+        String sharePath = Environment.getExternalStorageDirectory().getPath() + content;
+        File outPutFile = new File(sharePath);
+        Uri uri = FileProvider.getUriForFile(context, "com.pine.pmedia", outPutFile);
+
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT,subject);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, content);
-        shareIntent.setType("text/plain");
-        context.startActivity(shareIntent);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        shareIntent.setType("image/*");
+        context.startActivity(Intent.createChooser(shareIntent, "Share Sound File"));
     }
 
     /**
@@ -643,6 +653,31 @@ public class CommonHelper {
         FragmentActivity fragmentActivity = (FragmentActivity) mContext;
         FragmentManager fm = fragmentActivity.getSupportFragmentManager();
         detailSongDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
+    }
+
+    public static Filter getQueueSong(DBManager dbManager) {
+
+        Filter filter = MediaHelper.getQueue(dbManager, App.getInstance().getMediaPlayList());
+        ArrayList<?> songs = filter != null ? filter.getSongs() : new ArrayList<>();
+        if(songs.isEmpty()) {
+            songs = App.getInstance().getMediaPlayList();
+
+            filter.setSongs((ArrayList<Song>) songs);
+            filter.setTotalDuration(songs.size());
+        }
+
+        return filter;
+    }
+
+    public static boolean isExistSongFrom( ArrayList<Song> songs, long songId) {
+
+        for(Song s : songs) {
+            if(s.get_id() == songId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

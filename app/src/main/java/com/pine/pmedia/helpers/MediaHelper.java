@@ -21,9 +21,12 @@ import com.pine.pmedia.models.Genre;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.sqlite.DBManager;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -614,8 +617,13 @@ public class MediaHelper {
         }
 
         protected String doInBackground(String... params){
+            long [] ids = getSongListForPlaylist(context, playListId);
+            Long[] inputIds = ArrayUtils.toObject(ids);
+            List<Long> songIds = Arrays.asList(inputIds);
             for(long audioId : audioIds) {
-                addToPlaylist(context, audioId, playListId);
+                if(!songIds.contains(audioId)) {
+                    addToPlaylist(context, audioId, playListId);
+                }
             }
             return "";
         }
