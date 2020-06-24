@@ -1,6 +1,8 @@
 package com.pine.pmedia.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -18,6 +20,7 @@ import androidx.cardview.widget.CardView;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -27,6 +30,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.models.Album;
 
@@ -37,6 +41,13 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
     private ArrayList<Album> mValues;
     private Context mContext;
     private int viewType;
+
+    private BottomSheetDialog bottomSheetdialog;
+    private long songId;
+    private long targetIdTemp;
+    private String targetNameTemp;
+    private long songCurrentIdTemp;
+    private TextView headerSheetDialog;
 
     public AlbumRecyclerAdapter(Context context, ArrayList values, int viewType) {
 
@@ -80,7 +91,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         }
 
         if(viewType == Constants.VIEW_ALBUM) {
-            viewHolder.setData(mValues.get(position));
+            viewHolder.setData(album);
             viewHolder.albumCardItemLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -98,8 +109,103 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                     mContext.startActivity(intent);
                 }
             });
+
+            // On click show bottom sheet more
+            viewHolder.moreRowControl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onShowBottomSheet(album.getId(), album.getId(), album.getName());
+                }
+            });
         }
 
+    }
+
+    //
+    //=======================
+    // START BOTTOM SHEET
+    private void onShowBottomSheet(long targetIdTemp, long songId, String targetNameTemp) {
+
+        this.targetIdTemp = targetIdTemp;
+        this.targetNameTemp = targetNameTemp;
+        this.songId = songId;
+
+        LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view =  li.inflate(R.layout.bottom_dialog_album, null);
+        onHandleActionBDialog(view);
+
+        headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
+        headerSheetDialog.setText(targetNameTemp);
+
+        CommonHelper.onCalColorBottomSheetDialog(mContext, view);
+
+        bottomSheetdialog = new BottomSheetDialog(mContext);
+        bottomSheetdialog.setContentView(view);
+        bottomSheetdialog.show();
+    }
+
+    /**
+     * Handler action for bottom sheet bottom sheet dialog album
+     * @param v
+     */
+    private void onHandleActionBDialog(View v) {
+
+        LinearLayout playControl = v.findViewById(R.id.playControl);
+        playControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+                // TODO:
+            }
+        });
+
+        LinearLayout addToPlayListControl = v.findViewById(R.id.addToPlayListControl);
+        addToPlayListControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+                // TODO:
+            }
+        });
+
+        LinearLayout changeAlbumArtControl = v.findViewById(R.id.changeAlbumArtControl);
+        changeAlbumArtControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+                // TODO:
+            }
+        });
+
+        LinearLayout deleteControl = v.findViewById(R.id.deleteControl);
+        deleteControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+                onOpenDialogConfirm(R.string.titleDeletePlayList, R.string.messageDeletePlayList);
+            }
+        });
+    }
+
+    private void onOpenDialogConfirm(int title, int message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO: delete artist
+            }
+        });
+        alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -116,6 +222,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         public ImageView imgCover;
         public RelativeLayout bottomCardLayout;
         public LinearLayout albumCardItemLayout;
+        public LinearLayout moreRowControl;
 
         public ViewHolder(@NonNull View v, int itemType) {
 
@@ -129,6 +236,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                     numberOfSong = v.findViewById(R.id.cardNumberOfSong);
                     bottomCardLayout = v.findViewById(R.id.bottomCardLayout);
                     albumCardItemLayout = v.findViewById(R.id.albumCardItemLayout);
+                    moreRowControl = v.findViewById(R.id.moreRowControl);
 
                     // Set font text
                     Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_REGULAR);

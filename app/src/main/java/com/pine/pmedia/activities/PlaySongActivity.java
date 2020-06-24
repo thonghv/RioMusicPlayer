@@ -476,7 +476,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
 
     private void onAddHistory() {
 
-        new RunBackgroundAddHistory().execute();
+        //new RunBackgroundAddHistory().execute();
     }
 
     public class RunBackgroundAddHistory extends AsyncTask<String, Void, String> {

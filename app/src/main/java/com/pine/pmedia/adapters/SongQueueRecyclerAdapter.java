@@ -1,13 +1,9 @@
 package com.pine.pmedia.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -159,7 +155,7 @@ public class SongQueueRecyclerAdapter extends RecyclerView.Adapter<SongQueueRecy
             bundle.putInt(Constants.KEY_POSITION, position);
             mService.onProcess(Constants.PLAY_PAUSE, bundle);
 
-            CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id(), position);
+            CommonHelper.updateSettingSongPLaying(dbManager, mService.getMCurrSong().get_id(), position);
 
             return "";
         }

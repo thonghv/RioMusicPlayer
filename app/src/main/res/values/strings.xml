@@ -49,6 +49,7 @@
     <string name="addPlayList">New Playlist</string>
     <string name="cancel">CANCEL</string>
     <string name="changeName">Rename</string>
+    <string name="play">Play</string>
     <string name="setAsRingtone">Set as Ringtone</string>
     <string name="share">Share</string>
     <string name="nameYourPlaylist">Name your playlist</string>
@@ -56,6 +57,7 @@
     <string name="ok">OK</string>
     <string name="playNext">Play Next</string>
     <string name="addToPlaylist">Add to Playlist</string>
+    <string name="changeAlbumArt">Change Album Art</string>
     <string name="addInFavorite">Add in favorite</string>
     <string name="songDetails">Song Details</string>
     <string name="titleDeletePlayList">Delete PlayList</string>

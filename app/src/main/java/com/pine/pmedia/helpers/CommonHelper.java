@@ -70,6 +70,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -462,22 +463,41 @@ public class CommonHelper {
         RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, addedUri);
     }
 
-    public static void updateSongPLaying(DBManager dbManager, long songId, int position) {
+    public static void updateSettingSongPLaying(DBManager dbManager, long songId, int position) {
         dbManager.updateSettingByKey(Constants.SETTING_SONG_PLAYING, String.valueOf(songId));
         dbManager.updateSettingByKey(Constants.SETTING_SONG_POSITION, String.valueOf(position));
+    }
+
+    public static File createImageFile() throws IOException {
+
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM), "Camera");
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        String mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
     }
 
     public static void onShare(Context context, String subject, String content) {
 
         String sharePath = Environment.getExternalStorageDirectory().getPath() + content;
         File outPutFile = new File(sharePath);
-        Uri uri = FileProvider.getUriForFile(context, "com.pine.pmedia", outPutFile);
+        Uri uri = FileProvider.getUriForFile(context,
+                context.getApplicationContext().getPackageName() + ".provider", outPutFile);
 
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        shareIntent.setType("image/*");
+        shareIntent.setType("audio/*");
         context.startActivity(Intent.createChooser(shareIntent, "Share Sound File"));
     }
 

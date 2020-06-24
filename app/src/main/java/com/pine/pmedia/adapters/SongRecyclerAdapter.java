@@ -152,7 +152,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
                 switch (viewType) {
                     case Constants.ITEM_TYPE_SONG:
                         final Song song = songs.get(position);
-                        onShowBottomSheet(song.get_id(), -1L, song.get_title());
+                        onShowBottomSheet(song.get_id(), song.get_id(), song.get_title());
                         break;
                 }
             }
@@ -169,7 +169,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         this.songId = songId;
 
         LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = li.inflate(R.layout.bottom_dialog_favorite, null);
+        View view = li.inflate(R.layout.bottom_dialog_history, null);
         onHandleActionBDialog(view);
 
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
@@ -192,6 +192,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         playNextControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bottomSheetdialog.hide();
                 CommonHelper.addPlayNext(dbManager, mContext, songs, songId);
             }
         });
@@ -202,6 +203,15 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
             public void onClick(View v) {
                 bottomSheetdialog.hide();
                 CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
+            }
+        });
+
+        LinearLayout addFavoriteControl = v.findViewById(R.id.addFavoriteControl);
+        addFavoriteControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetdialog.hide();
+                CommonHelper.onFavorite(mContext, dbManager, songId, targetNameTemp);
             }
         });
 
@@ -227,6 +237,7 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         shareControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bottomSheetdialog.hide();
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
                 CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
             }

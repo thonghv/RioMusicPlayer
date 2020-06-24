@@ -1,7 +1,9 @@
 package com.pine.pmedia.adapters;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
@@ -146,7 +148,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
         this.songId = songId;
 
         LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view =  li.inflate(R.layout.bottom_dialog_favorite, null);
+        View view =  li.inflate(R.layout.bottom_dialog_artist, null);
         onHandleActionBDialog(view);
 
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
@@ -165,11 +167,12 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
      */
     private void onHandleActionBDialog(View v) {
 
-        LinearLayout playNextControl = v.findViewById(R.id.playNextControl);
-        playNextControl.setOnClickListener(new View.OnClickListener() {
+        LinearLayout playControl = v.findViewById(R.id.playControl);
+        playControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                bottomSheetdialog.hide();
+                // TODO:
             }
         });
 
@@ -178,33 +181,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
-            }
-        });
-
-        LinearLayout viewDetailControl = v.findViewById(R.id.viewDetailControl);
-        viewDetailControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetdialog.hide();
-            }
-        });
-
-        LinearLayout setRingToneControl = v.findViewById(R.id.setRingToneControl);
-        setRingToneControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.setRingTone(mContext, songFind.get_path());
-            }
-        });
-
-        LinearLayout shareControl = v.findViewById(R.id.shareControl);
-        shareControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                // TODO:
             }
         });
 
@@ -213,8 +190,30 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
+                onOpenDialogConfirm(R.string.titleDeletePlayList, R.string.messageDeletePlayList);
             }
         });
+    }
+
+    private void onOpenDialogConfirm(int title, int message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO: delete artist
+            }
+        });
+        alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void onLoadImageCover(String imageUri, final ArtistRecyclerAdapter.MyViewHolder holder) {

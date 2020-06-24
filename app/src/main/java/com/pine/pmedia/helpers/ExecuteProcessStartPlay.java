@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.pine.pmedia.App;
 import com.pine.pmedia.activities.AlbumActivity;
 import com.pine.pmedia.activities.ArtistActivity;
 import com.pine.pmedia.activities.FilterActivity;
@@ -57,7 +58,12 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
             index ++;
         }
 
-        CommonHelper.updateSongPLaying(dbManager, mService.getMCurrSong().get_id(), position);
+        CommonHelper.updateSettingSongPLaying(dbManager, mService.getMCurrSong().get_id(), position);
+
+        // Insert history last play
+        dbManager.insertHistory(mService.getMCurrSong().get_id(),
+                mService.getMCurrSong().get_title());
+        App.getInstance().isReloadLastPlayed = true;
 
         return null;
     }

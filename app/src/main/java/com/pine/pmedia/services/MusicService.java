@@ -49,7 +49,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private Song mCurrSong;
     private Activity mActivity;
     private int mPosition = 0;
-    private int storePosition = -1;
     private ArrayList<Song> playlistTotal = new ArrayList<>();
     private ArrayList<Song> playingQueue = new ArrayList<>();
     public AudioManager audioManager;
@@ -129,14 +128,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return mPosition;
     }
 
-    public int getStorePosition() {
-        return storePosition;
+    public void setCurrentPosition(int mPosition) {
+        this.mPosition = mPosition;
     }
-
-    public void setStorePosition(int storePosition) {
-        this.storePosition = storePosition;
-    }
-
     //=======================
     // FUNCTION
     //=======================
@@ -460,7 +454,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         if(mPlayer == null) {
             if(bundle == null) {
                 initPlayQueueWhenEmpty();
-                mPosition = this.storePosition != -1 ? this.storePosition : 0;
             } else {
                 int position = bundle.getInt(Constants.KEY_POSITION);
                 mPosition = position;
@@ -489,6 +482,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             this.setPlayingQueue(queueStore);
         } else {
             this.setPlayingQueue(app.getMediaPlayList());
+            mPosition = 0;
         }
     }
 

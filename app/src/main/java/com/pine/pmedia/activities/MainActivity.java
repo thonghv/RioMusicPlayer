@@ -664,7 +664,7 @@ public class MainActivity extends BaseActivity implements IActivity{
 
             int storePosition = MediaHelper.findPreviousPosition(dbManager);
             if(storePosition != -1) {
-                mService.setStorePosition(storePosition);
+                mService.setCurrentPosition(storePosition);
             }
 
             songTitleBottomPlayControl.setText(songFind.get_title());

@@ -112,8 +112,10 @@ public class MediaHelper {
 
         final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         final String[] cursor_cols = { MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.ARTIST_ID,
                 MediaStore.Audio.Media.DURATION,
@@ -189,6 +191,12 @@ public class MediaHelper {
         return results;
     }
 
+    public static void deleteSong(Activity activity, long songId) {
+
+        final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        activity.getContentResolver().delete(uri,
+                MediaStore.Audio.Media._ID, String.valueOf(songId).split(""));
+    }
 
     public static final Cursor makeLastAddedCursor(final Activity activity) {
 

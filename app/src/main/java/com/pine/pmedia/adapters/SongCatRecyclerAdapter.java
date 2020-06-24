@@ -175,6 +175,8 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 switch (viewType) {
                     case Constants.VIEW_ALBUM:
                     case Constants.VIEW_ARTIST:
+                        onShowBottomSheet(song.get_id(), -1L, song.get_title());
+                        break;
                     case Constants.VIEW_GENRE:
 
                         break;
@@ -208,6 +210,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = null;
         switch (this.viewType) {
+            case Constants.VIEW_ARTIST:
+                view = li.inflate(R.layout.bottom_dialog_favorite, null);
+                onHandleActionBDialogFavorite(view);
+                break;
+            case Constants.VIEW_ALBUM:
+                view = li.inflate(R.layout.bottom_dialog_favorite, null);
+                onHandleActionBDialogFavorite(view);
+                break;
             case Constants.VIEW_SUGGEST:
                 view = li.inflate(R.layout.bottom_dialog_playlist, null);
                 onHandleActionBDialogPLayList(view);
@@ -280,18 +290,8 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                //CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
                 bottomSheetdialog.hide();
-
-                File outPutFile = new File(String.valueOf(mContext.getResources().getDrawable(R.drawable.ic_music_note_white)));
-                Uri uri = FileProvider.getUriForFile(mContext, "com.pine.pmedia", outPutFile);
-
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                shareIntent.setType("image/*");
-                mContext.startActivity(Intent.createChooser(shareIntent, "Share Sound File"));
             }
         });
 
@@ -377,7 +377,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     }
 
     /**
-     * Handler action for bottom sheet bottomSheetdialog playlist
+     * Handler action for bottom sheet bottom sheet dialog playlist
      * @param v
      */
     private void onHandleActionBDialogPLayList(View v) {
@@ -436,9 +436,11 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                         break;
                     case Constants.VIEW_LAST_PLAYED:
                         dbManager.deleteHistoryById(targetIdTemp);
+                        App.getInstance().isReloadLastPlayed = true;
                         break;
                     case Constants.VIEW_RECENT_ADDED:
                         dbManager.deleteRecentById(targetIdTemp);
+                        App.getInstance().isReloadRecentAdd = true;
                         break;
                 }
 
