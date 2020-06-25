@@ -191,11 +191,14 @@ public class MediaHelper {
         return results;
     }
 
-    public static void deleteSong(Activity activity, long songId) {
+    public static void deleteSongs(Activity activity, List<Long> songIds) {
 
-        final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        activity.getContentResolver().delete(uri,
-                MediaStore.Audio.Media._ID, String.valueOf(songId).split(""));
+        for(Long songId : songIds) {
+            Uri uri = ContentUris.withAppendedId(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId
+            );
+            activity.getContentResolver().delete(uri, null, null);
+        }
     }
 
     public static final Cursor makeLastAddedCursor(final Activity activity) {
@@ -298,6 +301,7 @@ public class MediaHelper {
         for(int i = 0; i < ids.length; i++){
             for(Song s : songs) {
                 if(s.get_id() == ids[i]) {
+                    s.set_audioInPlayListId(ids[i]);
                     results.add(s);
                     totalDuration += s.get_duration();
                 }
@@ -684,10 +688,11 @@ public class MediaHelper {
                 MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
     }
 
-    public static void removeFromPlaylist(ContentResolver resolver, int audioId, long playListId) {
+    public static void removeFromPlaylist(Context context, long audioId, long playListId) {
         String[] cols = new String[] {
                 "count(*)"
         };
+        final ContentResolver resolver = context.getContentResolver();
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playListId);
         Cursor cur = resolver.query(uri, cols, null, null, null);
         cur.moveToFirst();

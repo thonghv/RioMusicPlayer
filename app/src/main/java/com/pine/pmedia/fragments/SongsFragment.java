@@ -28,6 +28,7 @@ public class SongsFragment extends BaseFragment {
     private static SongsFragment instance = null;
     private SongRecyclerAdapter songRecyclerAdapter;
     private RecyclerView recyclerView;
+    private ArrayList<Song> songs = new ArrayList();;
 
     public static SongsFragment getInstance() {
 
@@ -41,6 +42,8 @@ public class SongsFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        onLoadSongList();
     }
 
     @Override
@@ -83,11 +86,11 @@ public class SongsFragment extends BaseFragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(super.getmActivity()));
 
-        ArrayList<Song> songsLibrary = MediaHelper.getSongs(getmActivity(), 0L, 0L);
+        //ArrayList<Song> songsLibrary = MediaHelper.getSongs(getmActivity(), 0L, 0L);
 
         ArrayList<Song> songs = new ArrayList<>();
         //songs.add(new Song());
-        songs.addAll(songsLibrary);
+        songs.addAll(this.songs);
 
         songRecyclerAdapter = new SongRecyclerAdapter(songs, super.getmActivity());
         recyclerView.setAdapter(songRecyclerAdapter);
@@ -96,5 +99,17 @@ public class SongsFragment extends BaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    private void onLoadSongList() {
+        synchronized(this) {
+            this.songs = MediaHelper.getSongs(getmActivity(), 0L, 0L);
+        }
+    }
+
+    public void onReloadSongList() {
+
+        onLoadSongList();
+        songRecyclerAdapter.notifyDataSetChanged();
     }
 }

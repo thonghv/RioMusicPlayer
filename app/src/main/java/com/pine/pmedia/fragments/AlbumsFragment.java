@@ -28,8 +28,10 @@ public class AlbumsFragment extends BaseFragment {
 
     private static AlbumsFragment instance = null;
 
-    RecyclerView recyclerView;
-    ArrayList<Album> arrayList = new ArrayList<>();
+    private AlbumRecyclerAdapter albumRecyclerAdapter;
+    private RecyclerView recyclerView;
+    private ArrayList<Album> arrayList = new ArrayList<>();
+    private ArrayList<Album> albums = new ArrayList<>();
 
     public AlbumsFragment() {
 
@@ -42,6 +44,14 @@ public class AlbumsFragment extends BaseFragment {
         }
 
         return new AlbumsFragment();
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        onLoadAlbumList();
     }
 
     @Override
@@ -64,9 +74,9 @@ public class AlbumsFragment extends BaseFragment {
         recyclerView.setBackgroundResource(0);
 
         // Load album list
-        ArrayList<Album> albums = MediaHelper.getAlbums(getmActivity(), 0);
-        AlbumRecyclerAdapter adapter = new AlbumRecyclerAdapter(super.getActivity(), albums, Constants.VIEW_ALBUM);
-        recyclerView.setAdapter(adapter);
+        //ArrayList<Album> albums = MediaHelper.getAlbums(getmActivity(), 0);
+        albumRecyclerAdapter = new AlbumRecyclerAdapter(super.getActivity(), this.albums, Constants.VIEW_ALBUM);
+        recyclerView.setAdapter(albumRecyclerAdapter);
         GridLayoutManager manager = new GridLayoutManager(super.getContext(), 3, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
 
@@ -76,5 +86,17 @@ public class AlbumsFragment extends BaseFragment {
     @Override
     protected void onHandler() {
 
+    }
+
+    private void onLoadAlbumList() {
+        synchronized(this) {
+            this.albums = MediaHelper.getAlbums(super.getActivity(), 0);
+        }
+    }
+
+    public void onReloadAlbumList() {
+
+        onLoadAlbumList();
+        albumRecyclerAdapter.notifyDataSetChanged();
     }
 }

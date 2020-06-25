@@ -73,6 +73,7 @@ public class ExecuteProcessStartPlay extends AsyncTask<String, Void, String> {
             case Constants.VIEW_FAVORITE:
             case Constants.VIEW_RECENT_ADDED:
             case Constants.VIEW_LAST_PLAYED:
+            case Constants.VIEW_PLAYLIST:
                 ((FilterActivity) context).onUpdateUISongPlayBottom(true);
                 return;
             case Constants.VIEW_ALBUM:

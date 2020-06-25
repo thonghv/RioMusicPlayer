@@ -31,6 +31,7 @@ public class Song implements Parcelable {
     private long _historyId;
     private long _recentId;
     private long _queueId;
+    private long _audioInPlayListId;
 
     private int _numberOfTrack;
 
@@ -53,6 +54,7 @@ public class Song implements Parcelable {
         _favoriteId = in.readLong();
         _historyId = in.readLong();
         _recentId = in.readLong();
+        _audioInPlayListId = in.readLong();
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -89,5 +91,6 @@ public class Song implements Parcelable {
         dest.writeLong(_favoriteId);
         dest.writeLong(_historyId);
         dest.writeLong(_recentId);
+        dest.writeLong(_audioInPlayListId);
     }
 }

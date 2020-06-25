@@ -40,6 +40,8 @@ public class Constants {
     //=================
     public static final int SUGGEST_INDEX               = 0;
     public static final int SONGS_INDEX                 = 1;
+    public static final int ALBUM_INDEX                 = 2;
+    public static final int ARTIST_INDEX                = 3;
 
 
     public static final int LIMIT_RECENT                = 50;
@@ -60,6 +62,7 @@ public class Constants {
     public static final int VIEW_LAST_PLAYED            = 8;
     public static final int VIEW_RECENT_ADDED           = 9;
     public static final int VIEW_QUEUE                  = 10;
+    public static final int VIEW_PLAYLIST               = 11;
 
     //=================
     // API KEY

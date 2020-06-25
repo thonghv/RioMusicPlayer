@@ -27,6 +27,10 @@ public class App extends Application {
     public boolean isReloadLastPlayed;
     public boolean isReloadRecentAdd;
 
+    public boolean isReloadSongs;
+    public boolean isReloadAlbums;
+    public boolean isReloadArtists;
+
     public static App getInstance() {
 
         if(_instance == null) {

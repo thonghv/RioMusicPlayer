@@ -1,5 +1,6 @@
 package com.pine.pmedia.adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,37 +32,42 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
-import com.pine.pmedia.activities.AlbumActivity;
 import com.pine.pmedia.activities.ArtistActivity;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.ExecuteProcessStartPlay;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Artist;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAdapter.MyViewHolder>  {
 
     private ArrayList<Artist> artistsDetails;
-    private Context mContext;
-
+    private Activity activity;
+    private DBManager dbManager;
     private Intent playIntent;
     private MusicService mService;
     private ImageLoader imageLoader;
 
     private BottomSheetDialog bottomSheetdialog;
-    private long songId;
+    private long artistId;
+    private int numberOfSongs;
     private long targetIdTemp;
     private String targetNameTemp;
     private long songCurrentIdTemp;
     private TextView headerSheetDialog;
 
-    public ArtistRecyclerAdapter(ArrayList<Artist> artistsDetails, Context mContext) {
+    public ArtistRecyclerAdapter(ArrayList<Artist> artistsDetails, Activity activity) {
         this.artistsDetails = artistsDetails;
-        this.mContext = mContext;
+        this.activity = activity;
+
+        this.dbManager = new DBManager(activity);
+        this.dbManager.open();
     }
 
     protected ServiceConnection serviceConnection = new ServiceConnection() {
@@ -77,8 +83,8 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     };
 
     private void inItService() {
-        playIntent = new Intent(mContext, MusicService.class);
-        mContext.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        playIntent = new Intent(activity, MusicService.class);
+        activity.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @NonNull
@@ -98,13 +104,15 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
         final Artist artist = artistsDetails.get(position);
+        this.numberOfSongs = artist.getNumberOfTracks();
+
         holder.artistName.setText(artist.getName());
 
         String artistInfo = artist.getNumberOfAlbums() + Constants.SPACE + Constants.ALBUMS
                 + " - " + artist.getNumberOfTracks() + Constants.SPACE + Constants.SONGS;
         holder.artistNumberOfSong.setText(artistInfo);
 
-        Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_LIGHT);
+        Typeface customFace = Typeface.createFromAsset(activity.getAssets(), Constants.FONT_ROBOTO_LIGHT);
         holder.artistName.setTypeface(customFace);
 
         this.onLoadImageCover(artist.getArtUri(), holder);
@@ -125,7 +133,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
                 Intent intent = new Intent(v.getContext(), ArtistActivity.class);
                 intent.putExtras(param);
 
-                mContext.startActivity(intent);
+                activity.startActivity(intent);
             }
         });
 
@@ -141,22 +149,22 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     //
     //=======================
     // START BOTTOM SHEET
-    private void onShowBottomSheet(long targetIdTemp, long songId, String targetNameTemp) {
+    private void onShowBottomSheet(long targetIdTemp, long artistId, String targetNameTemp) {
 
         this.targetIdTemp = targetIdTemp;
         this.targetNameTemp = targetNameTemp;
-        this.songId = songId;
+        this.artistId = artistId;
 
-        LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater li = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view =  li.inflate(R.layout.bottom_dialog_artist, null);
         onHandleActionBDialog(view);
 
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
         headerSheetDialog.setText(targetNameTemp);
 
-        CommonHelper.onCalColorBottomSheetDialog(mContext, view);
+        CommonHelper.onCalColorBottomSheetDialog(activity, view);
 
-        bottomSheetdialog = new BottomSheetDialog(mContext);
+        bottomSheetdialog = new BottomSheetDialog(activity);
         bottomSheetdialog.setContentView(view);
         bottomSheetdialog.show();
     }
@@ -172,7 +180,9 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                // TODO:
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistId);
+                new ExecuteProcessStartPlay(activity, dbManager, App.getInstance().getMService(),
+                        songs, 0, -1).execute();
             }
         });
 
@@ -181,7 +191,12 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                // TODO:
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistId);
+                List<Long> songIds = new ArrayList<>();
+                for(Song s : songs) {
+                    songIds.add(s.get_id());
+                }
+                CommonHelper.onShowMediaPlayListDialog(activity, songIds);
             }
         });
 
@@ -190,13 +205,17 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                onOpenDialogConfirm(R.string.titleDeletePlayList, R.string.messageDeletePlayList);
+                if(numberOfSongs > 1) {
+                    onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumTheseSongs);
+                } else {
+                    onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumThisSongs);
+                }
             }
         });
     }
 
     private void onOpenDialogConfirm(int title, int message){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {

@@ -1,16 +1,12 @@
 package com.pine.pmedia.adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,20 +34,17 @@ import com.pine.pmedia.helpers.ExecuteProcessStartPlay;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Filter;
 import com.pine.pmedia.models.Song;
-import com.pine.pmedia.services.MusicService;
 import com.pine.pmedia.sqlite.DBManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecyclerAdapter.ViewHolder> {
 
-
     private DBManager dbManager;
     private ArrayList songs;
-    private Context mContext;
+    private Activity activity;
     private Intent playIntent;
     private int viewType;
     private BottomSheetDialog bottomSheetdialog;
@@ -63,14 +55,15 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
     private List<Long> listSongCurrentIdTemp;
     private MediaPlayListDialog mediaPlayListDialog;
     private TextView headerSheetDialog;
+    private long playListIdTemp;
 
-    public SongCatRecyclerAdapter(Context context, ArrayList values, int viewType) {
+    public SongCatRecyclerAdapter(Activity activity, ArrayList values, int viewType) {
 
         this.songs = values;
-        this.mContext = context;
+        this.activity = activity;
         this.viewType = viewType;
 
-        this.dbManager = new DBManager(context);
+        this.dbManager = new DBManager(activity);
         this.dbManager.open();
     }
 
@@ -88,6 +81,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
     public void setMediaPlayListDialog(MediaPlayListDialog mediaPlayListDialog) {
         this.mediaPlayListDialog = mediaPlayListDialog;
+    }
+
+    public long getPlayListIdTemp() {
+        return playListIdTemp;
+    }
+
+    public void setPlayListIdTemp(long playListIdTemp) {
+        this.playListIdTemp = playListIdTemp;
     }
 
     @Override
@@ -108,13 +109,14 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             case Constants.VIEW_FAVORITE:
             case Constants.VIEW_LAST_PLAYED:
             case Constants.VIEW_RECENT_ADDED:
-                view = LayoutInflater.from(mContext).inflate(R.layout.song_custum_item, parent, false);
+            case Constants.VIEW_PLAYLIST:
+                view = LayoutInflater.from(activity).inflate(R.layout.song_custum_item, parent, false);
                 break;
             case Constants.VIEW_SUGGEST:
-                view = LayoutInflater.from(mContext).inflate(R.layout.play_list_item, parent, false);
+                view = LayoutInflater.from(activity).inflate(R.layout.play_list_item, parent, false);
                 break;
             case Constants.VIEW_PLAYLIST_DIALOG:
-                view = LayoutInflater.from(mContext).inflate(R.layout.play_list_item_min, parent, false);
+                view = LayoutInflater.from(activity).inflate(R.layout.play_list_item_min, parent, false);
                 break;
         }
 
@@ -137,7 +139,8 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_ALBUM:
                     case Constants.VIEW_ARTIST:
                     case Constants.VIEW_GENRE:
-                        new ExecuteProcessStartPlay(mContext, dbManager, App.getInstance().getMService(),
+                    case Constants.VIEW_PLAYLIST:
+                        new ExecuteProcessStartPlay(activity, dbManager, App.getInstance().getMService(),
                                 songs, position, viewType).execute();
                         break;
 
@@ -147,21 +150,21 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                         param.putString(Constants.KEY_TITLE_CAT, song.get_title());
                         param.putLong(Constants.KEY_ID, song.get_id());
                         intent.putExtras(param);
-                        mContext.startActivity(intent);
+                        activity.startActivity(intent);
                         break;
 
                     case Constants.VIEW_PLAYLIST_DIALOG:
                         // ID of playlist: song.get_id()
-                        MediaHelper.addToPlaylist(mContext, listSongCurrentIdTemp, song.get_id());
+                        MediaHelper.addToPlaylist(activity, listSongCurrentIdTemp, song.get_id());
                         mediaPlayListDialog.dismiss();
-                        Toast.makeText(mContext, R.string.addSongInPlayListSuccess, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, R.string.addSongInPlayListSuccess, Toast.LENGTH_SHORT).show();
                         App.getInstance().isReloadPlayList = true;
                         break;
 
                     case Constants.VIEW_FAVORITE:
                     case Constants.VIEW_LAST_PLAYED:
                     case Constants.VIEW_RECENT_ADDED:
-                        new ExecuteProcessStartPlay(mContext, dbManager,
+                        new ExecuteProcessStartPlay(activity, dbManager,
                                 App.getInstance().getMService(), songs, position, viewType).execute();
                         break;
                 }
@@ -178,7 +181,9 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                         onShowBottomSheet(song.get_id(), -1L, song.get_title());
                         break;
                     case Constants.VIEW_GENRE:
-
+                        break;
+                    case Constants.VIEW_PLAYLIST:
+                        onShowBottomSheet(song.get_audioInPlayListId(), song.get_id(), song.get_title());
                         break;
                     case Constants.VIEW_SUGGEST:
                     case Constants.VIEW_PLAYLIST_DIALOG:
@@ -207,7 +212,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         this.targetNameTemp = targetNameTemp;
         this.songId = songId;
 
-        LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater li = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = null;
         switch (this.viewType) {
             case Constants.VIEW_ARTIST:
@@ -222,6 +227,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 view = li.inflate(R.layout.bottom_dialog_playlist, null);
                 onHandleActionBDialogPLayList(view);
                 break;
+            case Constants.VIEW_PLAYLIST:
             case Constants.VIEW_FAVORITE:
                 view = li.inflate(R.layout.bottom_dialog_favorite,null);
                 onHandleActionBDialogFavorite(view);
@@ -236,9 +242,9 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
         headerSheetDialog.setText(targetNameTemp);
 
-        CommonHelper.onCalColorBottomSheetDialog(mContext, view);
+        CommonHelper.onCalColorBottomSheetDialog(activity, view);
 
-        bottomSheetdialog = new BottomSheetDialog(mContext);
+        bottomSheetdialog = new BottomSheetDialog(activity);
         bottomSheetdialog.setContentView(view);
         bottomSheetdialog.show();
     }
@@ -254,7 +260,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.addPlayNext(dbManager, mContext, songs, songId);
+                CommonHelper.addPlayNext(dbManager, activity, songs, songId);
             }
         });
 
@@ -263,7 +269,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
+                CommonHelper.onShowMediaPlayListDialog(activity, Arrays.asList(songId));
             }
         });
 
@@ -281,7 +287,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.setRingTone(mContext, songFind.get_path());
+                CommonHelper.setRingTone(activity, songFind.get_path());
             }
         });
 
@@ -290,7 +296,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                CommonHelper.onShare(activity, activity.getResources().getString(R.string.action_settings), songFind.get_path());
                 bottomSheetdialog.hide();
             }
         });
@@ -316,7 +322,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.addPlayNext(dbManager, mContext, songs, songId);
+                CommonHelper.addPlayNext(dbManager, activity, songs, songId);
             }
         });
 
@@ -325,7 +331,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.onShowMediaPlayListDialog(mContext, Arrays.asList(songId));
+                CommonHelper.onShowMediaPlayListDialog(activity, Arrays.asList(songId));
             }
         });
 
@@ -334,7 +340,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.onFavorite(mContext, dbManager, songId, targetNameTemp);
+                CommonHelper.onFavorite(activity, dbManager, songId, targetNameTemp);
             }
         });
 
@@ -352,7 +358,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.setRingTone(mContext, songFind.get_path());
+                CommonHelper.setRingTone(activity, songFind.get_path());
             }
         });
 
@@ -361,7 +367,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 Song songFind = MediaHelper.getById(App.getInstance().getMediaPlayList(), songId);
-                CommonHelper.onShare(mContext, mContext.getResources().getString(R.string.action_settings), songFind.get_path());
+                CommonHelper.onShare(activity, activity.getResources().getString(R.string.action_settings), songFind.get_path());
                 bottomSheetdialog.hide();
             }
         });
@@ -387,7 +393,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                CommonHelper.showPlayListDialog(mContext, SuggestFragment.getInstance(),
+                CommonHelper.showPlayListDialog(activity, SuggestFragment.getInstance(),
                         Constants.UPDATE_DIALOG, targetNameTemp, targetIdTemp);
                 onReloadDataUI();
             }
@@ -407,20 +413,20 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
 
         Song songFind = MediaHelper.getSongById(songs, songId);
         if(songFind == null) {
-            Toast.makeText(mContext, R.string.errorPleaseAgain, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.errorPleaseAgain, Toast.LENGTH_SHORT).show();
             return;
         }
 
         DetailSongDialog detailSongDialog = new DetailSongDialog(songFind.get_title(), songFind.get_artist(),
                 songFind.get_album(), CommonHelper.toFormatTimeMS(songFind.get_duration()),
                 CommonHelper.toFormatSize(songFind.get_size()), songFind.get_path());
-        FragmentActivity fragmentActivity = (FragmentActivity) mContext;
+        FragmentActivity fragmentActivity = (FragmentActivity) activity;
         FragmentManager fm = fragmentActivity.getSupportFragmentManager();
         detailSongDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
     }
 
     private void onOpenDialogConfirm(int title, int message){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -428,7 +434,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
             public void onClick(DialogInterface dialog, int which) {
                 switch (viewType) {
                     case Constants.VIEW_SUGGEST:
-                        MediaHelper.deletePlaylist(mContext, targetIdTemp);
+                        MediaHelper.deletePlaylist(activity, targetIdTemp);
                         break;
                     case Constants.VIEW_FAVORITE:
                         dbManager.deleteFavoriteById(targetIdTemp);
@@ -441,6 +447,10 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     case Constants.VIEW_RECENT_ADDED:
                         dbManager.deleteRecentById(targetIdTemp);
                         App.getInstance().isReloadRecentAdd = true;
+                        break;
+                    case Constants.VIEW_PLAYLIST:
+                        MediaHelper.removeFromPlaylist(activity, targetIdTemp, playListIdTemp);
+                        App.getInstance().isReloadPlayList = true;
                         break;
                 }
 
@@ -467,7 +477,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
         Filter filter = null;
         switch (this.viewType) {
             case Constants.VIEW_SUGGEST:
-                songs = MediaHelper.getAllPLayList(mContext);
+                songs = MediaHelper.getAllPLayList(activity);
                 return;
             case Constants.VIEW_FAVORITE:
                 filter = MediaHelper.getFavorites(dbManager, App.getInstance().getMediaPlayList());
@@ -481,9 +491,13 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 filter = MediaHelper.getRecent(dbManager, App.getInstance().getMediaPlayList());
                 songs = filter.getSongs();
                 break;
+            case Constants.VIEW_PLAYLIST:
+                filter = MediaHelper.getSongsByPlayListId(activity, playListIdTemp);
+                songs = filter.getSongs();
+                break;
         }
 
-        ((FilterActivity)mContext).onUpdateNoteFilter(songs.size(), filter.getTotalDuration());
+        ((FilterActivity)activity).onUpdateNoteFilter(songs.size(), filter.getTotalDuration());
     }
 
     //=======================
@@ -518,7 +532,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 case Constants.VIEW_FAVORITE:
                 case Constants.VIEW_LAST_PLAYED:
                 case Constants.VIEW_RECENT_ADDED:
-
+                case Constants.VIEW_PLAYLIST:
                     trackTitle = itemView.findViewById(R.id.trackTitle);
                     trackImage = itemView.findViewById(R.id.trackImage);
                     trackDuration = itemView.findViewById(R.id.trackDuration);
@@ -526,6 +540,7 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                     contentHolder = itemView.findViewById(R.id.songLayout);
                     moreRowControl = itemView.findViewById(R.id.moreRowControl);
                     break;
+
                 case Constants.VIEW_SUGGEST:
                 case Constants.VIEW_PLAYLIST_DIALOG:
                     trackTitle = itemView.findViewById(R.id.trackTitle);
@@ -545,14 +560,15 @@ public class SongCatRecyclerAdapter extends RecyclerView.Adapter<SongCatRecycler
                 case Constants.VIEW_FAVORITE:
                 case Constants.VIEW_LAST_PLAYED:
                 case Constants.VIEW_RECENT_ADDED:
-
+                case Constants.VIEW_PLAYLIST:
                     trackTitle.setText(song.get_title());
                     trackDuration.setText(CommonHelper.toFormatTimeMS(song.get_duration()));
                     trackArtist.setText(song.get_artist());
 
-                    Drawable drawable = mContext.getResources().getDrawable(R.drawable.ic_music_note_white);
+                    Drawable drawable = activity.getResources().getDrawable(R.drawable.ic_music_note_white);
                     trackImage.setBackground(drawable);
                     break;
+
                 case Constants.VIEW_SUGGEST:
                 case Constants.VIEW_PLAYLIST_DIALOG:
                     trackTitle.setText(song.get_title());

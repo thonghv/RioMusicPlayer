@@ -284,6 +284,18 @@ public class MainActivity extends BaseActivity implements IActivity{
                 if(position == Constants.SUGGEST_INDEX) {
                     reloadData();
                 }
+
+                if(position == Constants.SONGS_INDEX && App.getInstance().isReloadSongs) {
+                    reloadData();
+                }
+
+                if(position == Constants.ALBUM_INDEX && App.getInstance().isReloadAlbums) {
+                    reloadData();
+                }
+
+                if(position == Constants.ARTIST_INDEX && App.getInstance().isReloadArtists) {
+                    reloadData();
+                }
             }
 
             @Override
@@ -467,6 +479,16 @@ public class MainActivity extends BaseActivity implements IActivity{
         if (app.isReloadRecentAdd) {
             SuggestFragment.getInstance().onLoadCountRecentAdd();
             app.isReloadRecentAdd = false;
+        }
+
+        if (app.isReloadSongs) {
+            SongsFragment.getInstance().onReloadSongList();
+            app.isReloadSongs = false;
+        }
+
+        if (app.isReloadAlbums) {
+            AlbumsFragment.getInstance().onReloadAlbumList();
+            app.isReloadAlbums = false;
         }
     }
 

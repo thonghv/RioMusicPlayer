@@ -61,7 +61,7 @@
     <string name="addInFavorite">Add in favorite</string>
     <string name="songDetails">Song Details</string>
     <string name="titleDeletePlayList">Delete PlayList</string>
-    <string name="titleDeleteTrack">Delete Track</string>
+    <string name="titleDeleteTrack">Remove Song</string>
     <string name="playListNameIsExist">Play list name is exist</string>
     <string name="addSongInPlayListSuccess">Add song in playlist success.</string>
     <string name="addSongFavoriteSuccess">Add song favorite success.</string>
@@ -71,7 +71,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="messageDeletePlayList">Are you sure, you want to delete ?</string>
-    <string name="messageDeleteFromList">Are you sure, you want to delete form list ?</string>
+    <string name="messageDeleteFromList">Are you sure to remove this song ?</string>
     <string name="addInPlayNextSuccess">Add play next success</string>
     <string name="errorPleaseAgain">Error...! Please again.</string>
 
@@ -79,4 +79,7 @@
     <string name="title_activity_genre">GenreActivity</string>
     <string name="title_activity_filter">FilterActivity</string>
 
+    <string name="titleDeleteAlbum">Delete Songs</string>
+    <string name="messageDeleteAlbumThisSongs">Are you sure to delete this song ?</string>
+    <string name="messageDeleteAlbumTheseSongs">Are you sure to delete these songs ?</string>
 </resources>

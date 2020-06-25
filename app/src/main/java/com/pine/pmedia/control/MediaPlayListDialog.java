@@ -70,7 +70,7 @@ public class MediaPlayListDialog extends DialogFragment implements IDialogFragme
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         ArrayList playList = MediaHelper.getAllPLayList(mConText);
 
-        SongCatRecyclerAdapter adapter = new SongCatRecyclerAdapter(mConText, playList, Constants.VIEW_PLAYLIST_DIALOG);
+        SongCatRecyclerAdapter adapter = new SongCatRecyclerAdapter(getActivity(), playList, Constants.VIEW_PLAYLIST_DIALOG);
         adapter.setListSongCurrentIdTemp(songIds);
         adapter.setMediaPlayListDialog(this);
         recyclerView.setAdapter(adapter);

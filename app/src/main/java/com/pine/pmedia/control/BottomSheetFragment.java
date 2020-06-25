@@ -107,7 +107,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         headerSheetDialogControl.setText(getResources().getString(R.string.nowPlaying)
                 + Constants.SPACE + "(" + queueSong.size() + ")");
 
-        queueSongRecyclerAdapter = new SongCatRecyclerAdapter(context, queueSong, Constants.VIEW_QUEUE);
+        queueSongRecyclerAdapter = new SongCatRecyclerAdapter(getActivity(), queueSong, Constants.VIEW_QUEUE);
         recyclerQueueSong.setAdapter(queueSongRecyclerAdapter);
 
         try {

@@ -235,8 +235,17 @@ public class FilterActivity extends BaseActivity implements IActivity {
         this.totalDuration = filter.getTotalDuration();
         this.onUpdateNoteFilter(this.songs.size(), this.totalDuration);
 
+        if(catType == Constants.VIEW_SUGGEST) {
+            catType = Constants.VIEW_PLAYLIST;
+        }
+
         SongCatRecyclerAdapter songCatRecyclerAdapter =
                 new SongCatRecyclerAdapter(this, songs, catType);
+
+        if(catType == Constants.VIEW_PLAYLIST) {
+            songCatRecyclerAdapter.setPlayListIdTemp(playListId);
+        }
+
         recyclerSongsView.setAdapter(songCatRecyclerAdapter);
     }
 

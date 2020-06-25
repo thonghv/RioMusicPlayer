@@ -1,5 +1,6 @@
 package com.pine.pmedia.adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,32 +29,44 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
+import com.pine.pmedia.fragments.AlbumsFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
+import com.pine.pmedia.helpers.ExecuteProcessStartPlay;
+import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Album;
+import com.pine.pmedia.models.Song;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdapter.ViewHolder> {
 
     private ArrayList<Album> mValues;
-    private Context mContext;
+    private Activity activity;
+    private DBManager dbManager;
     private int viewType;
 
     private BottomSheetDialog bottomSheetdialog;
-    private long songId;
+    private long albumId;
+    private int numberOfSongs;
     private long targetIdTemp;
     private String targetNameTemp;
     private long songCurrentIdTemp;
     private TextView headerSheetDialog;
 
-    public AlbumRecyclerAdapter(Context context, ArrayList values, int viewType) {
+    public AlbumRecyclerAdapter(Activity activity, ArrayList values, int viewType) {
 
         this.mValues = values;
-        this.mContext = context;
+        this.activity = activity;
         this.viewType = viewType;
+
+        this.dbManager = new DBManager(activity);
+        this.dbManager.open();
     }
 
     @Override
@@ -67,7 +80,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         View view = null;
         switch (viewType) {
             case Constants.VIEW_ALBUM:
-                view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item, parent, false);
+                view = LayoutInflater.from(activity).inflate(R.layout.album_card_item, parent, false);
 
                 // Clear background of card view
                 CardView cardView = view.findViewById(R.id.cardView);
@@ -75,7 +88,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
 
                 break;
             case Constants.VIEW_ARTIST:
-                view = LayoutInflater.from(mContext).inflate(R.layout.album_card_item_min, parent, false);
+                view = LayoutInflater.from(activity).inflate(R.layout.album_card_item_min, parent, false);
                 break;
         }
 
@@ -85,6 +98,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         final Album album = mValues.get(position);
+        this.numberOfSongs = album.getNumberOfSong();
 
         if(viewType == Constants.VIEW_ARTIST) {
             viewHolder.setDataAlbumArtist(album);
@@ -106,7 +120,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                     Intent intent = new Intent(v.getContext(), AlbumActivity.class);
                     intent.putExtras(param);
 
-                    mContext.startActivity(intent);
+                    activity.startActivity(intent);
                 }
             });
 
@@ -124,22 +138,22 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
     //
     //=======================
     // START BOTTOM SHEET
-    private void onShowBottomSheet(long targetIdTemp, long songId, String targetNameTemp) {
+    private void onShowBottomSheet(long targetIdTemp, long albumId, String targetNameTemp) {
 
         this.targetIdTemp = targetIdTemp;
         this.targetNameTemp = targetNameTemp;
-        this.songId = songId;
+        this.albumId = albumId;
 
-        LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater li = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view =  li.inflate(R.layout.bottom_dialog_album, null);
         onHandleActionBDialog(view);
 
         headerSheetDialog = view.findViewById(R.id.headerSheetDialog);
         headerSheetDialog.setText(targetNameTemp);
 
-        CommonHelper.onCalColorBottomSheetDialog(mContext, view);
+        CommonHelper.onCalColorBottomSheetDialog(activity, view);
 
-        bottomSheetdialog = new BottomSheetDialog(mContext);
+        bottomSheetdialog = new BottomSheetDialog(activity);
         bottomSheetdialog.setContentView(view);
         bottomSheetdialog.show();
     }
@@ -155,7 +169,9 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                // TODO:
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumId,0L);
+                new ExecuteProcessStartPlay(activity, dbManager, App.getInstance().getMService(),
+                        songs, 0, -1).execute();
             }
         });
 
@@ -164,7 +180,12 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                // TODO:
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumId,0L);
+                List<Long> songIds = new ArrayList<>();
+                for(Song s : songs) {
+                    songIds.add(s.get_id());
+                }
+                CommonHelper.onShowMediaPlayListDialog(activity, songIds);
             }
         });
 
@@ -182,19 +203,34 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                onOpenDialogConfirm(R.string.titleDeletePlayList, R.string.messageDeletePlayList);
+                if(numberOfSongs > 1) {
+                    onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumTheseSongs);
+                } else {
+                    onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumThisSongs);
+                }
             }
         });
     }
 
     private void onOpenDialogConfirm(int title, int message){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // TODO: delete artist
+                // TODO: delete all song of albums
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumId,0L);
+                List<Long> songIds = new ArrayList<>();
+                for(Song s : songs) {
+                    songIds.add(s.get_id());
+                }
+                MediaHelper.deleteSongs(activity, songIds);
+
+                // Reload data at current screen.
+                App.getInstance().isReloadSongs = true;
+                mValues = MediaHelper.getAlbums(activity, 0);
+                notifyDataSetChanged();
             }
         });
         alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -239,7 +275,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                     moreRowControl = v.findViewById(R.id.moreRowControl);
 
                     // Set font text
-                    Typeface customFace = Typeface.createFromAsset(mContext.getAssets(), Constants.FONT_ROBOTO_REGULAR);
+                    Typeface customFace = Typeface.createFromAsset(activity.getAssets(), Constants.FONT_ROBOTO_REGULAR);
                     albumName.setTypeface(customFace);
                     albumArtist.setTypeface(customFace);
                     break;
