@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ import java.util.List;
 
 public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAdapter.MyViewHolder>  {
 
-    private ArrayList<Artist> artistsDetails;
+    private ArrayList<Artist> artists;
     private Activity activity;
     private DBManager dbManager;
     private Intent playIntent;
@@ -55,15 +56,17 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     private ImageLoader imageLoader;
 
     private BottomSheetDialog bottomSheetdialog;
-    private long artistId;
-    private int numberOfSongs;
+    private long artistIdTemp;
+    private int numberOfSongsTemp;
+    private int positionTemp;
+
     private long targetIdTemp;
     private String targetNameTemp;
     private long songCurrentIdTemp;
     private TextView headerSheetDialog;
 
-    public ArtistRecyclerAdapter(ArrayList<Artist> artistsDetails, Activity activity) {
-        this.artistsDetails = artistsDetails;
+    public ArtistRecyclerAdapter(ArrayList<Artist> artists, Activity activity) {
+        this.artists = artists;
         this.activity = activity;
 
         this.dbManager = new DBManager(activity);
@@ -103,17 +106,17 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
-        final Artist artist = artistsDetails.get(position);
-        this.numberOfSongs = artist.getNumberOfTracks();
+        final Artist artist = artists.get(position);
+        this.numberOfSongsTemp = artist.getNumberOfTracks();
+        this.positionTemp = position;
 
         holder.artistName.setText(artist.getName());
+        Typeface customFace = Typeface.createFromAsset(activity.getAssets(), Constants.FONT_ROBOTO_LIGHT);
+        holder.artistName.setTypeface(customFace);
 
         String artistInfo = artist.getNumberOfAlbums() + Constants.SPACE + Constants.ALBUMS
                 + " - " + artist.getNumberOfTracks() + Constants.SPACE + Constants.SONGS;
         holder.artistNumberOfSong.setText(artistInfo);
-
-        Typeface customFace = Typeface.createFromAsset(activity.getAssets(), Constants.FONT_ROBOTO_LIGHT);
-        holder.artistName.setTypeface(customFace);
 
         this.onLoadImageCover(artist.getArtUri(), holder);
 
@@ -153,7 +156,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
 
         this.targetIdTemp = targetIdTemp;
         this.targetNameTemp = targetNameTemp;
-        this.artistId = artistId;
+        this.artistIdTemp = artistId;
 
         LayoutInflater li = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view =  li.inflate(R.layout.bottom_dialog_artist, null);
@@ -180,7 +183,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistId);
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistIdTemp);
                 new ExecuteProcessStartPlay(activity, dbManager, App.getInstance().getMService(),
                         songs, 0, -1).execute();
             }
@@ -191,7 +194,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistId);
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistIdTemp);
                 List<Long> songIds = new ArrayList<>();
                 for(Song s : songs) {
                     songIds.add(s.get_id());
@@ -205,7 +208,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                if(numberOfSongs > 1) {
+                if(numberOfSongsTemp > 1) {
                     onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumTheseSongs);
                 } else {
                     onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumThisSongs);
@@ -221,7 +224,15 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
         alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // TODO: delete artist
+                // TODO: delete all song of artist
+                artists.remove(positionTemp);
+                notifyDataSetChanged();
+                App.getInstance().isReloadSongs = true;
+
+                new ExecuteRemoveAllSongAlbums(activity).execute();
+
+                // Reload data at current screen.
+                //artists = MediaHelper.getArtist(activity);
             }
         });
         alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -233,6 +244,34 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    /**
+     * Process remove all songs of albums
+     */
+    private class ExecuteRemoveAllSongAlbums extends AsyncTask<String, Void, Activity> {
+
+        private Activity activity;
+
+        public ExecuteRemoveAllSongAlbums(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        protected Activity doInBackground(String... strings) {
+            ArrayList<Song> songs = MediaHelper.getSongs(activity, 0L, artistIdTemp);
+            List<Long> songIds = new ArrayList<>();
+            for(Song s : songs) {
+                songIds.add(s.get_id());
+            }
+
+            MediaHelper.deleteSongs(activity, songIds);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+        }
     }
 
     private void onLoadImageCover(String imageUri, final ArtistRecyclerAdapter.MyViewHolder holder) {
@@ -260,7 +299,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
 
     @Override
     public int getItemCount() {
-        return artistsDetails == null ? 0 : artistsDetails.size();
+        return artists == null ? 0 : artists.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

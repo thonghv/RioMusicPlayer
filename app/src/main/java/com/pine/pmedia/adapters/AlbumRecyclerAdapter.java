@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,6 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.activities.AlbumActivity;
-import com.pine.pmedia.fragments.AlbumsFragment;
 import com.pine.pmedia.helpers.CommonHelper;
 import com.pine.pmedia.helpers.Constants;
 import com.pine.pmedia.helpers.ExecuteProcessStartPlay;
@@ -46,22 +46,24 @@ import java.util.List;
 
 public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdapter.ViewHolder> {
 
-    private ArrayList<Album> mValues;
+    private ArrayList<Album> albums;
     private Activity activity;
     private DBManager dbManager;
     private int viewType;
 
     private BottomSheetDialog bottomSheetdialog;
-    private long albumId;
-    private int numberOfSongs;
+    private long albumIdTemp;
+    private int numberOfSongsTemp;
+    private int positionTemp;
+
     private long targetIdTemp;
     private String targetNameTemp;
     private long songCurrentIdTemp;
     private TextView headerSheetDialog;
 
-    public AlbumRecyclerAdapter(Activity activity, ArrayList values, int viewType) {
+    public AlbumRecyclerAdapter(Activity activity, ArrayList albums, int viewType) {
 
-        this.mValues = values;
+        this.albums = albums;
         this.activity = activity;
         this.viewType = viewType;
 
@@ -97,8 +99,10 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        final Album album = mValues.get(position);
-        this.numberOfSongs = album.getNumberOfSong();
+
+        final Album album = albums.get(position);
+        this.numberOfSongsTemp = album.getNumberOfSong();
+        this.positionTemp = position;
 
         if(viewType == Constants.VIEW_ARTIST) {
             viewHolder.setDataAlbumArtist(album);
@@ -132,7 +136,6 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                 }
             });
         }
-
     }
 
     //
@@ -142,7 +145,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
 
         this.targetIdTemp = targetIdTemp;
         this.targetNameTemp = targetNameTemp;
-        this.albumId = albumId;
+        this.albumIdTemp = albumId;
 
         LayoutInflater li = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view =  li.inflate(R.layout.bottom_dialog_album, null);
@@ -169,7 +172,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumId,0L);
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumIdTemp,0L);
                 new ExecuteProcessStartPlay(activity, dbManager, App.getInstance().getMService(),
                         songs, 0, -1).execute();
             }
@@ -180,7 +183,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumId,0L);
+                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumIdTemp,0L);
                 List<Long> songIds = new ArrayList<>();
                 for(Song s : songs) {
                     songIds.add(s.get_id());
@@ -203,7 +206,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             @Override
             public void onClick(View v) {
                 bottomSheetdialog.hide();
-                if(numberOfSongs > 1) {
+                if(numberOfSongsTemp > 1) {
                     onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumTheseSongs);
                 } else {
                     onOpenDialogConfirm(R.string.titleDeleteAlbum, R.string.messageDeleteAlbumThisSongs);
@@ -219,18 +222,17 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 // TODO: delete all song of albums
-                ArrayList<Song> songs = MediaHelper.getSongs(activity, albumId,0L);
-                List<Long> songIds = new ArrayList<>();
-                for(Song s : songs) {
-                    songIds.add(s.get_id());
-                }
-                MediaHelper.deleteSongs(activity, songIds);
+                albums.remove(positionTemp);
+                notifyDataSetChanged();
+                App.getInstance().isReloadSongs = true;
+
+                new ExecuteRemoveAllSongArtist(activity).execute();
 
                 // Reload data at current screen.
-                App.getInstance().isReloadSongs = true;
-                mValues = MediaHelper.getAlbums(activity, 0);
-                notifyDataSetChanged();
+                //albums = MediaHelper.getAlbums(activity, 0);
+                //notifyDataSetChanged();
             }
         });
         alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -244,10 +246,37 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         alertDialog.show();
     }
 
+    /**
+     * Process remove all songs of artist
+     */
+    private class ExecuteRemoveAllSongArtist extends AsyncTask<String, Void, Activity> {
+
+        private Activity activity;
+
+        public ExecuteRemoveAllSongArtist(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        protected Activity doInBackground(String... strings) {
+            ArrayList<Song> songs = MediaHelper.getSongs(activity, albumIdTemp,0L);
+            List<Long> songIds = new ArrayList<>();
+            for(Song s : songs) {
+                songIds.add(s.get_id());
+            }
+            MediaHelper.deleteSongs(activity, songIds);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+        }
+    }
+
     @Override
     public int getItemCount() {
 
-        return mValues.size();
+        return albums.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

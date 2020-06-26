@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.pine.pmedia.App;
 import com.pine.pmedia.R;
@@ -64,10 +67,13 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
     private ImageButton shuffleImageButton;
     private LinearLayout downImageButton;
     private ImageButton imgDownPlaySong;
+    private ImageButton optionSongPlayControl;
     private ImageView avatarSong;
     private Timer timerOnReadyPlay;
     private Handler handler;
     private DBManager dbManager;
+    private TextView headerSheetDialog;
+    private BottomSheetDialog bottomSheetdialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +108,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         shuffleImageButton = findViewById(R.id.shuffleButton);
         downImageButton = findViewById(R.id.layoutDownPlaySong);
         imgDownPlaySong = findViewById(R.id.imgDownPlaySong);
+        optionSongPlayControl = findViewById(R.id.optionSongPlayControl);
 
         indexSongControl = findViewById(R.id.indexSongControl);
         favoriteControl = findViewById(R.id.favoriteControl);
@@ -137,6 +144,36 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
                 finish();
             }
         });
+
+        optionSongPlayControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOptionsMenu();
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the search; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.search, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            Toast.makeText(this, "Android Menu is Clicked", Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -189,9 +226,6 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
 
         // Init cal view for user
         onInitCalView();
-
-        // Insert history last play list
-        onAddHistory();
     }
 
     private void onStartTimer(){
@@ -436,7 +470,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         onInitCalView();
 
         // Insert history last play list
-        onAddHistory();
+        onAddLastPlayHistory();
     }
 
     private void onPrevious() {
@@ -450,7 +484,7 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         onInitCalView();
 
         // Insert history last play list
-        onAddHistory();
+        onAddLastPlayHistory();
     }
 
     private void onFavorite() {
@@ -466,17 +500,9 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         App.getInstance().isReloadFavorite = true;
     }
 
-    /*private void onShowMediaPlayListDialog() {
+    private void onAddLastPlayHistory() {
 
-        FragmentManager fm = this.getSupportFragmentManager();
-        MediaPlayListDialog mediaPlayListDialog =
-                new MediaPlayListDialog(this, mService.getMCurrSong().get_id());
-        mediaPlayListDialog.show(fm, Constants.PLAY_LIST_DIALOG_NAME);
-    }*/
-
-    private void onAddHistory() {
-
-        //new RunBackgroundAddHistory().execute();
+        new RunBackgroundAddHistory().execute();
     }
 
     public class RunBackgroundAddHistory extends AsyncTask<String, Void, String> {
