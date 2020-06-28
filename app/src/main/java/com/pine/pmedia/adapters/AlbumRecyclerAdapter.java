@@ -98,12 +98,9 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
 
         final Album album = albums.get(position);
-        this.numberOfSongsTemp = album.getNumberOfSong();
-        this.positionTemp = position;
-
         if(viewType == Constants.VIEW_ARTIST) {
             viewHolder.setDataAlbumArtist(album);
         }
@@ -132,6 +129,8 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
             viewHolder.moreRowControl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    numberOfSongsTemp = album.getNumberOfSong();
+                    positionTemp = position;
                     onShowBottomSheet(album.getId(), album.getId(), album.getName());
                 }
             });
@@ -228,7 +227,7 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
                 notifyDataSetChanged();
                 App.getInstance().isReloadSongs = true;
 
-                new ExecuteRemoveAllSongArtist(activity).execute();
+                new ExecuteRemoveAllSongAlbums(activity).execute();
 
                 // Reload data at current screen.
                 //albums = MediaHelper.getAlbums(activity, 0);
@@ -249,11 +248,11 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
     /**
      * Process remove all songs of artist
      */
-    private class ExecuteRemoveAllSongArtist extends AsyncTask<String, Void, Activity> {
+    private class ExecuteRemoveAllSongAlbums extends AsyncTask<String, Void, Activity> {
 
         private Activity activity;
 
-        public ExecuteRemoveAllSongArtist(Activity activity) {
+        public ExecuteRemoveAllSongAlbums(Activity activity) {
             this.activity = activity;
         }
 

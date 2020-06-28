@@ -2,6 +2,7 @@ package com.pine.pmedia.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.pine.pmedia.App;
 import com.pine.pmedia.R;
 import com.pine.pmedia.adapters.SongRecyclerAdapter;
 import com.pine.pmedia.helpers.MediaHelper;
 import com.pine.pmedia.models.Song;
 import com.pine.pmedia.services.MusicService;
+import com.pine.pmedia.sqlite.DBManager;
 
 import java.util.ArrayList;
 
@@ -28,7 +31,7 @@ public class SongsFragment extends BaseFragment {
     private static SongsFragment instance = null;
     private SongRecyclerAdapter songRecyclerAdapter;
     private RecyclerView recyclerView;
-    private ArrayList<Song> songs = new ArrayList();;
+    private ArrayList<Song> songs = new ArrayList();
 
     public static SongsFragment getInstance() {
 
@@ -102,14 +105,30 @@ public class SongsFragment extends BaseFragment {
     }
 
     private void onLoadSongList() {
-        synchronized(this) {
-            this.songs = MediaHelper.getSongs(getmActivity(), 0L, 0L);
-        }
+        songs = MediaHelper.getSongs(getmActivity(), 0L, 0L);
+        System.out.println("");
     }
 
     public void onReloadSongList() {
+        new ExecuteReloadSongList().execute();
+    }
 
-        onLoadSongList();
-        songRecyclerAdapter.notifyDataSetChanged();
+    private class ExecuteReloadSongList extends AsyncTask<String, Void, Activity> {
+
+        public ExecuteReloadSongList() {
+        }
+
+        @Override
+        protected Activity doInBackground(String... strings) {
+            onLoadSongList();
+            songRecyclerAdapter.updateSongs(songs);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Activity activity) {
+            songRecyclerAdapter.notifyDataSetChanged();
+        }
     }
 }
+

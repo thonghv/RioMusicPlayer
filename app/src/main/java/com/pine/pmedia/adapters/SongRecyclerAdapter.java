@@ -80,6 +80,10 @@ public class SongRecyclerAdapter extends RecyclerView.Adapter<SongRecyclerAdapte
         }
     };
 
+    public void updateSongs(ArrayList<Song> songs) {
+        this.songs = songs;
+    }
+
     private void inItService() {
         playIntent = new Intent(mContext, MusicService.class);
         mContext.bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);

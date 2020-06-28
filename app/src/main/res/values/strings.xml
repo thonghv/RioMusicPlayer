@@ -78,7 +78,7 @@
     <string name="title_activity_artist">ArtistActivity</string>
     <string name="title_activity_genre">GenreActivity</string>
     <string name="title_activity_filter">FilterActivity</string>
-
+    <string name="eq">Equalizer</string>
     <string name="titleDeleteAlbum">Delete Songs</string>
     <string name="messageDeleteAlbumThisSongs">Are you sure to delete this song ?</string>
     <string name="messageDeleteAlbumTheseSongs">Are you sure to delete these songs ?</string>

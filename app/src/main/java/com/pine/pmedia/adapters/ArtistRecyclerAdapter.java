@@ -107,8 +107,6 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
 
         final Artist artist = artists.get(position);
-        this.numberOfSongsTemp = artist.getNumberOfTracks();
-        this.positionTemp = position;
 
         holder.artistName.setText(artist.getName());
         Typeface customFace = Typeface.createFromAsset(activity.getAssets(), Constants.FONT_ROBOTO_LIGHT);
@@ -144,6 +142,8 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
         holder.moreRowControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                numberOfSongsTemp = artist.getNumberOfTracks();
+                positionTemp = position;
                 onShowBottomSheet(artist.getId(), artist.getId(), artist.getName());
             }
         });
@@ -229,10 +229,7 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
                 notifyDataSetChanged();
                 App.getInstance().isReloadSongs = true;
 
-                new ExecuteRemoveAllSongAlbums(activity).execute();
-
-                // Reload data at current screen.
-                //artists = MediaHelper.getArtist(activity);
+                new ExecuteRemoveAllSongArtist(activity).execute();
             }
         });
         alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -247,13 +244,13 @@ public class ArtistRecyclerAdapter extends RecyclerView.Adapter<ArtistRecyclerAd
     }
 
     /**
-     * Process remove all songs of albums
+     * Process remove all songs of artist
      */
-    private class ExecuteRemoveAllSongAlbums extends AsyncTask<String, Void, Activity> {
+    private class ExecuteRemoveAllSongArtist extends AsyncTask<String, Void, Activity> {
 
         private Activity activity;
 
-        public ExecuteRemoveAllSongAlbums(Activity activity) {
+        public ExecuteRemoveAllSongArtist(Activity activity) {
             this.activity = activity;
         }
 

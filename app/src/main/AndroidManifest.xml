@@ -24,6 +24,10 @@
             android:label="@string/title_activity_filter"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
+            android:name=".activities.EqualizerActivity"
+            android:label="@string/title_activity_filter"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".activities.QueueActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"></activity>

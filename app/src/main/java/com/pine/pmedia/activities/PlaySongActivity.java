@@ -447,7 +447,10 @@ public class PlaySongActivity extends BaseActivity implements IActivity{
         equalizerControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(mContext, EqualizerActivity.class);
+                Bundle param = new Bundle();
+                intent.putExtras(param);
+                mContext.startActivity(intent);
             }
         });
 
